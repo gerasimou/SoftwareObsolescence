@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	
+
+
+	<!-- The command -->
+  	<extension
+  		point="org.eclipse.ui.commands">
+  		<command
+            name="Print Message"
+            id="org.spg.refactoring.commands.printMessageCommand">
+       </command>
+  		<command
+            name="Refactor Command"
+            id="org.spg.refactoring.commands.refactorCommand">
+       </command>  	  
+	</extension>
+	
+	<!-- The handler -->
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.spg.refactoring.handlers.PrintMessageHandler"
+            commandId="org.spg.refactoring.commands.printMessageCommand">
+      </handler>
+      <handler
+            class="org.spg.refactoring.handlers.RefactorHandler"
+            commandId="org.spg.refactoring.commands.refactorCommand">
+      </handler>
+   </extension>
+   
+	<!-- The menu -->
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+      	<separator
+             name="org.spg.refactoring.separator1" 
+             visible="true">
+         </separator>
+         <menu
+               label="Refactor">
+            <command
+                  commandId="org.spg.refactoring.commands.printMessageCommand"
+                  label="Print Message"
+                  mnemonic="R"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate
+                           ifEmpty="false">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.eclipse.cdt.core.cnature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="org.spg.refactoring.commands.refactorCommand"
+                  label="Refactor Project"
+                  mnemonic="A"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate
+                           ifEmpty="false">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.eclipse.cdt.core.cnature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+</plugin>
