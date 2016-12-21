@@ -69,6 +69,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPNamespaceScope;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPNodeFactory;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPParameter;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
@@ -77,6 +78,7 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPUnknownBinding;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -196,7 +198,7 @@ public class RefactoringAST {
 			e.printStackTrace();
 		}
 	}
-
+ 	
  	
  	private void checkReferences () {
  		try {
@@ -206,7 +208,7 @@ public class RefactoringAST {
 			projectIndex.acquireReadLock();
 	 		for (IBinding binding : bindings){
 	 			if (binding instanceof ICPPClassType){
-	 				System.out.println(binding + "\t ICPPClassType");
+//	 				System.out.println(binding + "\t ICPPClassType");
 	 				ICPPClassType classBinding = (ICPPClassType)binding;	 	
 	 				
 	 				//check inheritance of this class
@@ -218,10 +220,10 @@ public class RefactoringAST {
 	 				}
 	 			}
 	 			else if (binding instanceof IEnumeration){
-	 				System.out.println(binding + "\t IEnumeration");
+//	 				System.out.println(binding + "\t IEnumeration");
 	 			}
 	 			else if (binding instanceof ICPPMethod){
-	 				System.out.println(binding + "IMethod");
+//	 				System.out.println(binding + "IMethod");
 	 				//check the signature of this method 
 	 				checkMethodSignature((ICPPMethod)binding);
 	 			}
@@ -286,38 +288,6 @@ public class RefactoringAST {
 				IASTDeclSpecifier paramDeclSpecifier = paramDecl.getDeclSpecifier();
 				
 				checkDeclSpecifier(paramDeclSpecifier);
-				
-//				//if it's not not a simple specifier (void, int, double, etc.) 
-//				//1) if it's part of the legacy library, include it in the set of elements to be migrated
-//				//2) if it's part of a standard c++ library, add it to the set of include directives
-//				if (paramDeclSpecifier instanceof ICPPASTNamedTypeSpecifier){
-//					IASTName paramSpecifierName 	= ((ICPPASTNamedTypeSpecifier) paramDeclSpecifier).getName();
-//					IBinding paramSpecifierBinding	= paramSpecifierName.resolveBinding();
-//					//find where the param specifier is defined
-//					IIndexName[] paramSpecifierDefs = projectIndex.findNames(paramSpecifierBinding, IIndex.FIND_DEFINITIONS); 
-//					if (paramSpecifierDefs.length>0){
-//						IIndexName paramSpecifierDef = paramSpecifierDefs[0];
-//						IASTSimpleDeclaration node 	= (IASTSimpleDeclaration)findNodeFromIndex(paramSpecifierDef, IASTSimpleDeclaration.class);
-//						
-//						// while not reached a namespace scope
-//						ICPPNamespaceScope scope = (ICPPNamespaceScope) paramSpecifierBinding.getScope();
-//
-//						while (!((scope != null) && (scope instanceof ICPPNamespaceScope))) {
-//							scope = (ICPPNamespaceScope) scope.getParent();
-//						}
-//
-//						IName scopeName = scope.getScopeName();
-//						if ( (scopeName != null) &&
-//						     (REFACTORING_NAMESPACES.contains(scopeName.toString())) ){
-//								bindingsSet.add(paramSpecifierBinding);
-//								namesSet.add(paramSpecifierName);	
-//						}
-//						else{//it is an include directive from the c++ libs				
-//							System.out.println(node +"\t"+ node.getContainingFilename() +"\t"+ node.getTranslationUnit().getFilePath());
-//							includeDirectivesMap.put(paramSpecifierName, node.getContainingFilename());
-//						}
-//					}
-//				}
 			}
 		}
 
@@ -778,7 +748,7 @@ public class RefactoringAST {
 	private LinkedHashMap<ICPPClassType, List<ICPPMember>> createClassMembersMapping(){
 		HashMap<ICPPClassType, List<ICPPMember>> classMembersMap = new HashMap<ICPPClassType, List<ICPPMember>>(); 
 		
-		for (IBinding binding : bindingsSet){			
+ 		for (IBinding binding : bindingsSet){			
 			//if it is a member of a class (method or field) & its owner is actually a class
 			if ( (binding instanceof ICPPMember) && (binding.getOwner() instanceof ICPPClassType) ){					
 				ICPPMember 	  classMember = (ICPPMember)binding;
@@ -933,9 +903,9 @@ public class RefactoringAST {
 
 		
 		/**
-		 * This is to capture (1) functions that belong to a class: e.g.,
-		 * {@code xmlDoc.LoadFile(filename)} (2) function that <b>do not</b>
-		 * belong to a class: e.g., {@code printf("%s", filename)}
+		 * This is to capture: 
+		 * (1) functions that belong to a class: e.g., {@code xmlDoc.LoadFile(filename)} 
+		 * (2) function that <b>do not</b> belong to a class: e.g., {@code printf("%s", filename)}
 		 */
 		@Override
 		public int visit(IASTExpression exp) {
@@ -971,11 +941,11 @@ public class RefactoringAST {
 				// get the binding
 				IBinding binding = name.resolveBinding();
 				// check whether this binding is part of the legacy library
-				checkBinding(name, binding, node);
-//				boolean inLibrary = checkBinding(binding);
-//				if (inLibrary){
-//					appendToLists(name, binding, node);
-//				}
+//				checkBinding(name, binding, node);
+				boolean inLibrary = checkBinding(binding);
+				if (inLibrary)
+					appendToLists(name, binding, node);
+				
 			}
 			return PROCESS_CONTINUE;
 		}
@@ -997,18 +967,20 @@ public class RefactoringAST {
 			IBinding binding = declSpecifierName.resolveBinding();
 
 			// check whether this binding is part of the legacy library
-			checkBinding(declSpecifierName, binding, pDecl);
-//			boolean inLibrary = checkBinding(binding);
-//			if (inLibrary) {
-//				appendToLists(declSpecifierName, binding, pDecl);
-//			}
+//			checkBinding(declSpecifierName, binding, pDecl);
+			boolean inLibrary = checkBinding(binding);
+			if (inLibrary)
+				appendToLists(declSpecifierName, binding, pDecl);
 
 			return PROCESS_CONTINUE;
 		}
 
+		
 		/**
-		 * This is to capture declarations (constructors) like
-		 * {@code XMLDocument xmlDoc};
+		 * This is to capture: 
+		 * (1) declarations (constructors),e.g.,  {@code XMLDocument xmlDoc}; 
+		 * (2) overloaded function declarations, e.g,  
+		 * {@code virtual bool VisitEnter(const XMLElement &element, const XMLAttribute *attr) override}
 		 */
 		@Override
 		public int visit(IASTDeclaration decl) {
@@ -1036,7 +1008,33 @@ public class RefactoringAST {
 		}
 
 		
-		private void checkBinding(IASTName name, IBinding binding, IASTNode node) {
+		
+		/**
+		 * Check if a method actually matches the signature of this original (base) method
+		 * To this end, it checks (1) name; (2) return type; (3) signature
+		 * @param overloadMethod
+		 * @param originalMethod
+		 * @throws DOMException 
+		 */
+		private boolean checkOverloadedMethodsSignature (ICPPMethod originalMethod, ICPPMethod overloadMethod) {
+			if (!originalMethod.getName().equals(overloadMethod.getName()))
+				return false;
+			if (originalMethod.getParameters().length != overloadMethod.getParameters().length)
+				return false;
+			ICPPParameter originalMethodParams[] = originalMethod.getParameters();
+			ICPPParameter overloadMethodParams[] = overloadMethod.getParameters();
+			for (int paramIndex=0; paramIndex<originalMethodParams.length; paramIndex++){
+				ICPPParameter originalParam =  originalMethodParams[paramIndex];
+				ICPPParameter overloadParam =  overloadMethodParams[paramIndex];
+//				System.out.println(originalParam.getType().toString() +"\t"+ overloadParam.getType().toString());
+					if (!originalParam.getType().isSameType(overloadParam.getType()))
+							return false;
+			}
+			return true;
+		}
+		
+		
+		private boolean checkBinding(IBinding binding) {
 			try {
 				
 				// while not reached a namespace scope
@@ -1044,8 +1042,8 @@ public class RefactoringAST {
 						|| (binding.getScope()==null) 
 						|| (binding instanceof ICPPUnknownBinding) 
 						){
-					System.out.println("NULL\t" + name +"\t"+ binding.getClass().getSimpleName());
-					return;
+//					System.out.println("NULL\t" + name +"\t"+ binding.getClass().getSimpleName());
+					return false;
 				}
 
 				IScope scope = binding.getScope();
@@ -1056,13 +1054,13 @@ public class RefactoringAST {
 
 				if ((scope.getScopeName() != null)
 						&& (REFACTORING_NAMESPACES.contains(scope.getScopeName().toString())))
-					appendToLists(name, binding, node);
-//					return true;
+//					appendToLists(name, binding, node);
+					return true;
 
 			} catch (DOMException e) {
 				e.printStackTrace();
 			}
-//			return false;
+			return false;
 		}
 		
 		
