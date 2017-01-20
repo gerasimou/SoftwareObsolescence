@@ -3,7 +3,6 @@ package org.spg.refactoring.utilities;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -11,7 +10,8 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class MessageUtility {
-
+	
+	private static MessageConsole console;
 	
 	protected static MessageConsole findConsole (String consoleName){
 		ConsolePlugin consolePlugin 	= ConsolePlugin.getDefault();

@@ -30,6 +30,13 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IParent;
 import org.eclipse.cdt.core.model.ISourceRoot;
 import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
+import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
+import org.eclipse.cdt.managedbuilder.core.IBuilder;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
+import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -38,9 +45,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 
 public class CdtUtilities {
 	private CdtUtilities() {}
@@ -230,7 +239,7 @@ public class CdtUtilities {
 	/**
 	 * Returns as List all the translation units for the given project.
 	 * This function considers all the source directories and sub-directories of this project
-	 * @param cproject the current C/C++ project
+	 * @param currentCproject the current C/C++ project
 	 * @return
 	 */
 	public static List<Object> getElementsFromProject(IParent parent,  Class<?> clazz, List<Object> list) {				
@@ -295,24 +304,77 @@ public class CdtUtilities {
 	 * @throws CoreException
 	 */
 	public static IProject copyProject(IProject project, String newProject) throws CoreException {
-	    IProgressMonitor monitor = new NullProgressMonitor();
-	    IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-	    IProjectDescription projectDescription = project.getDescription();
+		try{			
+		    IProgressMonitor monitor = new NullProgressMonitor();
+		    IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+		    IProjectDescription projectDescription = project.getDescription();
+	
+		    // create clone project in workspace
+		    IProjectDescription cloneDescription = workspaceRoot.getWorkspace().newProjectDescription(newProject);
+		    // copy project files
+		    project.copy(cloneDescription, true, monitor);
+		    IProject clone = workspaceRoot.getProject(newProject);
+		    
+		    // copy the project properties
+		    cloneDescription.setNatureIds(projectDescription.getNatureIds());
+		    cloneDescription.setReferencedProjects(projectDescription.getReferencedProjects());
+		    cloneDescription.setDynamicReferences(projectDescription.getDynamicReferences());
+		    cloneDescription.setBuildSpec(projectDescription.getBuildSpec());
+		    cloneDescription.setReferencedProjects(projectDescription.getReferencedProjects());
+		    clone.setDescription(cloneDescription, null);
+		    return clone;
+		}
+		catch (CoreException e){
+			e.printStackTrace();
+			MessageUtility.writeToConsole("console", e.getMessage());
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Create a new C++ project
+	 * @param projectName
+	 * @throws OperationCanceledException
+	 * @throws CoreException
+	 */
+	@SuppressWarnings("restriction")
+	public static void createNewProject(String projectName) throws OperationCanceledException, CoreException{
+		// Create and persist Standard Makefile project
+		{
+		// Create model project and accompanied project description
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
 
-	    // create clone project in workspace
-	    IProjectDescription cloneDescription = workspaceRoot.getWorkspace().newProjectDescription(newProject);
-	    // copy project files
-	    project.copy(cloneDescription, true, monitor);
-	    IProject clone = workspaceRoot.getProject(newProject);
-	    
-	    // copy the project properties
-	    cloneDescription.setNatureIds(projectDescription.getNatureIds());
-	    cloneDescription.setReferencedProjects(projectDescription.getReferencedProjects());
-	    cloneDescription.setDynamicReferences(projectDescription.getDynamicReferences());
-	    cloneDescription.setBuildSpec(projectDescription.getBuildSpec());
-	    cloneDescription.setReferencedProjects(projectDescription.getReferencedProjects());
-	    clone.setDescription(cloneDescription, null);
-	    return clone;
+		IProject newProjectHandle = root.getProject(projectName +"_test");
+		Assert.isNotNull(newProjectHandle);
+		Assert.isTrue(!newProjectHandle.exists());
+
+		IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
+		IProject project 				= CCorePlugin.getDefault().createCDTProject(description, newProjectHandle, new NullProgressMonitor());
+		Assert.isTrue(newProjectHandle.isOpen());
+
+		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+		ICProjectDescription des 		 = mngr.createProjectDescription(project, false);
+		ManagedProject mProj 			 = new ManagedProject(des);
+
+		Configuration cfg = new Configuration(mProj, null, "your.configuration.id", "YourConfigurationName");
+
+		IBuilder bld = cfg.getEditableBuilder();
+		Assert.isNotNull(bld);
+		Assert.isTrue(!bld.isInternalBuilder());
+
+		bld.setManagedBuildOn(false);
+
+		CConfigurationData data = cfg.getConfigurationData();
+		Assert.isNotNull(data);
+		des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
+
+		// Persist the project description
+		mngr.setProjectDescription(project, des);
+
+		project.close(null);
+		}
 	}
 	
 }
