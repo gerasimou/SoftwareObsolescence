@@ -97,11 +97,11 @@ public class RefactoringAST {
 	/** project index */
 	protected IIndex projectIndex = null;
 	
-	private final String NEW_LIBRARYhpp;// = "LibXML.h";
-	private final String NEW_LIBRARYcpp;// = "LibXML.cpp";
-	private final String NEW_NAMESPACE;// = "libxml";
-	private final String NEW_DIR;//        = "src/LibXML";
-//	private static final Set REFACTORING_NAMESPACES = new HashSet(Arrays.asList(elements));
+	private final String NEW_PROJECT;
+	private final String NEW_LIBRARYhpp;
+	private final String NEW_LIBRARYcpp;
+	private final String NEW_NAMESPACE;
+	private final String NEW_DIR;
 	private final Set<String> OLD_NAMESPACES;
 	private final String[] OLD_HEADERS;
 
@@ -120,33 +120,30 @@ public class RefactoringAST {
 	
 	
 	/** Class constructor */
-	public RefactoringAST(ICProject project, String oldHeader, String oldNamespace,
+	public RefactoringAST(ICProject project, String[] oldHeader, String oldNamespace,
 							String newProject, String newLibrary, String newNamespace) {
-		try {
-			IProject proj 		= CdtUtilities.copyProject(project.getProject(), newProject);
-			this.cproject		= CdtUtilities.getICProject(proj);
-			this.projectIndex = CCorePlugin.getIndexManager().getIndex(cproject);			
-		} catch (CoreException e) {
-			e.printStackTrace();
-		} finally{
+//		try {
+//			IProject proj 		= CdtUtilities.copyProject(project.getProject(), newProject);
+//			this.cproject		= CdtUtilities.getICProject(proj);
+//			this.projectIndex = CCorePlugin.getIndexManager().getIndex(cproject);			
+//		} catch (CoreException e) {
+//			e.printStackTrace();
+//		} finally{
+			this.NEW_PROJECT	= newProject;
 			this.NEW_NAMESPACE  = newNamespace;
 			this.NEW_LIBRARYcpp	= newLibrary +".cpp";
 			this.NEW_LIBRARYhpp	= newLibrary +".hpp";
 			this.NEW_DIR		= "src/" + newLibrary;
 			this.OLD_NAMESPACES	= new HashSet<String>(Arrays.asList(oldNamespace));
-			this.OLD_HEADERS	= new String[]{oldHeader};
-		}
+			this.OLD_HEADERS	= oldHeader;
+//		}
 	}
 
 
 	/**
 	 * The main refactoring method
 	 */
- 	public void refactor() {
- 		boolean t = true;
- 		if (t)
- 			return;
- 		
+ 	public boolean refactor(IProject project) {
 		try {
 			/**Pairs of ITranslationUnit, List<IASTName>, where List
 			 * <IASTName> keeps the IASTNames used from the legacy library **/
@@ -154,9 +151,14 @@ public class RefactoringAST {
 			
 			List<ITranslationUnit> tusUsingLibList = new ArrayList<ITranslationUnit>();
 
+			//get existing cProject
+			this.cproject		= CdtUtilities.getICProject(project);
+			this.projectIndex = CCorePlugin.getIndexManager().getIndex(cproject);			
+			
+
 			// find all translation units
 			MessageUtility.writeToConsole("Console", "Analysing project source and header files.");
-			List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(cproject, excludedFiles);
+			List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(cproject, OLD_HEADERS);
 
 			// for each translation unit get its AST
 			for (ITranslationUnit tu : tuList) {
@@ -181,11 +183,7 @@ public class RefactoringAST {
 					tusUsingLibList.add(tu);
 				}
 			}
-			
-			//FIXME: -ea VM flag does not work - how to enable assertions?
-//			assert(namesSet.size() == bindingsSet.size());
-//			assert(namesSet.size() == nodesList.size());
-			
+						
 			System.out.println(Arrays.toString(tusUsingLibList.toArray()));
 			
 			//check for library uses within the same library
@@ -200,17 +198,30 @@ public class RefactoringAST {
 			//find mappings class - members
 			Map<ICPPClassType, List<ICPPMember>> classMembersMap = null; 
 			classMembersMap = createClassMembersMapping();
+			
+			
+			
+			//copy project from selected project
+			IProject newProject	= CdtUtilities.copyProject(project, NEW_PROJECT);
+			if (newProject == null)
+				throw new Exception("There was something wrong with copying project " + project.getName());
+//			IProject newProject = project;
+			cproject = CdtUtilities.getICProject(newProject);
+			
 
 			//create header file
-			MessageUtility.writeToConsole("Console", "Creating library header file: " + myLIBRARYhpp);
+			MessageUtility.writeToConsole("Console", "Creating library header file: " + NEW_LIBRARYhpp);
 			createHeader(classMembersMap);
 
 			//create source file
-			MessageUtility.writeToConsole("Console", "Creating library source file: " + myLIBRARYcpp);
+			MessageUtility.writeToConsole("Console", "Creating library source file: " + NEW_LIBRARYcpp);
 			createSource(classMembersMap);
+			
+			return true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
  	
@@ -296,7 +307,6 @@ public class RefactoringAST {
 				checkDeclSpecifier(returnDeclSpecifier);
 			}
 			
-			
 			//check parameters
 			ICPPASTParameterDeclaration paramDecls[] = methodDecl.getParameters();
 			for (ICPPASTParameterDeclaration paramDecl :paramDecls ){
@@ -315,7 +325,7 @@ public class RefactoringAST {
 		//2) if it's part of a standard c++ library, add it to the set of include directives
 		if (declSpecifier instanceof ICPPASTNamedTypeSpecifier){
 			IASTName declSpecifierName 	= ((ICPPASTNamedTypeSpecifier) declSpecifier).getName();
-			IBinding declSpecifierBinding	= declSpecifierName.resolveBinding();
+			IBinding declSpecifierBinding	= declSpecifierName.resolveBinding(); 
 			//find where the param specifier is defined
 			IIndexName[] paramSpecifierDefs = projectIndex.findNames(declSpecifierBinding, IIndex.FIND_DEFINITIONS); 
 			if (paramSpecifierDefs.length>0){
@@ -331,7 +341,7 @@ public class RefactoringAST {
 
 				IName scopeName = scope.getScopeName();
 				if ( (scopeName != null) &&
-				     (REFACTORING_NAMESPACES.contains(scopeName.toString())) ){
+				     (OLD_NAMESPACES.contains(scopeName.toString())) ){
 						bindingsSet.add(declSpecifierBinding);
 						namesSet.add(declSpecifierName);	
 				}
@@ -391,17 +401,30 @@ public class RefactoringAST {
 		}
  	}
  	 	
-	
+
+ 	/**
+ 	 * Create source and header files for each class
+ 	 * @param classMembersMap
+ 	 */
+ 	private void createHeaderSourceFiles (Map<ICPPClassType, List<ICPPMember>> classMembersMap) {
+ 		for (ICPPClassType libClass : classMembersMap.keySet()){
+ 			String libClassName = "My" + libClass.getName() + ".h";
+			throw new UnsupportedOperationException("createHeader2(...) not supported yet!");
+// 			createHeader2(libClassName, classMembersMap.get(libClass));
+ 		}
+ 	}
+ 	
+ 	
  	/**
  	 * Create the header for this library
  	 * @param classMembersMap
  	 */
-	private void createHeader (Map<ICPPClassType, List<ICPPMember>> classMembersMap) {
+	private void createHeader2 (String libClassName, List<ICPPMember> classMembersList) {
 		try {
 			//
-			IFile file = CdtUtilities.createNewFile(cproject, myDIR, myLIBRARYhpp);
+			IFile file = CdtUtilities.createNewFile(cproject, NEW_DIR, libClassName);
 			if (file == null)
-				throw new NoSuchFileException("Could not create source file " + myDIR + "/" + myLIBRARYhpp);
+				throw new NoSuchFileException("Could not create source file " + NEW_DIR + "/" + libClassName);
 
 			// Create translation unit for file
 			ITranslationUnit libTU = CoreModelUtil.findTranslationUnit(file);
@@ -430,7 +453,71 @@ public class RefactoringAST {
 //			rewriter.insertBefore(libAST, null, usingDirective, null);
 
 			//4) add namespace definition
-			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(myNAMESPACE));
+			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(NEW_NAMESPACE));
+			
+			//5) create forward declarations
+//			refactorForwardDeclarations(nsDef, nodeFactory, classMembersMap.keySet());
+			
+			//6) Refactor enumerations
+			refactorEnumerations(nsDef);
+			
+			//7) Refactor classes and methods
+//			refactorClasses(nodeFactory, classMembersMap, nsDef);
+			
+			//9) add namespace to ast
+			rewriter.insertBefore(headerAST, null, nsDef, null);
+			
+			//10) add endif preprocessor statement
+			IASTName endIfStm 	= nodeFactory.newName("#endif //LIBXML_INCLUDED");
+			rewriter.insertBefore(headerAST, null, endIfStm, null);
+
+			rewriter.rewriteAST().perform(new NullProgressMonitor()); 
+		} 
+		catch (NoSuchFileException | CoreException e) {
+			e.printStackTrace();
+		}
+	}
+
+ 	
+ 	/**
+ 	 * Create the header for this library
+ 	 * @param classMembersMap
+ 	 */
+	private void createHeader (Map<ICPPClassType, List<ICPPMember>> classMembersMap) {
+		try {
+			//
+			IFile file = CdtUtilities.createNewFile(cproject, NEW_DIR, NEW_LIBRARYhpp);
+			if (file == null)
+				throw new NoSuchFileException("Could not create source file " + NEW_DIR + "/" + NEW_LIBRARYhpp);
+
+			// Create translation unit for file
+			ITranslationUnit libTU = CoreModelUtil.findTranslationUnit(file);
+			// get ast
+			IASTTranslationUnit headerAST = libTU.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
+			// get rewriter
+			ASTRewrite rewriter = ASTRewrite.create(headerAST);
+			// get node factory
+			ICPPNodeFactory nodeFactory = (ICPPNodeFactory) headerAST.getASTNodeFactory();
+
+			//1) Add preprocessor ifdef statements
+			IASTName ifnDefStm  = nodeFactory.newName("#ifndef LIBXML_INCLUDED");
+			IASTName defStm 	= nodeFactory.newName("#define LIBXML_INCLUDED");
+			rewriter.insertBefore(headerAST, null, ifnDefStm, null);
+			rewriter.insertBefore(headerAST, null, defStm, null);
+			
+			//2) add include directives
+			for (IASTName name : includeDirectivesMap.keySet()){
+				String includeDirective = includeDirectivesMap.get(name);
+				IASTName includeDir = nodeFactory.newName("#include <" + includeDirective +">");
+				rewriter.insertBefore(headerAST, null, includeDir, null);
+			}
+			
+			//3) add using directives
+//			ICPPASTUsingDirective usingDirective = nodeFactory.newUsingDirective(nodeFactory.newName("tinyxml2"));
+//			rewriter.insertBefore(libAST, null, usingDirective, null);
+
+			//4) add namespace definition
+			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(NEW_NAMESPACE));
 			
 			//5) create forward declarations
 			refactorForwardDeclarations(nsDef, nodeFactory, classMembersMap.keySet());
@@ -463,9 +550,9 @@ public class RefactoringAST {
 	private void createSource (Map<ICPPClassType, List<ICPPMember>> classMembersMap) {
 		try {
 			//
-			IFile file = CdtUtilities.createNewFile(cproject, myDIR, myLIBRARYcpp);
+			IFile file = CdtUtilities.createNewFile(cproject, NEW_DIR, NEW_LIBRARYcpp);
 			if (file == null)
-				throw new NoSuchFileException("Could not create source file " + myDIR + "/" + myLIBRARYcpp);
+				throw new NoSuchFileException("Could not create source file " + NEW_DIR + "/" + NEW_LIBRARYcpp);
 
 			// Create translation unit for file
 			ITranslationUnit libTU = CoreModelUtil.findTranslationUnit(file);
@@ -477,7 +564,7 @@ public class RefactoringAST {
 			ICPPNodeFactory nodeFactory = (ICPPNodeFactory) sourceAST.getASTNodeFactory();
 
 			//1) add include directives
-			IASTName myLibInclude = nodeFactory.newName("#include \"" + myLIBRARYhpp +"\"");
+			IASTName myLibInclude = nodeFactory.newName("#include \"" + NEW_LIBRARYhpp +"\"");
 			rewriter.insertBefore(sourceAST, null, myLibInclude, null);
 			IASTName iostreamINclude = nodeFactory.newName("#include <iostream>");
 			rewriter.insertBefore(sourceAST, null, iostreamINclude, null);
@@ -487,7 +574,7 @@ public class RefactoringAST {
 //			rewriter.insertBefore(libAST, null, usingDirective, null);
 
 			//3) add namespace definition
-			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(myNAMESPACE));
+			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(NEW_NAMESPACE));
 			
 			//4) Refactor classes and methods
 			refactorFunctionImplementations(nodeFactory, classMembersMap, nsDef);
@@ -1005,20 +1092,49 @@ public class RefactoringAST {
 
 			// check if there are any declarators: they should, otherwise there
 			// would be a compilation error (e.g., int ;)
-			if (!(simpleDecl.getDeclSpecifier() instanceof IASTNamedTypeSpecifier))
-				return PROCESS_CONTINUE;
+			if ((simpleDecl.getDeclSpecifier() instanceof IASTNamedTypeSpecifier)){				
 
-			// find bindings for the declaration specifier
-			IASTName declSpecifierName = ((IASTNamedTypeSpecifier) simpleDecl.getDeclSpecifier()).getName();
-			IBinding binding = declSpecifierName.resolveBinding();
+				// find bindings for the declaration specifier
+				IASTName declSpecifierName = ((IASTNamedTypeSpecifier) simpleDecl.getDeclSpecifier()).getName();
+				IBinding binding = declSpecifierName.resolveBinding();
+	
+				// check whether this binding is part of the legacy library
+//				checkBinding(declSpecifierName, binding, simpleDecl);
+				boolean inLibrary = checkBinding(binding);
+				if (inLibrary)
+					appendToLists(declSpecifierName, binding, simpleDecl);
 
-			// check whether this binding is part of the legacy library
-			checkBinding(declSpecifierName, binding, simpleDecl);
-//			boolean inLibrary = checkBinding(binding);
-//			if (inLibrary){
-//				appendToLists(declSpecifierName, binding, simpleDecl);
-//			}
-
+			}
+			//TODO: Need to fix this --> method overloading not working properly yet...
+			else if ( (simpleDecl.getDeclarators().length == 1) &&
+					  (simpleDecl.getDeclarators()[0] instanceof ICPPASTFunctionDeclarator) ){
+				ICPPASTFunctionDeclarator funDecl = (ICPPASTFunctionDeclarator) simpleDecl.getDeclarators()[0];
+				if (funDecl.isOverride()){
+					IASTName funDeclName = funDecl.getName();
+					IBinding binding = funDeclName.resolveBinding();
+					
+					//check if it a method; since this methods overloads another function --> there exists a base class (superclass) 
+					if (binding instanceof ICPPMethod){
+						ICPPMethod methodBinding = (ICPPMethod)binding;
+						
+						//get superclasses
+						ICPPBase baseClasses[] = methodBinding.getClassOwner().getBases();
+						for (ICPPBase baseClass : baseClasses){
+							if ( (baseClass.getBaseClass() instanceof ICPPClassType) && 
+								 (checkBinding(baseClass.getBaseClass())) ){
+								ICPPClassType clazz = (ICPPClassType)baseClass.getBaseClass();
+								for (ICPPMethod clazzMethod : clazz.getAllDeclaredMethods()){
+									if (checkOverloadedMethodsSignature(methodBinding, clazzMethod)){
+										System.out.println("Original Method found\t" + simpleDecl.getRawSignature() +"\t"+ simpleDecl.getTranslationUnit().getOriginatingTranslationUnit());
+										appendToLists(funDeclName, clazzMethod, simpleDecl);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+ 
 			return PROCESS_CONTINUE;
 		}
 
@@ -1049,6 +1165,7 @@ public class RefactoringAST {
 		}
 		
 		
+		@SuppressWarnings("restriction")
 		private boolean checkBinding(IBinding binding) {
 			try {
 				
@@ -1068,7 +1185,7 @@ public class RefactoringAST {
 				// System.out.println(scope.getScopeName() +"\t");
 
 				if ((scope.getScopeName() != null)
-						&& (REFACTORING_NAMESPACES.contains(scope.getScopeName().toString())))
+						&& (OLD_NAMESPACES.contains(scope.getScopeName().toString())))
 //					appendToLists(name, binding, node);
 					return true;
 
