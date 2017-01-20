@@ -97,13 +97,13 @@ public class RefactoringAST {
 	/** project index */
 	protected IIndex projectIndex = null;
 	
-	private final String NEW_PROJECT;
-	private final String NEW_LIBRARYhpp;
-	private final String NEW_LIBRARYcpp;
-	private final String NEW_NAMESPACE;
-	private final String NEW_DIR;
-	private final Set<String> OLD_NAMESPACES;
-	private final String[] OLD_HEADERS;
+	protected static String NEW_PROJECT;
+	protected static String NEW_LIBRARYhpp;
+	protected static String NEW_LIBRARYcpp;
+	protected static String NEW_NAMESPACE;
+	protected static String NEW_DIR;
+	protected static Set<String> OLD_NAMESPACES;
+	protected static String[] OLD_HEADERS;
 
 	/** Pairs of ITranslationUnit, IASTTranslationUnit **/
 	HashMap<ITranslationUnit, IASTTranslationUnit> astCache = new HashMap<ITranslationUnit, IASTTranslationUnit>();
@@ -129,13 +129,13 @@ public class RefactoringAST {
 //		} catch (CoreException e) {
 //			e.printStackTrace();
 //		} finally{
-			this.NEW_PROJECT	= newProject;
-			this.NEW_NAMESPACE  = newNamespace;
-			this.NEW_LIBRARYcpp	= newLibrary +".cpp";
-			this.NEW_LIBRARYhpp	= newLibrary +".hpp";
-			this.NEW_DIR		= "src/" + newLibrary;
-			this.OLD_NAMESPACES	= new HashSet<String>(Arrays.asList(oldNamespace));
-			this.OLD_HEADERS	= oldHeader;
+			NEW_PROJECT	= newProject;
+			NEW_NAMESPACE  = newNamespace;
+			NEW_LIBRARYcpp	= newLibrary +".cpp";
+			NEW_LIBRARYhpp	= newLibrary +".hpp";
+			NEW_DIR		= "src/" + newLibrary;
+			OLD_NAMESPACES	= new HashSet<String>(Arrays.asList(oldNamespace));
+			OLD_HEADERS	= oldHeader;
 //		}
 	}
 
@@ -145,77 +145,14 @@ public class RefactoringAST {
 	 */
  	public boolean refactor(IProject project) {
 		try {
-			/**Pairs of ITranslationUnit, List<IASTName>, where List
-			 * <IASTName> keeps the IASTNames used from the legacy library **/
-			HashMap<ITranslationUnit, List<IASTName>> libraryCache = new HashMap<>();
-			
-			List<ITranslationUnit> tusUsingLibList = new ArrayList<ITranslationUnit>();
-
-			//get existing cProject
-			this.cproject		= CdtUtilities.getICProject(project);
-			this.projectIndex = CCorePlugin.getIndexManager().getIndex(cproject);			
-			
-
-			// find all translation units
-			MessageUtility.writeToConsole("Console", "Analysing project source and header files.");
-			List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(cproject, OLD_HEADERS);
-
-			// for each translation unit get its AST
-			for (ITranslationUnit tu : tuList) {
-				// System.out.println(tu.getFile().getName() +"\t"+
-				// tu.getFile().getLocation());
-
-				// get AST for that translation unit
-				IASTTranslationUnit ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
-
-				// cache the tu & ast pair
-				astCache.put(tu, ast);
-
-				NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
-				ast.accept(fcVisitor);
-				
-				// if the list is not empty, then it uses the legacy library --> add it to cached library
-				if (fcVisitor.libraryCallsExist()) {
-					libraryCache.put(tu, fcVisitor.namesList);
-					namesSet.addAll(fcVisitor.namesSet);
-					bindingsSet.addAll(fcVisitor.bindingsSet);
-					nodesList.addAll(fcVisitor.nodesList);
-					tusUsingLibList.add(tu);
-				}
-			}
-						
-			System.out.println(Arrays.toString(tusUsingLibList.toArray()));
-			
-			//check for library uses within the same library
-			MessageUtility.writeToConsole("Console", "Checking class inheritance and method signature.");
-			checkReferences();
-
-			System.out.println(namesSet.size() +"\t"+ bindingsSet.size() +"\t"+ nodesList.size());
-			for (int i=0; i<namesSet.size(); i++){
-				System.out.println(namesSet.getList().get(i) +"\t"+ bindingsSet.getList().get(i).getClass().getSimpleName());// +"\t"+ nodesList.get(i));
-			}
+			//analyse selected project
+			analyseExistingProject(project);
 
 			//find mappings class - members
-			Map<ICPPClassType, List<ICPPMember>> classMembersMap = null; 
-			classMembersMap = createClassMembersMapping();
+			Map<ICPPClassType, List<ICPPMember>> classMembersMap = createClassMembersMapping();
 			
-			
-			
-			//copy project from selected project
-			IProject newProject	= CdtUtilities.copyProject(project, NEW_PROJECT);
-			if (newProject == null)
-				throw new Exception("There was something wrong with copying project " + project.getName());
-//			IProject newProject = project;
-			cproject = CdtUtilities.getICProject(newProject);
-			
-
-			//create header file
-			MessageUtility.writeToConsole("Console", "Creating library header file: " + NEW_LIBRARYhpp);
-			createHeader(classMembersMap);
-
-			//create source file
-			MessageUtility.writeToConsole("Console", "Creating library source file: " + NEW_LIBRARYcpp);
-			createSource(classMembersMap);
+			//create refactored project
+			createRefactoredProject(classMembersMap);
 			
 			return true;
 
@@ -224,6 +161,87 @@ public class RefactoringAST {
 			return false;
 		}
 	}
+ 	
+ 	
+ 	/** 
+ 	 * Analyse selected project to extract all necessary information for refactoring
+ 	 * @param project
+ 	 * @throws CoreException
+ 	 */
+ 	private void analyseExistingProject(IProject project) throws CoreException{
+		/**Pairs of ITranslationUnit, List<IASTName>, where List
+		 * <IASTName> keeps the IASTNames used from the legacy library **/
+		HashMap<ITranslationUnit, List<IASTName>> libraryCache = new HashMap<>();
+		
+		List<ITranslationUnit> tusUsingLibList = new ArrayList<ITranslationUnit>();
+
+		//get existing cProject
+		this.cproject		= CdtUtilities.getICProject(project);
+		this.projectIndex = CCorePlugin.getIndexManager().getIndex(cproject);			
+		
+
+		// find all translation units
+		MessageUtility.writeToConsole("Console", "Analysing project source and header files.");
+		List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(cproject, OLD_HEADERS);
+
+		// for each translation unit get its AST
+		for (ITranslationUnit tu : tuList) {
+			// System.out.println(tu.getFile().getName() +"\t"+
+			// tu.getFile().getLocation());
+
+			// get AST for that translation unit
+			IASTTranslationUnit ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
+
+			// cache the tu & ast pair
+			astCache.put(tu, ast);
+
+			NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
+			ast.accept(fcVisitor);
+			
+			// if the list is not empty, then it uses the legacy library --> add it to cached library
+			if (fcVisitor.libraryCallsExist()) {
+				libraryCache.put(tu, fcVisitor.namesList);
+				namesSet.addAll(fcVisitor.namesSet);
+				bindingsSet.addAll(fcVisitor.bindingsSet);
+				nodesList.addAll(fcVisitor.nodesList);
+				tusUsingLibList.add(tu);
+			}
+		}
+					
+		System.out.println(Arrays.toString(tusUsingLibList.toArray()));
+		
+		//check for library uses within the same library
+		MessageUtility.writeToConsole("Console", "Checking class inheritance and method signature.");
+		checkReferences();
+
+		System.out.println(namesSet.size() +"\t"+ bindingsSet.size() +"\t"+ nodesList.size());
+		for (int i=0; i<namesSet.size(); i++){
+			System.out.println(namesSet.getList().get(i) +"\t"+ bindingsSet.getList().get(i).getClass().getSimpleName());// +"\t"+ nodesList.get(i));
+		}
+ 	}
+ 	
+ 	
+ 	/**
+ 	 * After analysing the selected project, create a new (refactored) project based on the adapter pattern 
+ 	 * @param classMembersMap
+ 	 * @throws Exception
+ 	 */
+ 	private void createRefactoredProject(Map<ICPPClassType, List<ICPPMember>> classMembersMap) throws Exception{
+		//copy project from selected project
+		IProject newProject	= CdtUtilities.copyProject(cproject.getProject(), NEW_PROJECT);
+		if (newProject == null)
+			throw new Exception("There was something wrong with copying project " + cproject.getProject().getName());
+//		IProject newProject = project;
+		cproject = CdtUtilities.getICProject(newProject);
+		
+		//create header file
+		MessageUtility.writeToConsole("Console", "Creating library header file: " + NEW_LIBRARYhpp);
+		createHeader(classMembersMap);
+
+		//create source file
+		MessageUtility.writeToConsole("Console", "Creating library source file: " + NEW_LIBRARYcpp);
+		createSource(classMembersMap);
+ 	}
  	
  	
  	private void checkReferences () {
@@ -315,7 +333,6 @@ public class RefactoringAST {
 				checkDeclSpecifier(paramDeclSpecifier);
 			}
 		}
-
  	}
  	
  	
@@ -913,7 +930,6 @@ public class RefactoringAST {
 		}
 		
 		return sortedClassMembersMap;
-
 	}
 	
 	
