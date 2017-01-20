@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.index.IIndexFile;
 import org.eclipse.cdt.core.index.IIndexName;
 import org.eclipse.cdt.core.model.CModelException;
@@ -32,33 +33,17 @@ import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 public class CdtUtilities {
 	private CdtUtilities() {}
-	
-	
-	/**
-	 * Get a list of projects for the current workspace
-	 * @return
-	 */
-	public static List<IProject> getIProjects(String[] projectNames){
-		//get current workspace
-		IWorkspace workspace 	= ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root		= workspace.getRoot();
-		//get all projects in this workspace
-		IProject[] projects = root.getProjects();
-		//create a list to store the selected projects
-		List<IProject> selectedProjects = new ArrayList<IProject>();
-		for (IProject project : projects){
-			selectedProjects.add(project);
-		}
-		return selectedProjects;
-	}
 	
 	
 	/** 
@@ -119,6 +104,7 @@ public class CdtUtilities {
 	public static ICProject getICProject (String projectName) throws CoreException{
 		return CdtUtilities.getICProject(getIProject(projectName));
 	}
+	
 	
 	/**
 	 * Get a list of ICProjects
@@ -187,10 +173,7 @@ public class CdtUtilities {
 		}
 		return true;
 	}
-	
-
 		
-	
 	
 	/**
 	 * Returns as List all the translation units for the given project.
@@ -283,5 +266,53 @@ public class CdtUtilities {
 		return null;
 	}
 
+
+	/**
+	 * Create a new empty project
+	 * @param projectName
+	 * @return
+	 */
+	public static boolean createProject (String projectName){
+		try {
+			IProgressMonitor progressMonitor = new NullProgressMonitor();
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IProject project = root.getProject(projectName);
+			project.create(progressMonitor);
+			project.open(progressMonitor);	
+			return true;
+		} catch (CoreException e) {		
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * Copy the given project into the workspace under the newProject name
+	 * @param project
+	 * @param newProject
+	 * @return
+	 * @throws CoreException
+	 */
+	public static IProject copyProject(IProject project, String newProject) throws CoreException {
+	    IProgressMonitor monitor = new NullProgressMonitor();
+	    IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+	    IProjectDescription projectDescription = project.getDescription();
+
+	    // create clone project in workspace
+	    IProjectDescription cloneDescription = workspaceRoot.getWorkspace().newProjectDescription(newProject);
+	    // copy project files
+	    project.copy(cloneDescription, true, monitor);
+	    IProject clone = workspaceRoot.getProject(newProject);
+	    
+	    // copy the project properties
+	    cloneDescription.setNatureIds(projectDescription.getNatureIds());
+	    cloneDescription.setReferencedProjects(projectDescription.getReferencedProjects());
+	    cloneDescription.setDynamicReferences(projectDescription.getDynamicReferences());
+	    cloneDescription.setBuildSpec(projectDescription.getBuildSpec());
+	    cloneDescription.setReferencedProjects(projectDescription.getReferencedProjects());
+	    clone.setDescription(cloneDescription, null);
+	    return clone;
+	}
 	
 }
