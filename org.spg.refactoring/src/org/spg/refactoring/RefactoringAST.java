@@ -88,6 +88,7 @@ import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.Digraph;
 import org.spg.refactoring.utilities.MessageUtility;
 
+@SuppressWarnings("restriction")
 public class RefactoringAST {
 
 	/** project */
@@ -96,22 +97,20 @@ public class RefactoringAST {
 	/** project index */
 	protected IIndex projectIndex = null;
 	
+	private final String NEW_LIBRARYhpp;// = "LibXML.h";
+	private final String NEW_LIBRARYcpp;// = "LibXML.cpp";
+	private final String NEW_NAMESPACE;// = "libxml";
+	private final String NEW_DIR;//        = "src/LibXML";
+//	private static final Set REFACTORING_NAMESPACES = new HashSet(Arrays.asList(elements));
+	private final Set<String> OLD_NAMESPACES;
+	private final String[] OLD_HEADERS;
+
 	/** Pairs of ITranslationUnit, IASTTranslationUnit **/
 	HashMap<ITranslationUnit, IASTTranslationUnit> astCache = new HashMap<ITranslationUnit, IASTTranslationUnit>();
 
 	/** Pairs of elements-potential name from standard C++ library that should be included using #include directives*/
 	LinkedHashMap<IASTName, String> includeDirectivesMap = new LinkedHashMap<IASTName, String>();
-
-
-	private static String elements[] = { "tinyxml2" };
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static final Set REFACTORING_NAMESPACES = new HashSet(Arrays.asList(elements));
-
-	private static final String myLIBRARYhpp = "LibXML.h";
-	private static final String myLIBRARYcpp = "LibXML.cpp";
-	private static final String myNAMESPACE  = "libxml";
-	private static final String myDIR        = "src/LibXML";
-
+	
 	/** Keep refactoring information*/
 	NamesSet 	namesSet 	 = new NamesSet();
 	BindingsSet bindingsSet  = new BindingsSet();
@@ -121,17 +120,33 @@ public class RefactoringAST {
 	
 	
 	/** Class constructor */
-	public RefactoringAST(ICProject project) {
+	public RefactoringAST(ICProject project, String oldHeader, String oldNamespace,
+							String newProject, String newLibrary, String newNamespace) {
 		try {
-			this.cproject = project;
-			this.projectIndex = CCorePlugin.getIndexManager().getIndex(cproject);
+			IProject proj 		= CdtUtilities.copyProject(project.getProject(), newProject);
+			this.cproject		= CdtUtilities.getICProject(proj);
+			this.projectIndex = CCorePlugin.getIndexManager().getIndex(cproject);			
 		} catch (CoreException e) {
 			e.printStackTrace();
+		} finally{
+			this.NEW_NAMESPACE  = newNamespace;
+			this.NEW_LIBRARYcpp	= newLibrary +".cpp";
+			this.NEW_LIBRARYhpp	= newLibrary +".hpp";
+			this.NEW_DIR		= "src/" + newLibrary;
+			this.OLD_NAMESPACES	= new HashSet<String>(Arrays.asList(oldNamespace));
+			this.OLD_HEADERS	= new String[]{oldHeader};
 		}
 	}
 
-	
- 	public void refactor(final String[] excludedFiles) {
+
+	/**
+	 * The main refactoring method
+	 */
+ 	public void refactor() {
+ 		boolean t = true;
+ 		if (t)
+ 			return;
+ 		
 		try {
 			/**Pairs of ITranslationUnit, List<IASTName>, where List
 			 * <IASTName> keeps the IASTNames used from the legacy library **/
