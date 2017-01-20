@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.spg.refactoring.RefactoringAST;
+import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.LibraryDetailsDialog;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -68,18 +69,26 @@ public class RefactorHandler extends AbstractHandler {
 					
 					//get library dialogue properties
 					StringProperties properties = libraryDialog.getProperties();
-					String oldHeader       		= properties.getProperty(LibraryDetailsDialog.OLD_HEADER);
+					String[] oldHeader       	= properties.getProperty(LibraryDetailsDialog.OLD_HEADER).split(",");
 					String oldNamespace			= properties.getProperty(LibraryDetailsDialog.OLD_NAMESPACE);
 					String newProject			= properties.getProperty(LibraryDetailsDialog.NEW_PROJECT);
 					String newLibrary			= properties.getProperty(LibraryDetailsDialog.NEW_LIBRARY);
 					String newNamespace			= properties.getProperty(LibraryDetailsDialog.NEW_NAMESPACE);
 					
-					RefactoringAST refactorProject = new RefactoringAST(cproject, oldHeader, oldNamespace, newProject, newLibrary, newNamespace);
-					refactorProject.refactor();
+//					RefactoringAST refactorProject = new RefactoringAST(cproject, oldHeader, oldNamespace, newProject, newLibrary, newNamespace);
+					RefactoringProject refactorProject = new RefactoringProject(cproject, oldHeader, oldNamespace, newProject, newLibrary, newNamespace);
+					boolean refactorOK = refactorProject.refactor(project);
 					
-					MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
-							   "Refactoring completed", 
-							   	String.format("Refactoring project %s completed successfully.", project.getName()));
+					
+					if (refactorOK)					
+						MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
+								   "Refactoring completed", 
+								   	String.format("Refactoring project %s completed successfully.", project.getName()));
+					else{
+						MessageUtility.showMessage(shell, MessageDialog.ERROR, 
+								   "Refactoring error", 
+								   	String.format("Something went wrong with project %s refactoring. Please check the log.", project.getName()));
+					}
 				}
 				else 
 					throw new NullPointerException("Project " + project.getName() + " is not C/C++");

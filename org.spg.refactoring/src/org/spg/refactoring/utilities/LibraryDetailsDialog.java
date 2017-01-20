@@ -76,6 +76,13 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(control, "org.eclipse.epsilon.help.emc_dialogs");
 		
 		loadProperties();
+
+		//preconfigured details
+		oldNamespaceText.setText("tinyxml2");
+		oldHeaderText.setText("tinyxml2.cpp, tinyxml2.h");
+		newProjectText.setText("XMLExampleNew");
+		newNamespaceText.setText("myNewLib");
+		newLibraryText.setText("myNewLib");
 		
 		control.layout();
 		control.pack();
@@ -100,10 +107,11 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 		new Label(groupContent, SWT.NONE);
 		
 		oldHeaderLabel = new Label(groupContent, SWT.NONE);
-		oldHeaderLabel.setText("Library header file");
+		oldHeaderLabel.setText("Library files (header)");
 
 		oldHeaderText = new Text(groupContent, SWT.BORDER);
 		oldHeaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
 		final Button browseFile = new Button(groupContent, SWT.NONE); 
 		browseFile.setText("Browse Workspace..."); 
 		browseFile.addListener(SWT.Selection, new Listener() {
@@ -169,11 +177,11 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 	
 	protected void storeProperties() {
 		properties = new StringProperties();
-		properties.put(NEW_PROJECT, newProjectText.getText());
-		properties.put(NEW_LIBRARY, newLibraryText.getText());
-		properties.put(NEW_NAMESPACE, newNamespaceText.getText());
-		properties.put(OLD_NAMESPACE, oldNamespaceText.getText());
-		properties.put(OLD_HEADER, oldHeaderText.getText());
+		properties.put(NEW_PROJECT, newProjectText.getText().replaceAll("\\s",""));
+		properties.put(NEW_LIBRARY, newLibraryText.getText().replaceAll("\\s",""));
+		properties.put(NEW_NAMESPACE, newNamespaceText.getText().replaceAll("\\s",""));
+		properties.put(OLD_NAMESPACE, oldNamespaceText.getText().replaceAll("\\s",""));
+		properties.put(OLD_HEADER, oldHeaderText.getText().replaceAll("\\s",""));
 	}
 
 	
