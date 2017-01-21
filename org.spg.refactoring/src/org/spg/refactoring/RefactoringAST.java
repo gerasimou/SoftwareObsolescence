@@ -505,7 +505,7 @@ public class RefactoringAST {
 			//
 			IFile file = CdtUtilities.createNewFile(cproject, NEW_DIR, NEW_LIBRARYhpp);
 			if (file == null)
-				throw new NoSuchFileException("Could not create source file " + NEW_DIR + "/" + NEW_LIBRARYhpp);
+				throw new NoSuchFileException("Could not create header file " + NEW_DIR + "/" + NEW_LIBRARYhpp);
 
 			// Create translation unit for file
 			ITranslationUnit libTU = CoreModelUtil.findTranslationUnit(file);
@@ -517,8 +517,9 @@ public class RefactoringAST {
 			ICPPNodeFactory nodeFactory = (ICPPNodeFactory) headerAST.getASTNodeFactory();
 
 			//1) Add preprocessor ifdef statements
-			IASTName ifnDefStm  = nodeFactory.newName("#ifndef LIBXML_INCLUDED");
-			IASTName defStm 	= nodeFactory.newName("#define LIBXML_INCLUDED");
+			IASTName ifnDefStm  = nodeFactory.newName("#ifndef "+ RefactoringProject.NEW_NAMESPACE +"_INCLUDED");
+			IASTName defStm 	= nodeFactory.newName("#define "+ RefactoringProject.NEW_NAMESPACE +"_INCLUDED");
+
 			rewriter.insertBefore(headerAST, null, ifnDefStm, null);
 			rewriter.insertBefore(headerAST, null, defStm, null);
 			
@@ -549,7 +550,7 @@ public class RefactoringAST {
 			rewriter.insertBefore(headerAST, null, nsDef, null);
 			
 			//10) add endif preprocessor statement
-			IASTName endIfStm 	= nodeFactory.newName("#endif //LIBXML_INCLUDED");
+			IASTName endIfStm 	= nodeFactory.newName("#endif //"+ RefactoringProject.NEW_NAMESPACE +"_INCLUDED");
 			rewriter.insertBefore(headerAST, null, endIfStm, null);
 
 			rewriter.rewriteAST().perform(new NullProgressMonitor()); 
