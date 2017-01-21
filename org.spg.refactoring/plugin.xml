@@ -14,7 +14,15 @@
   		<command
             name="Refactor Command"
             id="org.spg.refactoring.commands.refactorCommand">
-       </command>  	  
+       </command>
+    <command
+          id="org.spg.refactoring.commands.newProjectCommand"
+          name="New Project">
+    </command>
+    <command
+          id="org.spg.refactoring.commands.copyProjectCommand"
+          name="Copy Project">
+    </command>  	  
 	</extension>
 	
 	<!-- The handler -->
@@ -27,6 +35,14 @@
       <handler
             class="org.spg.refactoring.handlers.RefactorHandler"
             commandId="org.spg.refactoring.commands.refactorCommand">
+      </handler>
+      <handler
+            class="org.spg.refactoring.handlers.NewProjectHandler"
+            commandId="org.spg.refactoring.commands.newProjectCommand">
+      </handler>
+      <handler
+            class="org.spg.refactoring.handlers.CopyProjectHandler"
+            commandId="org.spg.refactoring.commands.copyProjectCommand">
       </handler>
    </extension>
    
@@ -45,7 +61,7 @@
             <command
                   commandId="org.spg.refactoring.commands.printMessageCommand"
                   label="Print Message"
-                  mnemonic="R"
+                  mnemonic="P"
                   style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -67,7 +83,54 @@
             <command
                   commandId="org.spg.refactoring.commands.refactorCommand"
                   label="Refactor Project"
-                  mnemonic="A"
+                  mnemonic="R"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate
+                           ifEmpty="false">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.eclipse.cdt.core.cnature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <separator
+                  name="org.spg.refactoring.separator2">
+            </separator>
+            <command
+                  commandId="org.spg.refactoring.commands.newProjectCommand"
+                  label="Create new project"
+                  mnemonic="N"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate
+                           ifEmpty="false">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.eclipse.cdt.core.cnature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="org.spg.refactoring.commands.copyProjectCommand"
+                  label="Copy project"
+                  mnemonic="C"
                   style="push">
                <visibleWhen
                      checkEnabled="false">

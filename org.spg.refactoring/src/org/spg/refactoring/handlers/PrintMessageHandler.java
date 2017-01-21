@@ -21,10 +21,10 @@ public class PrintMessageHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		
 		MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
 									"Refactoring",
 									"Refactor project was executed.");
 		return null;
 	}
-
 }
