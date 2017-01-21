@@ -1,16 +1,14 @@
 package org.spg.refactoring;
 
-import java.io.File;
 import java.nio.file.NoSuchFileException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
@@ -47,12 +45,17 @@ import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
 import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModelUtil;
+import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IInclude;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.core.model.IUsing;
+import org.eclipse.cdt.internal.core.model.CreateIncludeOperation;
+import org.eclipse.cdt.internal.core.model.CreateUsingOperation;
+import org.eclipse.cdt.internal.core.model.TranslationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.spg.refactoring.ProjectAnalyser.BindingsSet;
 import org.spg.refactoring.utilities.CdtUtilities;
@@ -83,7 +86,8 @@ public class RefactoredProjectCreator {
  	 * @throws Exception
  	 */
  	protected void createRefactoredProject(ICProject project, IIndex index, BindingsSet bindingsSet, 
- 											LinkedHashMap<IASTName, String> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap) throws Exception{
+ 											Map<IASTName, String> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap,
+ 											Collection<String> tusUsingLib) throws Exception{
  		this.projectIndex = index;
  		this.cproject	  = project;	
  		
@@ -95,6 +99,9 @@ public class RefactoredProjectCreator {
 		//create source file
 		MessageUtility.writeToConsole("Console", "Creating library source file: " + RefactoringProject.NEW_LIBRARYcpp);
 		createSource(classMembersMap);
+		
+		//refactor the files that use the original library (include and using directives)
+		refactorAffectedFiles(tusUsingLib);
  	}
  	
  	
@@ -102,7 +109,7 @@ public class RefactoredProjectCreator {
  	 * Create the header for this library
  	 * @param classMembersMap
  	 */
-	private void createHeader (BindingsSet bindingsSet, LinkedHashMap<IASTName, String> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap) {
+	private void createHeader (BindingsSet bindingsSet, Map<IASTName, String> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap) {
 		try {
 			//
 			IFile file = CdtUtilities.createNewFile(cproject, RefactoringProject.NEW_DIR, RefactoringProject.NEW_LIBRARYhpp);
@@ -184,17 +191,13 @@ public class RefactoredProjectCreator {
 			IASTName iostreamINclude = nodeFactory.newName("#include <iostream>");
 			rewriter.insertBefore(sourceAST, null, iostreamINclude, null);
 			
-			//2) add using directives
-//			ICPPASTUsingDirective usingDirective = nodeFactory.newUsingDirective(nodeFactory.newName("tinyxml2"));
-//			rewriter.insertBefore(libAST, null, usingDirective, null);
-
-			//3) add namespace definition
+			//2) add namespace definition
 			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(RefactoringProject.NEW_NAMESPACE));
 			
-			//4) Refactor classes and methods
+			//3) Refactor classes and methods
 			refactorFunctionImplementations(nodeFactory, classMembersMap, nsDef);
 			
-			//6) add namespace to ast
+			//4) add namespace to ast
 			rewriter.insertBefore(sourceAST, null, nsDef, null);
 			rewriter.rewriteAST().perform(new NullProgressMonitor()); 
 		} 
@@ -413,7 +416,7 @@ public class RefactoredProjectCreator {
 							//if the return type is simple specifier except void --> add a null return statement
 							if ( (declSpecifier instanceof IASTSimpleDeclSpecifier) && 
 								 (((IASTSimpleDeclSpecifier)declSpecifier).getType() > IASTSimpleDeclSpecifier.t_void) ){
-								returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL"));
+								returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr"));
 							}
 							//if the return type is a qualified name (e.g., class, enumeration etc) --> 
 							//   if it is a class --> add a null return statement
@@ -462,21 +465,95 @@ public class RefactoredProjectCreator {
 	 * Refactor files (.h & .cpp) that use the old library to start using the new library
 	 * @throws CModelException 
 	 */
-	protected void refactorAffectedFiles() throws CModelException{
-		Set<String> oldLib = new HashSet<String>(Arrays.asList(RefactoringProject.OLD_HEADERS));
-		 
-		// for each translation unit get its AST
-		for (ITranslationUnit tu : astCache.keySet()) {
-			System.out.println(tu.getFile().getFullPath());
-			String filename = tu.getElementName(); 
-			if (oldLib.contains(filename)){
+	@SuppressWarnings("restriction")
+	protected void refactorAffectedFiles(Collection<String> tusUsingLib) throws CModelException{
+		
+		//get excluded files
+		String[] excludedFiles = new String[RefactoringProject.OLD_HEADERS.length+2]; 
+		int i=0;
+		for (; i<RefactoringProject.OLD_HEADERS.length; i++)
+			excludedFiles[i] = RefactoringProject.OLD_HEADERS[i];
+		excludedFiles[i++] = RefactoringProject.NEW_LIBRARYhpp;
+		excludedFiles[i]   = RefactoringProject.NEW_LIBRARYcpp;		
+		
+		List<ITranslationUnit> cProjectTUList = null;
+				
+		
+		cProjectTUList = CdtUtilities.getProjectTranslationUnits(cproject, excludedFiles); 
+		for (ITranslationUnit tu : cProjectTUList){			
+			String tuName = tu.getElementName();
+			
+			//if this TU is in the list of TUs using the old library 
+			if (tusUsingLib.contains(tuName)){
+	
+				//change include directives
 				for (IInclude include : tu.getIncludes()){
-					System.out.println(include.getElementName());
-				}				
-				for (IUsing using : tu.getUsings()){
-					System.out.println(using.getElementName());
+					for (String oldLibHeader : RefactoringProject.OLD_HEADERS){
+						if (include.getElementName().contains(oldLibHeader)){
+							System.err.println("Removing include " + include.getElementName() +" from "+ tu.getFile().getFullPath());
+							include.delete(false,  new NullProgressMonitor());
+							tu.save(new NullProgressMonitor(), true);
+							tu.createInclude(RefactoringProject.NEW_INCLUDE_DIRECTIVE, true, 
+												tu.getNamespaces()[0], new NullProgressMonitor());
+							tu.save(new NullProgressMonitor(), true);
+//							include.rename(RefactoringProject.NEW_LIBRARYhpp, true, new NullProgressMonitor());
+						}
+					}
 				}
 			}
+		}
+		
+		cProjectTUList = CdtUtilities.getProjectTranslationUnits(cproject, excludedFiles);
+		for (ITranslationUnit tu : cProjectTUList){			
+			String tuName = tu.getElementName();
+			
+			//if this TU is in the list of TUs using the old library 
+			if (tusUsingLib.contains(tuName)){
+				
+				//change the namespace
+				for (IUsing using : tu.getUsings()){
+					if (RefactoringProject.OLD_NAMESPACES.contains(using.getElementName())){
+//						namespace. rename("BOOOB", true, new NullProgressMonitor());
+						System.err.println("Removing using " + using.getElementName() +" from "+ tu.getFile().getFullPath());
+						using.delete(true,  new NullProgressMonitor());
+						tu.save(new NullProgressMonitor(), true);
+						
+						myTranslationUnit myTU = new myTranslationUnit(tu.getParent(), tu.getFile(), 
+													tu.isHeaderUnit()?CCorePlugin.CONTENT_TYPE_CXXHEADER:CCorePlugin.CONTENT_TYPE_CXXSOURCE);
+						myTU.createUsing(RefactoringProject.NEW_NAMESPACE, true, tu.getNamespaces()[0], new NullProgressMonitor());
+						
+						tu.save(new NullProgressMonitor(), true);
+					}
+				}
+			}
+		}
+		
+	}
+	
+	
+	/**
+	 * Bug in TranslationUnit.createUsing(String usingName, boolean isDirective, ICElement sibling, IProgressMonitor monitor)
+	 * instead of CreateUsingOperation(usingName, isDirective, this), it calls CreateIncludeOperation(usingName, isDirective, this); 
+	 * @author sgerasimou
+	 *
+	 */
+	@SuppressWarnings("restriction")
+	class myTranslationUnit extends TranslationUnit{
+
+		
+		public myTranslationUnit(ICElement parent, IFile file , String id) {
+			super(parent, file, id);
+		}
+		
+		@Override
+		public IUsing createUsing(String usingName, boolean isDirective, ICElement sibling,
+				IProgressMonitor monitor) throws CModelException {
+			CreateUsingOperation op = new CreateUsingOperation(usingName, isDirective, this);
+			if (sibling != null) {
+				op.createBefore(sibling);
+			}
+			op.runOperation(monitor);
+			return getUsing(usingName);
 		}
 	}
 }

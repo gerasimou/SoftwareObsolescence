@@ -2,6 +2,7 @@ package org.spg.refactoring;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -43,7 +44,6 @@ import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPUnknownBinding;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.epsilon.common.util.ListSet;
 import org.spg.refactoring.utilities.Digraph;
@@ -614,16 +614,23 @@ public class ProjectAnalyser {
 		return this.bindingsSet;
 	}
 
+	
 	protected LinkedHashMap<IASTName, String> getIncludeDirectives(){
 		return this.includeDirectivesMap;
 	}
+	
 	
 	protected Map<ICPPClassType, List<ICPPMember>> getClassMembersMap(){
 		return this.classMembersMap;
 	}
 	
-	protected List<ITranslationUnit> getTUsUsingLib (){
-		return this.tusUsingLibList;
+	
+	protected Collection<String> getTUsUsingLib (){
+		Collection<String> tusLibSet = new ListSet<String>();
+		for (ITranslationUnit tu : tusUsingLibList){
+			tusLibSet.add(tu.getElementName());
+		}
+		return tusLibSet;
 	}
 
 }
