@@ -11,6 +11,7 @@
 package org.spg.refactoring;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -30,6 +31,7 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.spg.refactoring.ProjectAnalyser.BindingsSet;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -48,6 +50,7 @@ public class RefactoringProject {
 	protected static String NEW_LIBRARYcpp;
 	protected static String NEW_NAMESPACE;
 	protected static String NEW_DIR;
+	protected static String NEW_INCLUDE_DIRECTIVE;
 	protected static Set<String> OLD_NAMESPACES;
 	protected static String[] OLD_HEADERS;
 
@@ -66,13 +69,14 @@ public class RefactoringProject {
 	/** Class constructor */
 	public RefactoringProject(ICProject project, String[] oldHeader, String oldNamespace,
 							String newProject, String newLibrary, String newNamespace) {
-		NEW_PROJECT	= newProject;
-		NEW_NAMESPACE  = newNamespace;
-		NEW_LIBRARYcpp	= newLibrary +".cpp";
-		NEW_LIBRARYhpp	= newLibrary +".hpp";
-		NEW_DIR		= "src/" + newLibrary;
-		OLD_NAMESPACES	= new HashSet<String>(Arrays.asList(oldNamespace));
-		OLD_HEADERS	= oldHeader;
+		NEW_PROJECT				= newProject;
+		NEW_NAMESPACE  			= newNamespace;
+		NEW_LIBRARYcpp			= newLibrary +".cpp";
+		NEW_LIBRARYhpp			= newLibrary +".hpp";
+		NEW_DIR					= "src/" + newLibrary;
+		NEW_INCLUDE_DIRECTIVE	= newLibrary +"/"+  NEW_LIBRARYhpp;
+		OLD_NAMESPACES			= new HashSet<String>(Arrays.asList(oldNamespace));
+		OLD_HEADERS				= oldHeader;
 	}
 
 
@@ -86,47 +90,61 @@ public class RefactoringProject {
 			this.currentCProject		= CdtUtilities.getICProject(project);
 			this.projectIndex 	= CCorePlugin.getIndexManager().getIndex(currentCProject);			
 			
-
-			// find all translation units
+			//1) find all translation units
 			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
-			List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(currentCProject, RefactoringProject.OLD_HEADERS);
+			parseProject();
 
-			// for each translation unit get its AST
-			for (ITranslationUnit tu : tuList) {
-				// System.out.println(tu.getFile().getName() +"\t"+
-				// tu.getFile().getLocation());
-
-				// get AST for that translation unit
-				IASTTranslationUnit ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
-
-				// cache the tu & ast pair
-				astCache.put(tu, ast);
-			}
-			
-			//analyse selected project
+			//2) analyse project
 			analyser.analyseExistingProject(projectIndex);
-			
-			/** Keep refactoring information*/
-			BindingsSet bindingsSet  = analyser.getBindings();
-			LinkedHashMap<IASTName, String> includeDirectivesMap = analyser.getIncludeDirectives();
-			Map<ICPPClassType, List<ICPPMember>> classMembersMap = analyser.getClassMembersMap();
-			
-			//copy project from selected project
+						
+			//3) copy project
 			IProject newProject	= CdtUtilities.copyProject(currentCProject.getProject(), RefactoringProject.NEW_PROJECT);
 			if (newProject == null)
 				throw new Exception("There was something wrong with copying project " + currentCProject.getProject().getName());
 			newCProject = CdtUtilities.getICProject(newProject);
 			
-			//create refactored project
-			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap);
+			/** Get refactoring information*/
+			BindingsSet bindingsSet  							 = analyser.getBindings();
+			Map<IASTName, String> includeDirectivesMap 			 = analyser.getIncludeDirectives();
+			Map<ICPPClassType, List<ICPPMember>> classMembersMap = analyser.getClassMembersMap();
+			Collection<String> tusUsingLib					 	 = analyser.getTUsUsingLib();
+			
+			//5) create refactored project
+			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap, tusUsingLib);
 			
 			return true;
-
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				//if an exception is thrown --> delete the newly created project
+				newCProject.getProject().delete(false, new NullProgressMonitor());
+			} catch (CoreException e1) {
+				e1.printStackTrace();
+				return false;
+			}
 			return false;
 		}
 	}
+ 	
+ 	
+ 	/**
+ 	 * Parse project and for each translation unit generate its AST
+ 	 * @throws CoreException
+ 	 */
+ 	private void parseProject() throws CoreException{
+		List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(currentCProject, RefactoringProject.OLD_HEADERS);
+
+		// for each translation unit get its AST
+		for (ITranslationUnit tu : tuList) {
+			// get AST for that translation unit
+			IASTTranslationUnit ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
+
+			// cache the tu & ast pair
+			astCache.put(tu, ast);
+		}
+ 	}
+ 	
+ 	
 	
 	
 
@@ -168,6 +186,10 @@ public class RefactoringProject {
 		return null;
 	}
 	
+	
+
+	
+
 	
 	/**
 	 * Checks if this node is instance of any of the given classes
