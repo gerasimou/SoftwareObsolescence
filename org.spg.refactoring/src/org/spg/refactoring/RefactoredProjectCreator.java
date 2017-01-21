@@ -1,7 +1,10 @@
 package org.spg.refactoring;
 
+import java.io.File;
 import java.nio.file.NoSuchFileException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +45,13 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPNodeFactory;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
+import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IInclude;
 import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.cdt.core.model.IUsing;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.spg.refactoring.ProjectAnalyser.BindingsSet;
@@ -102,7 +107,7 @@ public class RefactoredProjectCreator {
 			//
 			IFile file = CdtUtilities.createNewFile(cproject, RefactoringProject.NEW_DIR, RefactoringProject.NEW_LIBRARYhpp);
 			if (file == null)
-				throw new NoSuchFileException("Could not create source file " + RefactoringProject.NEW_DIR + "/" + RefactoringProject.NEW_LIBRARYhpp);
+				throw new NoSuchFileException("Could not create header file " + RefactoringProject.NEW_DIR + "/" + RefactoringProject.NEW_LIBRARYhpp);
 
 			// Create translation unit for file
 			ITranslationUnit libTU = CoreModelUtil.findTranslationUnit(file);
@@ -114,8 +119,8 @@ public class RefactoredProjectCreator {
 			ICPPNodeFactory nodeFactory = (ICPPNodeFactory) headerAST.getASTNodeFactory();
 
 			//1) Add preprocessor ifdef statements
-			IASTName ifnDefStm  = nodeFactory.newName("#ifndef LIBXML_INCLUDED");
-			IASTName defStm 	= nodeFactory.newName("#define LIBXML_INCLUDED");
+			IASTName ifnDefStm  = nodeFactory.newName("#ifndef "+ RefactoringProject.NEW_NAMESPACE +"_INCLUDED");
+			IASTName defStm 	= nodeFactory.newName("#define "+ RefactoringProject.NEW_NAMESPACE +"_INCLUDED");
 			rewriter.insertBefore(headerAST, null, ifnDefStm, null);
 			rewriter.insertBefore(headerAST, null, defStm, null);
 			
@@ -126,27 +131,23 @@ public class RefactoredProjectCreator {
 				rewriter.insertBefore(headerAST, null, includeDir, null);
 			}
 			
-			//3) add using directives
-//			ICPPASTUsingDirective usingDirective = nodeFactory.newUsingDirective(nodeFactory.newName("tinyxml2"));
-//			rewriter.insertBefore(libAST, null, usingDirective, null);
-
-			//4) add namespace definition
+			//3) add namespace definition
 			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(RefactoringProject.NEW_NAMESPACE));
 			
-			//5) create forward declarations
+			//4) create forward declarations
 			refactorForwardDeclarations(nsDef, nodeFactory, classMembersMap.keySet());
 			
-			//6) Refactor enumerations
+			//5) Refactor enumerations
 			refactorEnumerations(bindingsSet, nsDef);
 			
-			//7) Refactor classes and methods
+			//6) Refactor classes and methods
 			refactorClasses(nodeFactory, classMembersMap, nsDef);
 			
-			//9) add namespace to ast
+			//7) add namespace to ast
 			rewriter.insertBefore(headerAST, null, nsDef, null);
 			
-			//10) add endif preprocessor statement
-			IASTName endIfStm 	= nodeFactory.newName("#endif //LIBXML_INCLUDED");
+			//8) add endif preprocessor statement
+			IASTName endIfStm 	= nodeFactory.newName("#endif //" + RefactoringProject.NEW_NAMESPACE +"_INCLUDED");
 			rewriter.insertBefore(headerAST, null, endIfStm, null);
 
 			rewriter.rewriteAST().perform(new NullProgressMonitor()); 
@@ -456,4 +457,26 @@ public class RefactoredProjectCreator {
  		}
 	}
 
+
+	/**
+	 * Refactor files (.h & .cpp) that use the old library to start using the new library
+	 * @throws CModelException 
+	 */
+	protected void refactorAffectedFiles() throws CModelException{
+		Set<String> oldLib = new HashSet<String>(Arrays.asList(RefactoringProject.OLD_HEADERS));
+		 
+		// for each translation unit get its AST
+		for (ITranslationUnit tu : astCache.keySet()) {
+			System.out.println(tu.getFile().getFullPath());
+			String filename = tu.getElementName(); 
+			if (oldLib.contains(filename)){
+				for (IInclude include : tu.getIncludes()){
+					System.out.println(include.getElementName());
+				}				
+				for (IUsing using : tu.getUsings()){
+					System.out.println(using.getElementName());
+				}
+			}
+		}
+	}
 }

@@ -104,7 +104,7 @@ public class RefactoringProject {
 			}
 			
 			//analyse selected project
-			analyser.analyseExistingProject(project, projectIndex);
+			analyser.analyseExistingProject(projectIndex);
 			
 			/** Keep refactoring information*/
 			BindingsSet bindingsSet  = analyser.getBindings();

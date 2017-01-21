@@ -53,7 +53,6 @@ import org.spg.refactoring.utilities.MessageUtility;
 @SuppressWarnings("restriction")
 public class ProjectAnalyser {
 
-
 	/** project index */
 	protected IIndex projectIndex = null;
 	
@@ -63,7 +62,12 @@ public class ProjectAnalyser {
 	/** Pairs of elements-potential name from standard C++ library that should be included using #include directives*/
 	LinkedHashMap<IASTName, String> includeDirectivesMap = new LinkedHashMap<IASTName, String>();
 	
+	/** Map that between classes and members (functions, methods etc) */
 	Map<ICPPClassType, List<ICPPMember>> classMembersMap;
+
+	/** List keeping the translation units using the old library*/
+	List<ITranslationUnit> tusUsingLibList = new ArrayList<ITranslationUnit>();
+
 
 	/** Keep refactoring information*/
 	NamesSet 	namesSet 	 = new NamesSet();
@@ -85,15 +89,13 @@ public class ProjectAnalyser {
  	 * @param project
  	 * @throws CoreException
  	 */
- 	protected void analyseExistingProject(IProject project, IIndex index) throws CoreException{
+ 	protected void analyseExistingProject(IIndex index) throws CoreException{
  		this.projectIndex = index;
  		
 		/**Pairs of ITranslationUnit, List<IASTName>, where List
 		 * <IASTName> keeps the IASTNames used from the legacy library **/
 		HashMap<ITranslationUnit, List<IASTName>> libraryCache = new HashMap<>();
 		
-		List<ITranslationUnit> tusUsingLibList = new ArrayList<ITranslationUnit>();
-
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
 
@@ -619,4 +621,9 @@ public class ProjectAnalyser {
 	protected Map<ICPPClassType, List<ICPPMember>> getClassMembersMap(){
 		return this.classMembersMap;
 	}
+	
+	protected List<ITranslationUnit> getTUsUsingLib (){
+		return this.tusUsingLibList;
+	}
+
 }
