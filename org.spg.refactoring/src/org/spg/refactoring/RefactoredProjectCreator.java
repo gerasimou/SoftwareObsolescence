@@ -195,7 +195,7 @@ public class RefactoredProjectCreator {
 			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(RefactoringProject.NEW_NAMESPACE));
 			
 			//3) Refactor classes and methods
-			refactorFunctionImplementations(nodeFactory, classMembersMap, nsDef);
+			refactorFunctionDefinitions(nodeFactory, classMembersMap, nsDef);
 			
 			//4) add namespace to ast
 			rewriter.insertBefore(sourceAST, null, nsDef, null);
@@ -361,7 +361,7 @@ public class RefactoredProjectCreator {
 	 * @throws CoreException
 	 * @throws DOMException 
 	 */
-	private void refactorFunctionImplementations (ICPPNodeFactory nodeFactory, Map<ICPPClassType, List<ICPPMember>> classMembersMap, 
+	private void refactorFunctionDefinitions (ICPPNodeFactory nodeFactory, Map<ICPPClassType, List<ICPPMember>> classMembersMap, 
 												 	ICPPASTNamespaceDefinition nsDef) throws CoreException{		
 		try {
 			projectIndex.acquireReadLock();
@@ -490,11 +490,23 @@ public class RefactoredProjectCreator {
 				for (IInclude include : tu.getIncludes()){
 					for (String oldLibHeader : RefactoringProject.OLD_HEADERS){
 						if (include.getElementName().contains(oldLibHeader)){
-							System.err.println("Removing include " + include.getElementName() +" from "+ tu.getFile().getFullPath());
+//							System.err.println("Removing include " + include.getElementName() +" from "+ tu.getFile().getFullPath());
+							//delete previous include
 							include.delete(false,  new NullProgressMonitor());
 							tu.save(new NullProgressMonitor(), true);
+							
+							//find insert position
+							ICElement sibling = null;
+							if (tu.getIncludes().length > 0)
+								sibling = tu.getIncludes()[tu.getIncludes().length-1];
+							else if (tu.getUsings().length > 0)
+								sibling = tu.getUsings()[0];
+							else if (tu.getNamespaces().length > 0)
+								sibling = tu.getNamespaces()[0];
+							
+							//add new include directive
 							tu.createInclude(RefactoringProject.NEW_INCLUDE_DIRECTIVE, true, 
-												tu.getNamespaces()[0], new NullProgressMonitor());
+												sibling, new NullProgressMonitor());
 							tu.save(new NullProgressMonitor(), true);
 //							include.rename(RefactoringProject.NEW_LIBRARYhpp, true, new NullProgressMonitor());
 						}
@@ -514,13 +526,24 @@ public class RefactoredProjectCreator {
 				for (IUsing using : tu.getUsings()){
 					if (RefactoringProject.OLD_NAMESPACES.contains(using.getElementName())){
 //						namespace. rename("BOOOB", true, new NullProgressMonitor());
-						System.err.println("Removing using " + using.getElementName() +" from "+ tu.getFile().getFullPath());
+//						System.err.println("Removing using " + using.getElementName() +" from "+ tu.getFile().getFullPath());
+						//delete previous using directive
 						using.delete(true,  new NullProgressMonitor());
 						tu.save(new NullProgressMonitor(), true);
 						
+						//find insert position
+						ICElement sibling = null; 
+						if (tu.getUsings().length > 0)
+							sibling = tu.getUsings()[0];
+						else if (tu.getIncludes().length > 0)
+							sibling = tu.getIncludes()[tu.getIncludes().length-1];
+						else if (tu.getNamespaces().length > 0)
+							sibling = tu.getNamespaces()[0];
+
+						//add new using directive
 						myTranslationUnit myTU = new myTranslationUnit(tu.getParent(), tu.getFile(), 
 													tu.isHeaderUnit()?CCorePlugin.CONTENT_TYPE_CXXHEADER:CCorePlugin.CONTENT_TYPE_CXXSOURCE);
-						myTU.createUsing(RefactoringProject.NEW_NAMESPACE, true, tu.getNamespaces()[0], new NullProgressMonitor());
+						myTU.createUsing(RefactoringProject.NEW_NAMESPACE, true, sibling, new NullProgressMonitor());
 						
 						tu.save(new NullProgressMonitor(), true);
 					}

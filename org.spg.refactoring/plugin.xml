@@ -103,7 +103,8 @@
                </visibleWhen>
             </command>
             <separator
-                  name="org.spg.refactoring.separator2">
+                  name="org.spg.refactoring.separator2"
+                  visible="true">
             </separator>
             <command
                   commandId="org.spg.refactoring.commands.newProjectCommand"
