@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.JSONGenerator;
+import org.spg.refactoring.utilities.Utility;
 
 public class Visualiser {
 	/** City */
@@ -46,17 +47,23 @@ public class Visualiser {
 
 	
 	
-	public void run (IProject project){
+	public String run (IProject project, String jsonPath){
 		try {
 			
 			generateCityElements(project);
 			
-			generateJSON();
-
+			String json = generateJSON();
+			
+			String filename = project.getName()+".json";
+			
+			Utility.exportToFile(jsonPath+filename, json, false);
+			
+			return filename;
 			
 		}
 		catch (CoreException e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 	
@@ -67,7 +74,7 @@ public class Visualiser {
 		ICProject cproject = CdtUtilities.getICProject(project);
 		
 		//add city
-		city = new City(project.getName(), "tooltip");
+		city = new City(project.getName(), project.getName());
 		
 		//add default district (src/)
 		District defaultDistrict = new District("default", "default package", DISTRICT_COLOR, city.name);
@@ -112,7 +119,6 @@ public class Visualiser {
 	}
 	
 	
-	
 	private void getTooltipForInnerElements(ICElement element, String eName, String tooltip){
 		if (!(element.getParent() instanceof ISourceRoot))
 			getTooltipForInnerElements(element.getParent(), eName, tooltip);
@@ -120,15 +126,13 @@ public class Visualiser {
 	}
 	
 	
-	private void generateJSON(){
+	private String generateJSON(){
 		StringBuilder JSON = new StringBuilder("{\n\n");
 		
 		//add city
 		JSON.append("\"city\":\n");
 		JSON.append(JSONGenerator.toJSON(city));
-		JSON.append(",\n\n");
-//		System.out.println(cityJSON);
-		
+		JSON.append(",\n\n");		
 
 		//add districts
 		JSON.append("\"districts\":[\n");
@@ -159,7 +163,8 @@ public class Visualiser {
 
 		JSON.append("\n}");
 		
-		System.out.println(JSON.toString());
+//		System.out.println(JSON.toString());
+		return JSON.toString();
 	}
 	
 	

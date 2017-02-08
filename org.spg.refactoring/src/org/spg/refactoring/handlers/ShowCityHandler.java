@@ -48,8 +48,10 @@ public class ShowCityHandler extends AbstractHandler {
 	int serverPid;
 	
 	/**JSCity details */
-	String path 	 = "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
-	String server 	 = "server.js";
+	final String path 	 = "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
+	final String jsonPath	 = "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";
+	final String server 	 = "server.js";
+	final String NODE		= "/usr/local/bin/node";
 
 	
 	
@@ -87,11 +89,22 @@ public class ShowCityHandler extends AbstractHandler {
 
 				if (cproject != null){
 					Visualiser vis = new Visualiser();
-					vis.run(project);
+					String jsonFile = vis.run(project, jsonPath);
+					
+					//TODO
+					if (jsonFile!=null){
+						runGeneratoScript(jsonFile);
+
+						startJSCityServer();
+
+						int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
+						IWebBrowser browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
+						browser.openURL(new URL("http://localhost:8888/"));
+					}
 				}	
 			}
 		} 
-		catch (NullPointerException | CoreException e) {
+		catch (NullPointerException | CoreException | MalformedURLException e) {
 			MessageUtility.writeToConsole("Console", e.getMessage());
 			MessageUtility.showMessage(shell, MessageDialog.ERROR, 
 									   "Unexpected Project Nature", 
@@ -99,23 +112,35 @@ public class ShowCityHandler extends AbstractHandler {
 			e.printStackTrace();
 		}
 		return null;
-		
-		
-		
-//		int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
-//		IWebBrowser browser;
-//		try {
-//			startJSCityServer();
-//			
-//			browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
-//			browser.openURL(new URL("http://localhost:8888/"));
-//		} catch (PartInitException | MalformedURLException e) {
-//			e.printStackTrace();
-//		}
-//		return null;
 	}
 	
 	
+	private void runGeneratoScript(String jsonFile){
+		try {
+			File dir = new File(jsonPath);
+			if (!dir.exists())
+				throw new FileNotFoundException(String.format("Directory %s not found", dir));
+			
+			File file = new File(jsonPath + jsonFile);
+			if (!file.exists())
+				throw new FileNotFoundException(String.format("File %s not found", file));
+			
+			String[] nodeCommand = {NODE, jsonPath + "generatorPromises8.js", "-f", jsonPath + jsonFile};
+			ProcessBuilder pb = new ProcessBuilder(nodeCommand);
+			pb.redirectOutput(Redirect.INHERIT);
+			pb.redirectError(Redirect.INHERIT);
+			Process p = pb.start();
+			p.waitFor();
+		} 
+		catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * Start server.sh
+	 */
 	private void startJSCityServer(){
 		try {
 			File file = new File(path + server);
