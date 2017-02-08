@@ -10,16 +10,28 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
+import org.spg.refactoring.RefactoringProject;
+import org.spg.refactoring.Visualiser;
+import org.spg.refactoring.utilities.CdtUtilities;
+import org.spg.refactoring.utilities.LibraryDetailsDialog;
 import org.spg.refactoring.utilities.MessageUtility;
 
 /**
@@ -47,6 +59,8 @@ public class ShowCityHandler extends AbstractHandler {
 		serverPid	  = -1;
 	}
 
+	
+	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
@@ -55,17 +69,50 @@ public class ShowCityHandler extends AbstractHandler {
 									"Showing City",
 									"Showing JSCity.");
 		
-		int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
-		IWebBrowser browser;
-		try {
-			startJSCityServer();
-			
-			browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
-			browser.openURL(new URL("http://localhost:8888/"));
-		} catch (PartInitException | MalformedURLException e) {
+		
+		IProject project = null; 
+		//get the current workbench page
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		//get the current selection
+		ISelection selection = page.getSelection();
+		try{
+			if (selection instanceof ITreeSelection){
+				ITreeSelection treeSelection = (ITreeSelection)selection;
+				//get selected object
+				Object selectedObject = treeSelection.getFirstElement();
+				//get the IProject
+				project= Platform.getAdapterManager().getAdapter(selectedObject, IProject.class);
+				//check if the project is a C project
+				ICProject cproject = CdtUtilities.getICProject(project);
+
+				if (cproject != null){
+					Visualiser vis = new Visualiser();
+					vis.run(project);
+				}	
+			}
+		} 
+		catch (NullPointerException | CoreException e) {
+			MessageUtility.writeToConsole("Console", e.getMessage());
+			MessageUtility.showMessage(shell, MessageDialog.ERROR, 
+									   "Unexpected Project Nature", 
+									   	String.format("Expected a C/C++ Project but got a %s instead.\nProcessing Terminated.", project.getName()));
 			e.printStackTrace();
 		}
 		return null;
+		
+		
+		
+//		int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
+//		IWebBrowser browser;
+//		try {
+//			startJSCityServer();
+//			
+//			browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
+//			browser.openURL(new URL("http://localhost:8888/"));
+//		} catch (PartInitException | MalformedURLException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
 	}
 	
 	

@@ -219,7 +219,7 @@ public class CdtUtilities {
 		} catch (CModelException e) {
 			e.printStackTrace();
 		}
-		return tuList;			
+		return tuList;
 	}
 	
 	
@@ -239,6 +239,31 @@ public class CdtUtilities {
 	/**
 	 * Returns as List all the translation units for the given project.
 	 * This function considers all the source directories and sub-directories of this project
+	 * @param currentCproject the current C/C++ project
+	 * @return
+	 */
+	public static List<ICElement> getICElementsFromProject(IParent parent,  Class<?> clazz, List<ICElement> list) {				
+		try {
+			for (ICElement element : parent.getChildren()){
+					if (clazz.isInstance(element)){
+						list.add(element);
+					}
+					
+					if (element instanceof ICContainer){
+						getICElementsFromProject((IParent)element, clazz, list);
+					}				
+			}
+		}
+		catch (CModelException e){
+			e.printStackTrace();
+		}
+		return list;			
+	}
+	
+	
+	/**
+	 * Returns as List all the ICElements (TranslationUnits & ICContainer) for the given project.
+	 * This function analyses all the source directories and sub-directories of this project
 	 * @param currentCproject the current C/C++ project
 	 * @return
 	 */
