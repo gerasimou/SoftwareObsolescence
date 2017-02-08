@@ -7,40 +7,13 @@ Promise.promisifyAll(require("mysql/lib/Pool").prototype);
 
 var path        = require('path');
 var mime        = require('mime');
-var nomnom      = require('nomnom');
-
 var config          = require('../config.json'),
     debug           = config.debug,
     CONST_ANONYMOUS = 'Anonymous function';
 require('../lib/MooTools-Core-Server.js');
 
 
-//Help of generator
-nomnom.options({
-	'city': {
-		abbr: 'c',
-		help: 'Name of your city.',
-		default: ''
-	},
-	'project': {
-		position: 0,
-		metavar: 'PATH_project',
-		help: 'Project path.',
-		required: true
-	},
-	'verbose': {
-		abbr: 'v',
-		help: 'Print message and errors.',
-		flag: true
-	},
-    'exclude': {
-        abbr: 'x',
-        help: 'List of file patterns to exclude (comma separated)',
-        default: ''
-    }
-});
-
-
+var argv = require('minimist')(process.argv.slice(2));
 
 
 //Parse JSON
@@ -97,7 +70,7 @@ function parseDistricts(){
                 // console.log(p);
                 topPromises.push(p);
              }
-        });     
+        });
     }
     // console.log(topPromisesCity +'\t'+ topPromisesDistrict);
     return (topPromises);
@@ -131,7 +104,7 @@ function parseSubDistricts(){
                         });
                 topPromises.push(p);
              }
-        });     
+        });
     }
     return (topPromises);
 }
@@ -183,10 +156,10 @@ function parseBuildings(){
                         });
                 topPromises.push(p);
              }
-             else{ 
-                throw new Error('No district or city found for building '+ building.name);   
+             else{
+                throw new Error('No district or city found for building '+ building.name);
              }
-        });     
+        });
     }
     // console.log(topPromisesCity +'\t'+ topPromisesDistrict);
     return (topPromises);
@@ -277,16 +250,21 @@ function processPromises(promisesJSON){
                   .then(function(results){
                     console.log('Added\t' + results);
                     resolve()
-                  }); 
-             }) 
+                  });
+             })
     });
 }
 
 
-
-var filename = 'input.txt';
-var jsonFile = 'city.json';
-var city     = require('./city.json');
+try{
+  if (!argv.f)
+    throw new Error('Error: Input file not given; Aborting execution!');
+}
+catch (ex){
+  console.log(ex);
+  return;
+}
+var city     = require(argv.f);
 var pool     = Promise.promisifyAll(mysql.createPool(config.conexoes[config.conexao]));
 
 
@@ -301,9 +279,9 @@ Promise.resolve()
     .then(processPromises)
     .then(function(){
         pool.end(function (err) {
-            if (err) 
+            if (err)
                 console.error("An error occurred: " + err);
-            else 
+            else
                 console.log("Connection to DB terminated successfully");
         });
     })
