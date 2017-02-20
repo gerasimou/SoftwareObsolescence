@@ -1,0 +1,1343 @@
+{
+
+"city":
+{
+  "name": "mFAST",
+  "tooltip": "mFAST"
+},
+
+"districts":[
+{
+  "name": "default",
+  "tooltip": "default package",
+  "color": "0xD5C8B2",
+  "city": "mFAST"
+},
+{
+  "name": "fast_type_gen",
+  "tooltip": "Folder: fast_type_gen",
+  "color": "0xF7AB29",
+  "city": "mFAST"
+},
+{
+  "name": "mfast",
+  "tooltip": "Folder: mfast",
+  "color": "0xF7AB29",
+  "city": "mFAST"
+},
+{
+  "name": "tinyxml2",
+  "tooltip": "Folder: tinyxml2",
+  "color": "0xF7AB29",
+  "city": "mFAST"
+},
+{
+  "name": "coder",
+  "tooltip": "Folder: coder",
+  "color": "0xF7AB29",
+  "district": "mfast"
+},
+{
+  "name": "common",
+  "tooltip": "Folder: common",
+  "color": "0xF7AB29",
+  "district": "coder"
+},
+{
+  "name": "decoder",
+  "tooltip": "Folder: decoder",
+  "color": "0xF7AB29",
+  "district": "coder"
+},
+{
+  "name": "decoder_v2",
+  "tooltip": "Folder: decoder_v2",
+  "color": "0xF7AB29",
+  "district": "coder"
+},
+{
+  "name": "encoder",
+  "tooltip": "Folder: encoder",
+  "color": "0xF7AB29",
+  "district": "coder"
+},
+{
+  "name": "encoder_v2",
+  "tooltip": "Folder: encoder_v2",
+  "color": "0xF7AB29",
+  "district": "coder"
+},
+{
+  "name": "instructions",
+  "tooltip": "Folder: instructions",
+  "color": "0xF7AB29",
+  "district": "mfast"
+},
+{
+  "name": "json",
+  "tooltip": "Folder: json",
+  "color": "0xF7AB29",
+  "district": "mfast"
+},
+{
+  "name": "sqlite3",
+  "tooltip": "Folder: sqlite3",
+  "color": "0xF7AB29",
+  "district": "mfast"
+},
+{
+  "name": "xml_parser",
+  "tooltip": "Folder: xml_parser",
+  "color": "0xF7AB29",
+  "district": "mfast"
+},
+{
+  "name": "resources",
+  "tooltip": "Folder: resources",
+  "color": "0xF7AB29",
+  "district": "tinyxml2"
+}],
+
+"buildings":[
+{
+  "name": "codegen_base.cpp",
+  "tooltip": "codegen_base.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "378",
+  "width": "53"
+},
+{
+  "name": "codegen_base.h",
+  "tooltip": "codegen_base.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "148",
+  "width": "82"
+},
+{
+  "name": "cpp_gen.cpp",
+  "tooltip": "cpp_gen.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "408",
+  "width": "65"
+},
+{
+  "name": "cpp_gen.h",
+  "tooltip": "cpp_gen.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "101",
+  "width": "76"
+},
+{
+  "name": "fast_type_gen.cpp",
+  "tooltip": "fast_type_gen.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "188",
+  "width": "16"
+},
+{
+  "name": "hpp_gen.cpp",
+  "tooltip": "hpp_gen.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "343",
+  "width": "12"
+},
+{
+  "name": "hpp_gen.h",
+  "tooltip": "hpp_gen.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "470",
+  "width": "6"
+},
+{
+  "name": "indented_ostream.h",
+  "tooltip": "indented_ostream.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "438",
+  "width": "75"
+},
+{
+  "name": "inl_gen.cpp",
+  "tooltip": "inl_gen.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "419",
+  "width": "85"
+},
+{
+  "name": "inl_gen.h",
+  "tooltip": "inl_gen.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "fast_type_gen",
+  "height": "365",
+  "width": "41"
+},
+{
+  "name": "mFAST.cpp",
+  "tooltip": "mFAST.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "default",
+  "height": "385",
+  "width": "29"
+},
+{
+  "name": "aggregate_ref.h",
+  "tooltip": "aggregate_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "455",
+  "width": "26"
+},
+{
+  "name": "allocator.cpp",
+  "tooltip": "allocator.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "376",
+  "width": "81"
+},
+{
+  "name": "allocator.h",
+  "tooltip": "allocator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "51",
+  "width": "17"
+},
+{
+  "name": "arena_allocator.cpp",
+  "tooltip": "arena_allocator.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "120",
+  "width": "2"
+},
+{
+  "name": "arena_allocator.h",
+  "tooltip": "arena_allocator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "87",
+  "width": "72"
+},
+{
+  "name": "array_view.h",
+  "tooltip": "array_view.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "88",
+  "width": "37"
+},
+{
+  "name": "boolean_ref.cpp",
+  "tooltip": "boolean_ref.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "237",
+  "width": "39"
+},
+{
+  "name": "boolean_ref.h",
+  "tooltip": "boolean_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "188",
+  "width": "57"
+},
+{
+  "name": "codec_helper.h",
+  "tooltip": "codec_helper.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "common",
+  "height": "77",
+  "width": "24"
+},
+{
+  "name": "debug_stream.h",
+  "tooltip": "debug_stream.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "common",
+  "height": "352",
+  "width": "79"
+},
+{
+  "name": "dictionary_builder.cpp",
+  "tooltip": "dictionary_builder.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "common",
+  "height": "229",
+  "width": "72"
+},
+{
+  "name": "dictionary_builder.h",
+  "tooltip": "dictionary_builder.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "common",
+  "height": "386",
+  "width": "22"
+},
+{
+  "name": "exceptions.h",
+  "tooltip": "exceptions.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "common",
+  "height": "462",
+  "width": "79"
+},
+{
+  "name": "template_repo.h",
+  "tooltip": "template_repo.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "common",
+  "height": "427",
+  "width": "31"
+},
+{
+  "name": "check_overflow.h",
+  "tooltip": "check_overflow.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "185",
+  "width": "14"
+},
+{
+  "name": "decoder_field_operator.cpp",
+  "tooltip": "decoder_field_operator.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "25",
+  "width": "45"
+},
+{
+  "name": "decoder_field_operator.h",
+  "tooltip": "decoder_field_operator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "368",
+  "width": "22"
+},
+{
+  "name": "decoder_presence_map.cpp",
+  "tooltip": "decoder_presence_map.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "208",
+  "width": "82"
+},
+{
+  "name": "decoder_presence_map.h",
+  "tooltip": "decoder_presence_map.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "191",
+  "width": "78"
+},
+{
+  "name": "fast_decoder.cpp",
+  "tooltip": "fast_decoder.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "75",
+  "width": "46"
+},
+{
+  "name": "fast_istream.cpp",
+  "tooltip": "fast_istream.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "194",
+  "width": "53"
+},
+{
+  "name": "fast_istream.h",
+  "tooltip": "fast_istream.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "486",
+  "width": "30"
+},
+{
+  "name": "fast_istream_extractor.h",
+  "tooltip": "fast_istream_extractor.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "264",
+  "width": "46"
+},
+{
+  "name": "fast_istreambuf.h",
+  "tooltip": "fast_istreambuf.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder",
+  "height": "295",
+  "width": "93"
+},
+{
+  "name": "fast_decoder_core.h",
+  "tooltip": "fast_decoder_core.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder_v2",
+  "height": "62",
+  "width": "33"
+},
+{
+  "name": "fast_istream_extractor.h",
+  "tooltip": "fast_istream_extractor.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "decoder_v2",
+  "height": "454",
+  "width": "75"
+},
+{
+  "name": "encoder_field_operator.cpp",
+  "tooltip": "encoder_field_operator.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "119",
+  "width": "7"
+},
+{
+  "name": "encoder_field_operator.h",
+  "tooltip": "encoder_field_operator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "210",
+  "width": "91"
+},
+{
+  "name": "encoder_presence_map.h",
+  "tooltip": "encoder_presence_map.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "285",
+  "width": "78"
+},
+{
+  "name": "fast_encoder.cpp",
+  "tooltip": "fast_encoder.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "457",
+  "width": "71"
+},
+{
+  "name": "fast_ostream.h",
+  "tooltip": "fast_ostream.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "393",
+  "width": "39"
+},
+{
+  "name": "fast_ostream_inserter.h",
+  "tooltip": "fast_ostream_inserter.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "251",
+  "width": "19"
+},
+{
+  "name": "fast_ostreambuf.cpp",
+  "tooltip": "fast_ostreambuf.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "167",
+  "width": "86"
+},
+{
+  "name": "fast_ostreambuf.h",
+  "tooltip": "fast_ostreambuf.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "164",
+  "width": "59"
+},
+{
+  "name": "resizable_fast_ostreambuf.h",
+  "tooltip": "resizable_fast_ostreambuf.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder",
+  "height": "237",
+  "width": "51"
+},
+{
+  "name": "fast_encoder_core.cpp",
+  "tooltip": "fast_encoder_core.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder_v2",
+  "height": "284",
+  "width": "30"
+},
+{
+  "name": "fast_encoder_core.h",
+  "tooltip": "fast_encoder_core.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder_v2",
+  "height": "454",
+  "width": "36"
+},
+{
+  "name": "fast_ostream_inserter.h",
+  "tooltip": "fast_ostream_inserter.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "encoder_v2",
+  "height": "393",
+  "width": "27"
+},
+{
+  "name": "fast_decoder.h",
+  "tooltip": "fast_decoder.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "coder",
+  "height": "318",
+  "width": "98"
+},
+{
+  "name": "fast_decoder_v2.h",
+  "tooltip": "fast_decoder_v2.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "coder",
+  "height": "224",
+  "width": "31"
+},
+{
+  "name": "fast_encoder.h",
+  "tooltip": "fast_encoder.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "coder",
+  "height": "37",
+  "width": "52"
+},
+{
+  "name": "fast_encoder_v2.h",
+  "tooltip": "fast_encoder_v2.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "coder",
+  "height": "84",
+  "width": "21"
+},
+{
+  "name": "mfast_coder_export.h",
+  "tooltip": "mfast_coder_export.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "coder",
+  "height": "129",
+  "width": "16"
+},
+{
+  "name": "composite_type.h",
+  "tooltip": "composite_type.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "41",
+  "width": "54"
+},
+{
+  "name": "decimal_ref.cpp",
+  "tooltip": "decimal_ref.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "294",
+  "width": "49"
+},
+{
+  "name": "decimal_ref.h",
+  "tooltip": "decimal_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "153",
+  "width": "78"
+},
+{
+  "name": "enum_ref.h",
+  "tooltip": "enum_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "454",
+  "width": "7"
+},
+{
+  "name": "exceptions.cpp",
+  "tooltip": "exceptions.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "9",
+  "width": "5"
+},
+{
+  "name": "exceptions.h",
+  "tooltip": "exceptions.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "493",
+  "width": "21"
+},
+{
+  "name": "ext_ref.h",
+  "tooltip": "ext_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "247",
+  "width": "27"
+},
+{
+  "name": "field_comparator.h",
+  "tooltip": "field_comparator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "204",
+  "width": "61"
+},
+{
+  "name": "field_instructions.cpp",
+  "tooltip": "field_instructions.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "235",
+  "width": "89"
+},
+{
+  "name": "field_instructions.h",
+  "tooltip": "field_instructions.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "477",
+  "width": "59"
+},
+{
+  "name": "field_mref.h",
+  "tooltip": "field_mref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "200",
+  "width": "60"
+},
+{
+  "name": "field_ref.cpp",
+  "tooltip": "field_ref.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "214",
+  "width": "32"
+},
+{
+  "name": "field_ref.h",
+  "tooltip": "field_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "269",
+  "width": "97"
+},
+{
+  "name": "field_visitor.h",
+  "tooltip": "field_visitor.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "12",
+  "width": "22"
+},
+{
+  "name": "group_ref.h",
+  "tooltip": "group_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "97",
+  "width": "92"
+},
+{
+  "name": "byte_vector_instruction.cpp",
+  "tooltip": "byte_vector_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "223",
+  "width": "40"
+},
+{
+  "name": "byte_vector_instruction.h",
+  "tooltip": "byte_vector_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "104",
+  "width": "19"
+},
+{
+  "name": "decimal_instruction.cpp",
+  "tooltip": "decimal_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "105",
+  "width": "50"
+},
+{
+  "name": "decimal_instruction.h",
+  "tooltip": "decimal_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "48",
+  "width": "3"
+},
+{
+  "name": "enum_instruction.cpp",
+  "tooltip": "enum_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "103",
+  "width": "39"
+},
+{
+  "name": "enum_instruction.h",
+  "tooltip": "enum_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "205",
+  "width": "29"
+},
+{
+  "name": "field_instruction.cpp",
+  "tooltip": "field_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "235",
+  "width": "29"
+},
+{
+  "name": "field_instruction.h",
+  "tooltip": "field_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "65",
+  "width": "54"
+},
+{
+  "name": "group_instruction.cpp",
+  "tooltip": "group_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "452",
+  "width": "52"
+},
+{
+  "name": "group_instruction.h",
+  "tooltip": "group_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "64",
+  "width": "56"
+},
+{
+  "name": "int_instructions.cpp",
+  "tooltip": "int_instructions.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "365",
+  "width": "32"
+},
+{
+  "name": "int_instructions.h",
+  "tooltip": "int_instructions.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "195",
+  "width": "82"
+},
+{
+  "name": "int_vector_instructions.h",
+  "tooltip": "int_vector_instructions.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "418",
+  "width": "79"
+},
+{
+  "name": "sequence_instruction.cpp",
+  "tooltip": "sequence_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "224",
+  "width": "56"
+},
+{
+  "name": "sequence_instruction.h",
+  "tooltip": "sequence_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "113",
+  "width": "93"
+},
+{
+  "name": "string_instructions.cpp",
+  "tooltip": "string_instructions.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "414",
+  "width": "80"
+},
+{
+  "name": "string_instructions.h",
+  "tooltip": "string_instructions.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "452",
+  "width": "14"
+},
+{
+  "name": "template_instruction.cpp",
+  "tooltip": "template_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "475",
+  "width": "50"
+},
+{
+  "name": "template_instruction.h",
+  "tooltip": "template_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "46",
+  "width": "23"
+},
+{
+  "name": "templateref_instruction.cpp",
+  "tooltip": "templateref_instruction.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "133",
+  "width": "38"
+},
+{
+  "name": "templateref_instruction.h",
+  "tooltip": "templateref_instruction.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "229",
+  "width": "59"
+},
+{
+  "name": "templates_description.h",
+  "tooltip": "templates_description.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "173",
+  "width": "43"
+},
+{
+  "name": "vector_instruction_base.cpp",
+  "tooltip": "vector_instruction_base.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "72",
+  "width": "5"
+},
+{
+  "name": "vector_instruction_base.h",
+  "tooltip": "vector_instruction_base.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "instructions",
+  "height": "327",
+  "width": "20"
+},
+{
+  "name": "int_ref.h",
+  "tooltip": "int_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "279",
+  "width": "46"
+},
+{
+  "name": "json.h",
+  "tooltip": "json.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "json",
+  "height": "486",
+  "width": "4"
+},
+{
+  "name": "json_decode.cpp",
+  "tooltip": "json_decode.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "json",
+  "height": "376",
+  "width": "73"
+},
+{
+  "name": "json_encode.cpp",
+  "tooltip": "json_encode.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "json",
+  "height": "183",
+  "width": "4"
+},
+{
+  "name": "mfast_json_export.h",
+  "tooltip": "mfast_json_export.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "json",
+  "height": "252",
+  "width": "84"
+},
+{
+  "name": "malloc_allocator.cpp",
+  "tooltip": "malloc_allocator.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "358",
+  "width": "32"
+},
+{
+  "name": "malloc_allocator.h",
+  "tooltip": "malloc_allocator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "291",
+  "width": "30"
+},
+{
+  "name": "message_ref.h",
+  "tooltip": "message_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "49",
+  "width": "98"
+},
+{
+  "name": "mfast_export.h",
+  "tooltip": "mfast_export.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "384",
+  "width": "58"
+},
+{
+  "name": "nested_message_ref.h",
+  "tooltip": "nested_message_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "351",
+  "width": "78"
+},
+{
+  "name": "output.h",
+  "tooltip": "output.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "57",
+  "width": "63"
+},
+{
+  "name": "sequence_ref.cpp",
+  "tooltip": "sequence_ref.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "140",
+  "width": "27"
+},
+{
+  "name": "sequence_ref.h",
+  "tooltip": "sequence_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "68",
+  "width": "94"
+},
+{
+  "name": "sequence_type.h",
+  "tooltip": "sequence_type.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "366",
+  "width": "29"
+},
+{
+  "name": "aggregate_inserter.cpp",
+  "tooltip": "aggregate_inserter.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "312",
+  "width": "93"
+},
+{
+  "name": "aggregate_inserter.h",
+  "tooltip": "aggregate_inserter.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "212",
+  "width": "34"
+},
+{
+  "name": "converter.cpp",
+  "tooltip": "converter.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "11",
+  "width": "38"
+},
+{
+  "name": "converter.h",
+  "tooltip": "converter.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "127",
+  "width": "18"
+},
+{
+  "name": "converter_core.cpp",
+  "tooltip": "converter_core.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "100",
+  "width": "88"
+},
+{
+  "name": "converter_core.h",
+  "tooltip": "converter_core.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "295",
+  "width": "50"
+},
+{
+  "name": "error.cpp",
+  "tooltip": "error.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "212",
+  "width": "22"
+},
+{
+  "name": "error.h",
+  "tooltip": "error.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "443",
+  "width": "4"
+},
+{
+  "name": "field_instruction_visitor_ex.cpp",
+  "tooltip": "field_instruction_visitor_ex.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "486",
+  "width": "46"
+},
+{
+  "name": "field_instruction_visitor_ex.h",
+  "tooltip": "field_instruction_visitor_ex.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "314",
+  "width": "73"
+},
+{
+  "name": "field_masks.h",
+  "tooltip": "field_masks.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "21",
+  "width": "18"
+},
+{
+  "name": "first_pass_visitor.cpp",
+  "tooltip": "first_pass_visitor.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "66",
+  "width": "97"
+},
+{
+  "name": "first_pass_visitor.h",
+  "tooltip": "first_pass_visitor.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "55",
+  "width": "65"
+},
+{
+  "name": "mfast_sqlite3_export.h",
+  "tooltip": "mfast_sqlite3_export.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "186",
+  "width": "91"
+},
+{
+  "name": "second_pass_visitor.cpp",
+  "tooltip": "second_pass_visitor.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "59",
+  "width": "44"
+},
+{
+  "name": "second_pass_visitor.h",
+  "tooltip": "second_pass_visitor.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "476",
+  "width": "37"
+},
+{
+  "name": "sequence_inserter.h",
+  "tooltip": "sequence_inserter.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "487",
+  "width": "77"
+},
+{
+  "name": "tables_creator.cpp",
+  "tooltip": "tables_creator.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "409",
+  "width": "7"
+},
+{
+  "name": "tables_creator.h",
+  "tooltip": "tables_creator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "45",
+  "width": "62"
+},
+{
+  "name": "third_pass_visitor.cpp",
+  "tooltip": "third_pass_visitor.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "269",
+  "width": "21"
+},
+{
+  "name": "third_pass_visitor.h",
+  "tooltip": "third_pass_visitor.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "52",
+  "width": "23"
+},
+{
+  "name": "value_binder.h",
+  "tooltip": "value_binder.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "sqlite3",
+  "height": "360",
+  "width": "40"
+},
+{
+  "name": "string_ref.h",
+  "tooltip": "string_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "443",
+  "width": "46"
+},
+{
+  "name": "type_category.h",
+  "tooltip": "type_category.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "456",
+  "width": "17"
+},
+{
+  "name": "value_storage.cpp",
+  "tooltip": "value_storage.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "218",
+  "width": "27"
+},
+{
+  "name": "value_storage.h",
+  "tooltip": "value_storage.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "52",
+  "width": "45"
+},
+{
+  "name": "vector_ref.h",
+  "tooltip": "vector_ref.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "413",
+  "width": "87"
+},
+{
+  "name": "view_iterator.cpp",
+  "tooltip": "view_iterator.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "304",
+  "width": "13"
+},
+{
+  "name": "view_iterator.h",
+  "tooltip": "view_iterator.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "mfast",
+  "height": "287",
+  "width": "95"
+},
+{
+  "name": "FastXMLVisitor.cpp",
+  "tooltip": "FastXMLVisitor.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "270",
+  "width": "41"
+},
+{
+  "name": "FastXMLVisitor.h",
+  "tooltip": "FastXMLVisitor.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "111",
+  "width": "34"
+},
+{
+  "name": "dynamic_templates_description.h",
+  "tooltip": "dynamic_templates_description.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "119",
+  "width": "28"
+},
+{
+  "name": "fast_xml_attributes.h",
+  "tooltip": "fast_xml_attributes.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "445",
+  "width": "85"
+},
+{
+  "name": "field_builder.cpp",
+  "tooltip": "field_builder.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "25",
+  "width": "91"
+},
+{
+  "name": "field_builder.h",
+  "tooltip": "field_builder.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "236",
+  "width": "51"
+},
+{
+  "name": "field_builder_base.h",
+  "tooltip": "field_builder_base.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "190",
+  "width": "16"
+},
+{
+  "name": "field_op.cpp",
+  "tooltip": "field_op.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "48",
+  "width": "60"
+},
+{
+  "name": "field_op.h",
+  "tooltip": "field_op.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "257",
+  "width": "19"
+},
+{
+  "name": "mfast_xml_parser_export.h",
+  "tooltip": "mfast_xml_parser_export.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "293",
+  "width": "27"
+},
+{
+  "name": "template_registry_impl.h",
+  "tooltip": "template_registry_impl.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "283",
+  "width": "79"
+},
+{
+  "name": "templates_builder.cpp",
+  "tooltip": "templates_builder.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "328",
+  "width": "63"
+},
+{
+  "name": "templates_builder.h",
+  "tooltip": "templates_builder.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "455",
+  "width": "66"
+},
+{
+  "name": "view_info_builder.cpp",
+  "tooltip": "view_info_builder.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "404",
+  "width": "76"
+},
+{
+  "name": "view_info_builder.h",
+  "tooltip": "view_info_builder.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "299",
+  "width": "2"
+},
+{
+  "name": "xml_util.h",
+  "tooltip": "xml_util.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "xml_parser",
+  "height": "76",
+  "width": "11"
+},
+{
+  "name": "mfast.h",
+  "tooltip": "mfast.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "default",
+  "height": "197",
+  "width": "62"
+},
+{
+  "name": "tinyxml2.cpp",
+  "tooltip": "tinyxml2.cpp, LoC : ",
+  "color": "0x2A75B3",
+  "district": "tinyxml2",
+  "height": "136",
+  "width": "72"
+},
+{
+  "name": "tinyxml2.h",
+  "tooltip": "tinyxml2.h, LoC : ",
+  "color": "0x2A75B3",
+  "district": "tinyxml2",
+  "height": "71",
+  "width": "18"
+}]
+
+}

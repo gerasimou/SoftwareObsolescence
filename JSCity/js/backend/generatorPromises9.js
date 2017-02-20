@@ -184,6 +184,8 @@ function parseBuildings2(){
                 resolve();
             });
         }
+        else
+            resolve();
     });
 }
 
