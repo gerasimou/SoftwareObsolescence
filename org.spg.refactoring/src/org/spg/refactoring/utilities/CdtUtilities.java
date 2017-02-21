@@ -195,7 +195,9 @@ public class CdtUtilities {
 	public static List<ITranslationUnit> getProjectTranslationUnits (ICProject cproject,  String[] excludedFiles) {
 		List<ITranslationUnit> tuList = new ArrayList<ITranslationUnit>();
 		
-		HashSet<String> excludedFilesSet = new HashSet<String>(Arrays.asList(excludedFiles));
+		HashSet<String> excludedFilesSet = new HashSet<String>();
+		if (excludedFiles != null)
+			excludedFilesSet.addAll(Arrays.asList(excludedFiles));
 		
 		//get source folders
 		try {
