@@ -314,10 +314,7 @@ public class ProjectAnalyser {
 					bindingsGraph.add((ICPPClassType)baseBinding, classBinding);
 			}
 		}
-//        System.out.println("In-degrees: " + bindingsGraph.inDegree());
-//        System.out.println("Out-degrees: " + bindingsGraph.outDegree());
         System.out.println("\nA topological sort of the vertices: " + bindingsGraph.topSort());
-//        System.out.println("The graph " + (bindingsGraph.isDag()?"is":"is not") + " a dag\n");
 		
 		List<ICPPClassType> topSortedBindings = bindingsGraph.topSort();
 		LinkedHashMap<ICPPClassType, List<ICPPMember>> sortedClassMembersMap = new LinkedHashMap<ICPPClassType, List<ICPPMember>>(); 
