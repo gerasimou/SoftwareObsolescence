@@ -9,7 +9,7 @@
  *     Simos Gerasimou - initial API and implementation
  ******************************************************************************/
 
-package org.spg.refactoring.utilities;
+package org.spg.refactoring.handlers.dialogs;
 
 
 import org.eclipse.epsilon.common.dt.launching.dialogs.BrowseWorkspaceUtil;
