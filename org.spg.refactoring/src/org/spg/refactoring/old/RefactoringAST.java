@@ -8,7 +8,7 @@
  * Contributors:
  *     Simos Gerasimou - initial API and implementation
  ******************************************************************************/
-package org.spg.refactoring;
+package org.spg.refactoring.old;
 
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
@@ -84,6 +84,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.epsilon.common.util.ListSet;
+import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.Digraph;
 import org.spg.refactoring.utilities.MessageUtility;

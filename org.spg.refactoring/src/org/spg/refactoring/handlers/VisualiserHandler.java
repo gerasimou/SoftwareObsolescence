@@ -30,8 +30,9 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
 import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.Visualiser;
+import org.spg.refactoring.handlers.dialogs.LibraryDetailsDialog;
+import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
-import org.spg.refactoring.utilities.LibraryDetailsDialog;
 import org.spg.refactoring.utilities.MessageUtility;
 
 /**
@@ -39,7 +40,7 @@ import org.spg.refactoring.utilities.MessageUtility;
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
-public class ShowCityHandler extends AbstractHandler {
+public class VisualiserHandler extends AbstractHandler {
 	
 	/** Process for server.js*/
 	Process serverProcess;
@@ -48,14 +49,15 @@ public class ShowCityHandler extends AbstractHandler {
 	int serverPid;
 	
 	/**JSCity details */
-	final String path 	 = "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
-	final String jsonPath	 = "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";
-	final String server 	 = "server.js";
-	final String NODE		= "/usr/local/bin/node";
+	final String path 	 			= "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
+	final String jsonPath	 		= "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";
+	final String server 	 		= "server.js";
+	final String NODE				= "/usr/local/bin/node";
+	final String GENERATOR_SCRIPT	= "generatorPromises9.js";
 
 	
 	
-	public ShowCityHandler() {
+	public VisualiserHandler() {
 //		this.setBaseEnabled(true);
 		serverProcess = null;
 		serverPid	  = -1;
@@ -73,36 +75,27 @@ public class ShowCityHandler extends AbstractHandler {
 		
 		
 		IProject project = null; 
-		//get the current workbench page
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		//get the current selection
-		ISelection selection = page.getSelection();
 		try{
-			if (selection instanceof ITreeSelection){
-				ITreeSelection treeSelection = (ITreeSelection)selection;
-				//get selected object
-				Object selectedObject = treeSelection.getFirstElement();
-				//get the IProject
-				project= Platform.getAdapterManager().getAdapter(selectedObject, IProject.class);
-				//check if the project is a C project
-				ICProject cproject = CdtUtilities.getICProject(project);
+			project = SelectionUtility.getSelectedProject();
+			//check if the project is a C project
+			ICProject cproject = CdtUtilities.getICProject(project);
 
-				if (cproject != null){
-					Visualiser vis = new Visualiser();
-					String jsonFile = vis.run(project, jsonPath);
+			if (cproject != null){
+				Visualiser vis = new Visualiser();
+				String jsonFile = vis.run(project, jsonPath);
+				
+				//TODO
+				if (jsonFile!=null){
+					runGeneratorScript(jsonFile);
+
+					startJSCityServer();
 					
-					//TODO
-					if (jsonFile!=null){
-						runGeneratoScript(jsonFile);
-
-						startJSCityServer();
-
-						int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
-						IWebBrowser browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
-						browser.openURL(new URL("http://localhost:8888/"));
-					}
-				}	
-			}
+					//show browser
+					int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
+					IWebBrowser browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
+					browser.openURL(new URL("http://localhost:8888/"));
+				}
+			}	
 		} 
 		catch (NullPointerException | CoreException | MalformedURLException e) {
 			MessageUtility.writeToConsole("Console", e.getMessage());
@@ -115,7 +108,7 @@ public class ShowCityHandler extends AbstractHandler {
 	}
 	
 	
-	private void runGeneratoScript(String jsonFile){
+	private void runGeneratorScript(String jsonFile){
 		try {
 			File dir = new File(jsonPath);
 			if (!dir.exists())
@@ -125,7 +118,7 @@ public class ShowCityHandler extends AbstractHandler {
 			if (!file.exists())
 				throw new FileNotFoundException(String.format("File %s not found", file));
 			
-			String[] nodeCommand = {NODE, jsonPath + "generatorPromises8.js", "-f", jsonPath + jsonFile};
+			String[] nodeCommand = {NODE, jsonPath + GENERATOR_SCRIPT, "-f", jsonPath + jsonFile};
 			ProcessBuilder pb = new ProcessBuilder(nodeCommand);
 			pb.redirectOutput(Redirect.INHERIT);
 			pb.redirectError(Redirect.INHERIT);
