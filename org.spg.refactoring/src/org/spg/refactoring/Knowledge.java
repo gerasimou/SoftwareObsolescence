@@ -52,8 +52,11 @@ public class Knowledge {
  	 * @throws CoreException
 	 */
  	protected synchronized static void parse(IProject project) throws CoreException {
-		if (!astCache.isEmpty())
-			return;
+ 		//check if project parsing is required
+ 		if (!Knowledge.projectAnalysisNeded(project.getName()))
+ 			return;
+ 		
+ 		clearKnowledge();
 		
 		cProject		= CdtUtilities.getICProject(project);
 		projectIndex	= CCorePlugin.getIndexManager().getIndex(cProject); 
@@ -188,6 +191,17 @@ public class Knowledge {
 	
 	protected synchronized static IIndex getProjectIndex(){
 		return projectIndex;
+	}
+	
+	private static void clearKnowledge(){
+		if (astCache != null)
+			astCache.clear();
+		if (classMembersMap != null)
+			classMembersMap.clear();
+		if (includeDirectivesMap != null)
+			includeDirectivesMap.clear();
+		if (tusUsingLibList != null)
+			tusUsingLibList.clear();
 	}
 	
 }
