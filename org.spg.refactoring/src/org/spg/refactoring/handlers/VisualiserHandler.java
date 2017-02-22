@@ -16,21 +16,13 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
-import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.Visualiser;
-import org.spg.refactoring.handlers.dialogs.LibraryDetailsDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -52,6 +44,7 @@ public class VisualiserHandler extends AbstractHandler {
 	final String path 	 			= "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
 	final String jsonPath	 		= "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";
 	final String server 	 		= "server.js";
+	final String MySQL				= "/usr/local/bin/mysql.server";
 	final String NODE				= "/usr/local/bin/node";
 	final String GENERATOR_SCRIPT	= "generatorPromises9.js";
 
@@ -81,11 +74,21 @@ public class VisualiserHandler extends AbstractHandler {
 			ICProject cproject = CdtUtilities.getICProject(project);
 
 			if (cproject != null){
+
+//				String[] oldHeader       	= new String[]{"tinyxml2.cpp", "tinyxml2.h"}; 
+//				String oldNamespace			= "tinyxml2";
+//				ProjectAnalyserNew analyser = new ProjectAnalyserNew(project, oldHeader, oldNamespace);
+//				analyser.analyseProject();
+
+				
 				Visualiser vis = new Visualiser();
 				String jsonFile = vis.run(project, jsonPath);
 				
 				//TODO
 				if (jsonFile!=null){
+					
+					startMySQLDatabase();
+					
 					runGeneratorScript(jsonFile);
 
 					startJSCityServer();
@@ -108,6 +111,22 @@ public class VisualiserHandler extends AbstractHandler {
 	}
 	
 	
+	private void startMySQLDatabase(){
+		try {
+			//check if mySQL is already running
+			if (isMySQLAlive())
+				return;
+			
+			String[] nodeCommand = {MySQL, "start"};
+			ProcessBuilder pb = new ProcessBuilder(nodeCommand);
+			pb.start();
+			System.out.println("MySQL database started.");
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
 	private void runGeneratorScript(String jsonFile){
 		try {
 			File dir = new File(jsonPath);
@@ -124,6 +143,7 @@ public class VisualiserHandler extends AbstractHandler {
 			pb.redirectError(Redirect.INHERIT);
 			Process p = pb.start();
 			p.waitFor();
+			System.out.println("City added to database.");
 		} 
 		catch (IOException | InterruptedException e) {
 			e.printStackTrace();
@@ -189,5 +209,27 @@ public class VisualiserHandler extends AbstractHandler {
 	    }
 
 		return serverAlive;
+	}
+	
+	
+	private boolean isMySQLAlive() throws IOException, InterruptedException{
+		String comStr	 	=  "ps aux | grep mysql | grep -v grep | awk '{print $11}'";//get only pids
+		String[] command   	= { "/bin/bash", "-c", comStr };
+		boolean mySQLAlive 	= false;
+		
+	    StringBuffer output	= new StringBuffer();
+		ProcessBuilder pb 	= new ProcessBuilder(command);
+		Process p 			= pb.start();
+		p.waitFor();
+		
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	    String line 		  = "";           
+	    while ((line = reader.readLine())!= null) {
+	        output.append(line + "\n");
+	        if (line.contains("mysql"))
+	        	mySQLAlive = true;
+	    }
+	    
+		return mySQLAlive;
 	}
 }

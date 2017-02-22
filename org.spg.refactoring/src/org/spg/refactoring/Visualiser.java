@@ -30,7 +30,10 @@ public class Visualiser {
 	List<Building> buildingsList;
 	
 	
-	final String DISTRICT_COLOR = "0xF7AB29";
+	final String DISTRICT_COLOR 		 = "0xF7AB29";
+	final String CITY_COLOR	 			 = "0xD5C8B2";
+	final String BUILDING_COLOR 		 = "0x2A75B3";
+	final String BUILDING_COLOR_AFFECTED = "0xB22029";
 	
 	
 	Random rand 		= new Random(System.currentTimeMillis());
@@ -99,18 +102,19 @@ public class Visualiser {
 				String name 	= element.getElementName();
 				String tooltip	= "Folder: "; 
 				getTooltipForInnerElements(element, name, tooltip);
-				tooltip += name;
-				SubDistrict sDistrict = new SubDistrict(name, tooltip, DISTRICT_COLOR, element.getParent().getElementName());
+				tooltip 		+= name;
+				String colour	= getSubDistrictColour(element) + ""; 
+				SubDistrict sDistrict = new SubDistrict(name, tooltip, colour, element.getParent().getElementName());
 				subDistrictsList.add(sDistrict);
 			}
 			else if (element instanceof ITranslationUnit){//source/header
 				String name 	= element.getElementName();
 				String tooltip	= name + ", LoC : ";
-				String color	= "0x2A75B3";
-				String height	= rand.nextInt(50) + "";
-				String width	= rand.nextInt(10) + "";
+				String colour	= BUILDING_COLOR;//Knowledge.tuExists(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
+				String height	= rand.nextInt(500) + "";
+				String width	= rand.nextInt(100) + "";
 				String district = element.getParent() instanceof ISourceRoot ? defaultDistrict.name : element.getParent().getElementName(); 
-				Building building = new Building(name, tooltip, color, height, width, district);
+				Building building = new Building(name, tooltip, colour, height, width, district);
 				buildingsList.add(building);
 			}
 			else 
@@ -123,6 +127,17 @@ public class Visualiser {
 		if (!(element.getParent() instanceof ISourceRoot))
 			getTooltipForInnerElements(element.getParent(), eName, tooltip);
 		tooltip += element.getElementName() + "/"; 
+	}
+	
+	
+	private String getSubDistrictColour(ICElement element){
+//		int colour = DISTRICT_COLOR;
+//		while (element != null && !(element.getParent() instanceof ISourceRoot)){
+//			colour -= 10000;
+//			element = element.getParent();
+//		}
+//		return colour;
+		return DISTRICT_COLOR;
 	}
 	
 	
