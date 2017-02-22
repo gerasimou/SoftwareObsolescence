@@ -22,6 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
+import org.spg.refactoring.ProjectAnalyserNew;
 import org.spg.refactoring.Visualiser;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
@@ -75,10 +76,10 @@ public class VisualiserHandler extends AbstractHandler {
 
 			if (cproject != null){
 
-//				String[] oldHeader       	= new String[]{"tinyxml2.cpp", "tinyxml2.h"}; 
-//				String oldNamespace			= "tinyxml2";
-//				ProjectAnalyserNew analyser = new ProjectAnalyserNew(project, oldHeader, oldNamespace);
-//				analyser.analyseProject();
+				String[] oldHeader       	= new String[]{"tinyxml2.cpp", "tinyxml2.h"}; 
+				String oldNamespace			= "tinyxml2";
+				ProjectAnalyserNew analyser = new ProjectAnalyserNew(project, oldHeader, oldNamespace);
+				analyser.analyseProject();
 
 				
 				Visualiser vis = new Visualiser();

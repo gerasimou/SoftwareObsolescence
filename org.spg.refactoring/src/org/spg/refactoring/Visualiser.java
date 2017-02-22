@@ -110,7 +110,7 @@ public class Visualiser {
 			else if (element instanceof ITranslationUnit){//source/header
 				String name 	= element.getElementName();
 				String tooltip	= name + ", LoC : ";
-				String colour	= BUILDING_COLOR;//Knowledge.tuExists(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
+				String colour	= Knowledge.tuExists(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
 				String height	= rand.nextInt(500) + "";
 				String width	= rand.nextInt(100) + "";
 				String district = element.getParent() instanceof ISourceRoot ? defaultDistrict.name : element.getParent().getElementName(); 

@@ -48,7 +48,7 @@ public class RefactoringProject {
 	protected static String NEW_PROJECT;
 	protected static String NEW_LIBRARYhpp;
 	protected static String NEW_LIBRARYcpp;
-	protected static String NEW_NAMESPACE;
+	public static String NEW_NAMESPACE;
 	protected static String NEW_DIR;
 	protected static String NEW_INCLUDE_DIRECTIVE;
 	protected static Set<String> OLD_NAMESPACES;
@@ -67,7 +67,7 @@ public class RefactoringProject {
 	
 	
 	/** Class constructor */
-	public RefactoringProject(ICProject project, String[] oldHeader, String oldNamespace,
+	public RefactoringProject(String[] oldHeader, String oldNamespace,
 							String newProject, String newLibrary, String newNamespace) {
 		NEW_PROJECT				= newProject;
 		NEW_NAMESPACE  			= newNamespace;
