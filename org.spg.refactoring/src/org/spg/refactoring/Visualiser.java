@@ -34,6 +34,7 @@ public class Visualiser {
 	final String CITY_COLOR	 			 = "0xD5C8B2";
 	final String BUILDING_COLOR 		 = "0x2A75B3";
 	final String BUILDING_COLOR_AFFECTED = "0xB22029";
+	final String[] SUB_DISTRICT_COLOR 	 = {"0xA0522D", "0xD2691E", "0xDAA520", "0xF4A460", "0xD2B48C", "0xF5DEB3", "0xFFF8DC"};
 	
 	
 	Random rand 		= new Random(System.currentTimeMillis());
@@ -50,10 +51,10 @@ public class Visualiser {
 
 	
 	
-	public String run (IProject project, String jsonPath){
+	public String run (IProject project, String jsonPath, Collection<String> tusUsing){
 		try {
 			
-			generateCityElements(project);
+			generateCityElements(project, tusUsing);
 			
 			String json = generateJSON();
 			
@@ -72,7 +73,7 @@ public class Visualiser {
 	
 	
 	
-	private void generateCityElements(IProject project) throws CoreException{
+	private void generateCityElements(IProject project, Collection<String> tusUsing) throws CoreException{
 		List<ICElement> icElementsList = new ArrayList<ICElement>(); 
 		ICProject cproject = CdtUtilities.getICProject(project);
 		
@@ -103,14 +104,14 @@ public class Visualiser {
 				String tooltip	= "Folder: "; 
 				getTooltipForInnerElements(element, name, tooltip);
 				tooltip 		+= name;
-				String colour	= getSubDistrictColour(element) + ""; 
+				String colour	= getSubDistrictColour(element); 
 				SubDistrict sDistrict = new SubDistrict(name, tooltip, colour, element.getParent().getElementName());
 				subDistrictsList.add(sDistrict);
 			}
 			else if (element instanceof ITranslationUnit){//source/header
 				String name 	= element.getElementName();
 				String tooltip	= name + ", LoC : ";
-				String colour	= Knowledge.tuExists(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
+				String colour	= tusUsing.contains(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
 				String height	= rand.nextInt(500) + "";
 				String width	= rand.nextInt(100) + "";
 				String district = element.getParent() instanceof ISourceRoot ? defaultDistrict.name : element.getParent().getElementName(); 
@@ -131,13 +132,18 @@ public class Visualiser {
 	
 	
 	private String getSubDistrictColour(ICElement element){
-//		int colour = DISTRICT_COLOR;
-//		while (element != null && !(element.getParent() instanceof ISourceRoot)){
-//			colour -= 10000;
-//			element = element.getParent();
-//		}
-//		return colour;
-		return DISTRICT_COLOR;
+//		int r = 250;
+//		int g = 230;
+//		int b = 10;
+		int index=0;
+		while (element != null && !(element.getParent() instanceof ISourceRoot)){
+//			r -= 25;
+//			g -= 25;
+			index ++;
+			element = element.getParent();
+		}
+//		return String.format("0x%02X%02X%02X", r, g, b);
+		return SUB_DISTRICT_COLOR[index];
 	}
 	
 	

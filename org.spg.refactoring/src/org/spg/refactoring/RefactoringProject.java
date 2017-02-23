@@ -61,8 +61,8 @@ public class RefactoringProject {
 	LinkedHashMap<IASTName, String> includeDirectivesMap = new LinkedHashMap<IASTName, String>();
 	
 
-	ProjectAnalyser analyser = new ProjectAnalyser(this, astCache);
-	RefactoredProjectCreator refactorer = new RefactoredProjectCreator(this, astCache);
+	ProjectAnalyser analyser = new ProjectAnalyser(this);
+	RefactoredProjectCreator refactorer = new RefactoredProjectCreator(this);
 
 	
 	
@@ -95,7 +95,7 @@ public class RefactoringProject {
 			parseProject();
 
 			//2) analyse project
-			analyser.analyseExistingProject(projectIndex);
+			analyser.analyseExistingProject(projectIndex, astCache);
 						
 			//3) copy project
 			IProject newProject	= CdtUtilities.copyProject(currentCProject.getProject(), RefactoringProject.NEW_PROJECT);
@@ -137,20 +137,16 @@ public class RefactoringProject {
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : tuList) {
 			// get AST for that translation unit
+			System.out.println(tu.getElementName());
 			IASTTranslationUnit ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
-
 			// cache the tu & ast pair
 			astCache.put(tu, ast);
 		}
  	}
- 	
- 	
-	
-	
 
-	
-	
-	/**
+ 	
+ 		
+ 	/**
 	 * Given an index name and a set of class names, this function searches the 
 	 * parent of the node with that name until it finds the parent which is instance of
 	 * 
@@ -185,11 +181,7 @@ public class RefactoringProject {
 		}
 		return null;
 	}
-	
-	
-
-	
-
+		
 	
 	/**
 	 * Checks if this node is instance of any of the given classes
@@ -204,5 +196,32 @@ public class RefactoringProject {
 				return true;
 		}
 		return false;
+	}
+
+
+
+
+	public boolean analyseOnly (IProject project){
+		try {
+			//get existing cProject
+			this.currentCProject		= CdtUtilities.getICProject(project);
+			this.projectIndex 	= CCorePlugin.getIndexManager().getIndex(currentCProject); 
+			
+			//1) find all translation units
+			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
+			parseProject();
+
+			//2) analyse project
+			analyser.analyseExistingProject(projectIndex, astCache);
+			
+			return true;
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public Collection<String> getTUsUsingLib (){
+		return analyser.getTUsUsingLib();
 	}
 }

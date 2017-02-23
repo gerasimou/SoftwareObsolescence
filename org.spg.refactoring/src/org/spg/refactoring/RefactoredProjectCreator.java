@@ -50,7 +50,6 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IInclude;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.core.model.IUsing;
-import org.eclipse.cdt.internal.core.model.CreateIncludeOperation;
 import org.eclipse.cdt.internal.core.model.CreateUsingOperation;
 import org.eclipse.cdt.internal.core.model.TranslationUnit;
 import org.eclipse.core.resources.IFile;
@@ -68,14 +67,11 @@ public class RefactoredProjectCreator {
 	/** project index */
 	protected IIndex projectIndex = null;
 	
-	/** Pairs of ITranslationUnit, IASTTranslationUnit **/
-	HashMap<ITranslationUnit, IASTTranslationUnit> astCache = new HashMap<ITranslationUnit, IASTTranslationUnit>();
-
+	/** */
 	RefactoringProject refactoring;
 
 	
-	public RefactoredProjectCreator(RefactoringProject refProject, HashMap<ITranslationUnit, IASTTranslationUnit>  astCache) {
-		this.astCache = astCache;
+	public RefactoredProjectCreator(RefactoringProject refProject) {
 		this.refactoring = refProject;
 	}
 	

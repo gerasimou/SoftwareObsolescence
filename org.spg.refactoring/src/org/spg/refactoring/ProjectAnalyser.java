@@ -56,8 +56,6 @@ public class ProjectAnalyser {
 	/** project index */
 	protected IIndex projectIndex = null;
 	
-	/** Pairs of ITranslationUnit, IASTTranslationUnit **/
-	HashMap<ITranslationUnit, IASTTranslationUnit> astCache = new HashMap<ITranslationUnit, IASTTranslationUnit>();
 
 	/** Pairs of elements-potential name from standard C++ library that should be included using #include directives*/
 	LinkedHashMap<IASTName, String> includeDirectivesMap = new LinkedHashMap<IASTName, String>();
@@ -78,8 +76,7 @@ public class ProjectAnalyser {
 	RefactoringProject refactoring;
 	
 	
-	public ProjectAnalyser(RefactoringProject refProject, HashMap<ITranslationUnit, IASTTranslationUnit>  astCache) {
-		this.astCache = astCache;
+	public ProjectAnalyser(RefactoringProject refProject) {
 		this.refactoring = refProject;
 	}
 
@@ -89,7 +86,7 @@ public class ProjectAnalyser {
  	 * @param project
  	 * @throws CoreException
  	 */
- 	protected void analyseExistingProject(IIndex index) throws CoreException{
+ 	protected void analyseExistingProject(IIndex index, HashMap<ITranslationUnit, IASTTranslationUnit>  astCache) throws CoreException{
  		this.projectIndex = index;
  		
 		/**Pairs of ITranslationUnit, List<IASTName>, where List

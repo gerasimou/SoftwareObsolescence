@@ -9,6 +9,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.commands.AbstractHandler;
@@ -22,7 +23,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
-import org.spg.refactoring.ProjectAnalyserNew;
+import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.Visualiser;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
@@ -78,12 +79,15 @@ public class VisualiserHandler extends AbstractHandler {
 
 				String[] oldHeader       	= new String[]{"tinyxml2.cpp", "tinyxml2.h"}; 
 				String oldNamespace			= "tinyxml2";
-				ProjectAnalyserNew analyser = new ProjectAnalyserNew(project, oldHeader, oldNamespace);
-				analyser.analyseProject();
+//				ProjectAnalyserNew analyser = new ProjectAnalyserNew(project, oldHeader, oldNamespace);
+//				analyser.analyseProject();
+				RefactoringProject refactoring = new RefactoringProject(oldHeader, oldNamespace, null, null, null);
+				refactoring.analyseOnly(project);
+				Collection<String> tusUsing = refactoring.getTUsUsingLib();
 
 				
 				Visualiser vis = new Visualiser();
-				String jsonFile = vis.run(project, jsonPath);
+				String jsonFile = vis.run(project, jsonPath, tusUsing);
 				
 				//TODO
 				if (jsonFile!=null){
