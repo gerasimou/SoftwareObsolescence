@@ -105,7 +105,7 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 			@Override
 			public void handleEvent(Event event) {
 				String file = BrowseWorkspaceUtil.browseFilePath(getShell(), 
-						"CSV files in the workspace", "Select a CSV file", "", null);
+						"Library files in the workspace", "Select a header file", "", null);
 				if (file != null){
 					oldHeaderText.setText(file);
 				}

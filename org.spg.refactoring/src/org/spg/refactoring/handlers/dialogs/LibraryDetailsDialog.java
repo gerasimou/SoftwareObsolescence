@@ -117,8 +117,8 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 		browseFile.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				String file = BrowseWorkspaceUtil.browseFilePath(getShell(), 
-						"CSV files in the workspace", "Select a CSV file", "", null);
+				String file = BrowseWorkspaceUtil.browseFilePath(getShell(),
+						"Library files in the workspace", "Select a header file", "", null);
 				if (file != null){
 					oldHeaderText.setText(file);
 				}
