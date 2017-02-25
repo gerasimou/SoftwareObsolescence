@@ -34,6 +34,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPBase;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassScope;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
@@ -55,17 +56,15 @@ public class ProjectAnalyser {
 
 	/** project index */
 	protected IIndex projectIndex = null;
-	
 
 	/** Pairs of elements-potential name from standard C++ library that should be included using #include directives*/
-	LinkedHashMap<IASTName, String> includeDirectivesMap = new LinkedHashMap<IASTName, String>();
+	LinkedHashMap<IASTName, String> includeDirectivesMap; 
 	
 	/** Map that between classes and members (functions, methods etc) */
 	Map<ICPPClassType, List<ICPPMember>> classMembersMap;
 
 	/** List keeping the translation units using the old library*/
-	List<ITranslationUnit> tusUsingLibList = new ArrayList<ITranslationUnit>();
-
+	List<ITranslationUnit> tusUsingLibList;
 
 	/** Keep refactoring information*/
 	NamesSet 	namesSet 	 = new NamesSet();
@@ -73,11 +72,15 @@ public class ProjectAnalyser {
 	//FIXME: not correct, do not use this list
 	List<IASTNode> nodesList = new ArrayList<IASTNode>();
 
+	/** Refactoring element*/
 	RefactoringProject refactoring;
 	
 	
+	
 	public ProjectAnalyser(RefactoringProject refProject) {
-		this.refactoring = refProject;
+		this.refactoring 		  = refProject;
+		this.includeDirectivesMap = new LinkedHashMap<IASTName, String>();
+		this.tusUsingLibList 	  = new ArrayList<ITranslationUnit>();
 	}
 
 	
@@ -518,7 +521,6 @@ public class ProjectAnalyser {
 		}
 		
 		
-		@SuppressWarnings("restriction")
 		private boolean checkBinding(IBinding binding) {
 			try {
 				
@@ -627,4 +629,12 @@ public class ProjectAnalyser {
 		return tusLibSet;
 	}
 
+	
+	protected boolean tuExists (String tuName){
+		for (ITranslationUnit tu : tusUsingLibList){
+			if (tu.getElementName().equals(tuName.trim()))
+				return true;
+		}
+		return false;
+	}
 }
