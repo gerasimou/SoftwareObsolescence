@@ -27,7 +27,6 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
-import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.resources.IProject;
@@ -46,24 +45,22 @@ public class RefactoringProject {
 	/** project index */
 	protected IIndex projectIndex = null;
 	
-	protected static String NEW_PROJECT;
-	protected static String NEW_LIBRARYhpp;
-	protected static String NEW_LIBRARYcpp;
-	public static String NEW_NAMESPACE;
-	protected static String NEW_DIR;
-	protected static String NEW_INCLUDE_DIRECTIVE;
-	protected static Set<String> OLD_NAMESPACES;
-	protected static HashSet<String> OLD_HEADERS;
+	protected static String 			NEW_PROJECT;
+	protected static String 			NEW_LIBRARYhpp;
+	protected static String 			NEW_LIBRARYcpp;
+	public static String 				NEW_NAMESPACE;
+	protected static String 			NEW_DIR;
+	protected static String 			NEW_INCLUDE_DIRECTIVE;
+	protected static Set<String> 		OLD_NAMESPACES;
+	protected static HashSet<String> 	OLD_HEADERS;
+	protected static String[] 			EXCLUDED_FILES;
 
 	/** Pairs of ITranslationUnit, IASTTranslationUnit **/
 	HashMap<ITranslationUnit, IASTTranslationUnit> projectASTCache;
 	
 	/** Pairs of ITranslationUnit, IASTTranslationUnit for the obsolete library**/
 	HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache;
-	
-	/** Pairs of elements-potential name from standard C++ library that should be included using #include directives*/
-	LinkedHashMap<IASTName, String> includeDirectivesMap = new LinkedHashMap<IASTName, String>();
-	
+		
 
 	LibraryAnalyser libraryAnalyser 	= new LibraryAnalyser();
 	ProjectAnalyser projectAnalyser 	= new ProjectAnalyser(this);
@@ -72,18 +69,19 @@ public class RefactoringProject {
 	
 	
 	/** Class constructor */
-	public RefactoringProject(String[] oldHeader, String newProject, String newLibrary, String newNamespace) {
+	public RefactoringProject(String[] libHeaders, String[] excludedFiles, String newProject, String newLibrary, String newNamespace) {
+		OLD_NAMESPACES			= new HashSet<String>();
+		OLD_HEADERS				= new HashSet<String>(Arrays.asList(libHeaders));
+		EXCLUDED_FILES			= excludedFiles;
 		NEW_PROJECT				= newProject;
 		NEW_NAMESPACE  			= newNamespace;
 		NEW_LIBRARYcpp			= newLibrary +".cpp";
 		NEW_LIBRARYhpp			= newLibrary +".hpp";
 		NEW_DIR					= "src/" + newLibrary;
 		NEW_INCLUDE_DIRECTIVE	= newLibrary +"/"+  NEW_LIBRARYhpp;
-		OLD_NAMESPACES			= new HashSet<String>();
-		OLD_HEADERS				= new HashSet<String>(Arrays.asList(oldHeader));
 		
-		this.projectASTCache 	= new HashMap<ITranslationUnit, IASTTranslationUnit>();
-		this.libASTCache 		= new HashMap<ITranslationUnit, IASTTranslationUnit>();
+		this.projectASTCache 		= new HashMap<ITranslationUnit, IASTTranslationUnit>();
+		this.libASTCache 			= new HashMap<ITranslationUnit, IASTTranslationUnit>();
 	}
 
 
@@ -139,7 +137,7 @@ public class RefactoringProject {
  	 * @throws CoreException
  	 */
  	private void parseProject() throws CoreException{
-		List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(currentCProject, null);
+		List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(currentCProject,EXCLUDED_FILES);
 
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : tuList) {
@@ -171,14 +169,18 @@ public class RefactoringProject {
 			if (projectASTCache.containsKey(tu)){
 				ast = projectASTCache.get(tu);
 			}
-			else{
+			else if (libASTCache.containsKey(tu)){
+				ast = libASTCache.get(tu);
+			}
+			else{//then it's a native library (e.g., stdio.h); do we need in the AST?
+//				return null;
 				ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
 				projectASTCache.put(tu, ast);
 			}
 			
-			//find enumeration 
-			IASTName name = (IASTName) ast.getNodeSelector(null).findEnclosingNode(indexName.getNodeOffset(), indexName.getNodeLength());
-			IASTNode node = name;
+			//find 
+			IASTNode node = ast.getNodeSelector(null).findEnclosingNode(indexName.getNodeOffset(), indexName.getNodeLength());
+//			IASTName name = (IASTName)node;
 			
 			while ( (node != null) && !(nodeIsInstance(classes, node)) ){
 				node =  node.getParent();
@@ -209,13 +211,11 @@ public class RefactoringProject {
 	}
 
 
-
-
 	public boolean analyseOnly (IProject project){
 		try {
 			//get existing cProject
-			this.currentCProject		= CdtUtilities.getICProject(project);
-			this.projectIndex 	= CCorePlugin.getIndexManager().getIndex(currentCProject); 
+			this.currentCProject	= CdtUtilities.getICProject(project);
+			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject); 
 			
 			//1) find all translation units
 			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");

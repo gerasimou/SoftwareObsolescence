@@ -1,8 +1,9 @@
 package org.spg.refactoring;
 
 import java.nio.file.NoSuchFileException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -461,14 +462,14 @@ public class RefactoredProjectCreator {
 	 * Refactor files (.h & .cpp) that use the old library to start using the new library
 	 * @throws CModelException 
 	 */
-	@SuppressWarnings("restriction")
 	protected void refactorAffectedFiles(Collection<String> tusUsingLib) throws CModelException{
 		
 		//get excluded files
-		String[] excludedFiles = new String[RefactoringProject.OLD_HEADERS.length+2]; 
+		String[] excludedFiles = new String[RefactoringProject.OLD_HEADERS.size()+2]; 
 		int i=0;
-		for (; i<RefactoringProject.OLD_HEADERS.length; i++)
-			excludedFiles[i] = RefactoringProject.OLD_HEADERS[i];
+		List<String> oldHeaders = new ArrayList<String>(Arrays.asList(RefactoringProject.OLD_HEADERS.toArray(new String[RefactoringProject.OLD_HEADERS.size()]))); 
+		for (; i<RefactoringProject.OLD_HEADERS.size(); i++)
+			excludedFiles[i] = oldHeaders.get(i);
 		excludedFiles[i++] = RefactoringProject.NEW_LIBRARYhpp;
 		excludedFiles[i]   = RefactoringProject.NEW_LIBRARYcpp;		
 		

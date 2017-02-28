@@ -1,8 +1,10 @@
 package org.spg.refactoring;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
@@ -10,6 +12,7 @@ import org.eclipse.cdt.core.dom.ast.IASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
@@ -34,7 +37,7 @@ public class LibraryAnalyser {
 			//generate CElements Set
 			generateCElementsSet(libASTCache.keySet());
 			
-			generateASTElementsSet(libASTCache);
+//			generateASTElementsSet(libASTCache);
 			
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -48,6 +51,7 @@ public class LibraryAnalyser {
 			if (tu.isHeaderUnit() ){
 				tu.accept(new ICElementVisitor() {
 					@Override
+					//if a CElement of those given below is reached, do not parse its children
 					public boolean visit(ICElement element) throws CoreException { 
 						if (   element.getElementType() == ICElement.C_CLASS
 						    || element.getElementType() == ICElement.C_ENUMERATION
@@ -97,7 +101,7 @@ public class LibraryAnalyser {
 	
 	private class NameFinderASTVisitor extends ASTVisitor {
 		/** List keeping all important IASTNames**/
-
+		List<Class> nodesList = new ArrayList<Class>();
 
 		protected NameFinderASTVisitor(){
 			shouldVisitNamespaces				= true;
@@ -109,7 +113,7 @@ public class LibraryAnalyser {
 		
 		@Override
 		public int visit(ICPPASTNamespaceDefinition namespaceDefinition) {
-			Class c = namespaceDefinition.getClass();
+			Class<? extends ICPPASTNamespaceDefinition> c = namespaceDefinition.getClass();
 			System.out.println(namespaceDefinition.getName().toString());
 			System.out.println(c);
 			return PROCESS_SKIP;
@@ -122,15 +126,17 @@ public class LibraryAnalyser {
 				
 				//if it is a class, struct, union
 				if (declSpecifier instanceof IASTCompositeTypeSpecifier){
-					Class c = declaration.getClass();
+					Class<?> c = declSpecifier.getClass();
 					System.out.println(((IASTCompositeTypeSpecifier) declSpecifier).getName().toString());
 					System.out.println(c);
+					nodesList.add(c);
 					return PROCESS_SKIP;					
 				}
 				else if (declSpecifier instanceof IASTEnumerationSpecifier){
-					Class c = declaration.getClass();
+					Class<?> c = declSpecifier.getClass();
 					System.out.println(((IASTEnumerationSpecifier) declSpecifier).getName().toString());
 					System.out.println(c);
+					nodesList.add(c);
 					return PROCESS_SKIP;										
 				}
 			}

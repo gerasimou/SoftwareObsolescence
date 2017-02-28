@@ -26,6 +26,7 @@ import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
+import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
 import org.eclipse.cdt.core.dom.ast.IScope;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
@@ -99,6 +100,10 @@ public class ProjectAnalyser {
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
 
+//			if (tu.getElementName().contains("xmlfunctions") ){
+//				System.out.println("analysing " + tu.getElementName());
+//			}
+			
 			NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
 			astCache.get(tu).accept(fcVisitor);
 			
@@ -522,8 +527,7 @@ public class ProjectAnalyser {
 		
 		
 		private boolean checkBinding(IBinding binding) {
-			try {
-				
+			try {				
 				// while not reached a namespace scope
 				if ( (binding==null) || (binding instanceof IProblemBinding) 
 						|| (binding.getScope()==null) 
