@@ -39,12 +39,23 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	private Text oldNamespaceText;
 	private Text oldHeaderText;
 	
-	public final static String OLD_NAMESPACE = "old_namespace";
-	public final static String OLD_HEADER 	  = "old_header";
+	private Label headerLabel;
+	private Label exclusionLabel;
 	
+	private Text headerText;
+	private Text exclusionText;
 	
-	public ObsoleteLibraryDialog() {
+	public final static String LIB_HEADERS 	  = "old_header";
+	public final static String EXCLUDED_FILES = "old_namespace";	
+	
+	private String[] libHeaders;
+	private String[] excludedFiles;
+	
+	private String path;
+	
+	public ObsoleteLibraryDialog(String path) {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		this.path = path;
 	}
 	
 	
@@ -69,8 +80,8 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		loadProperties();
 
 		//preconfigured details
-		oldNamespaceText.setText("tinyxml2");
-		oldHeaderText.setText("tinyxml2.cpp, tinyxml2.h");
+		headerText.setText("tinyxml2.h");
+		exclusionText.setText("tinyxml2.cpp");
 		
 		control.layout();
 		control.pack();
@@ -80,8 +91,11 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	
 	
 	protected void createGroups(Composite parent) {
-		createExistingProjectGroup(parent);
+//		createExistingProjectGroup(parent);
+		createSelectionGroup(parent);
+		createExclusionGroup(parent);
 	}
+	
 	
 	protected void createExistingProjectGroup(Composite parent) {
 		final Composite groupContent = createGroupContainer(parent, "Existing project details", 3);
@@ -113,6 +127,57 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		});
 	}
 	
+	
+	protected void createSelectionGroup(Composite parent) {
+		final Composite groupContent = createGroupContainer(parent, "Library details", 3);
+		
+		headerLabel = new Label(groupContent, SWT.NONE);
+		headerLabel.setText("Header files");
+
+		headerText = new Text(groupContent, SWT.BORDER);
+		headerText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		final Button selectBtn = new Button(groupContent, SWT.NONE); 
+		selectBtn.setText("Select..."); 
+		selectBtn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String[] extensions	= new String[] {"*.h"};
+				String[] names 		= new String[] {"Header"};
+				FilesSelection fileSelection = new FilesSelection(path, extensions, names);
+				libHeaders = fileSelection.getSelectedFiles();
+				if (libHeaders!= null && libHeaders.length > 0)
+					headerText.setText(String.join(",",libHeaders));
+			}
+		});
+	}
+	
+	
+	protected void createExclusionGroup(Composite parent) {
+		final Composite groupContent = createGroupContainer(parent, "Files that  should not be parsed", 3);
+		
+		exclusionLabel = new Label(groupContent, SWT.NONE);
+		exclusionLabel.setText("Excluded files");
+
+		exclusionText = new Text(groupContent, SWT.BORDER);
+		exclusionText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		final Button selectBtn = new Button(groupContent, SWT.NONE); 
+		selectBtn.setText("Select..."); 
+		selectBtn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String[] extensions	= new String[] {"*.cpp", "*.*"};
+				String[] names 		= new String[] {"cpp", "All files"};
+				FilesSelection fileSelection = new FilesSelection(path, extensions, names);
+				excludedFiles = fileSelection.getSelectedFiles();
+				if (excludedFiles!= null && excludedFiles.length > 0)
+					exclusionText.setText(String.join(",",excludedFiles));
+			}
+		});
+	}
+	
+		
 	protected static Composite createGroupContainer(Composite parent, String text, int columns) {
 		final Group group = new Group(parent, SWT.FILL);
 		
@@ -129,14 +194,14 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	
 	protected void loadProperties() {
 		if (properties == null) return;
-		oldHeaderText.setText(properties.getProperty(OLD_HEADER));
-		oldNamespaceText.setText(properties.getProperty(OLD_NAMESPACE));
+		oldHeaderText.setText(properties.getProperty(LIB_HEADERS));
+		oldNamespaceText.setText(properties.getProperty(EXCLUDED_FILES));
 	}
 	
 	protected void storeProperties() {
 		properties = new StringProperties();
-		properties.put(OLD_NAMESPACE, oldNamespaceText.getText().replaceAll("\\s",""));
-		properties.put(OLD_HEADER, oldHeaderText.getText().replaceAll("\\s",""));
+		properties.put(LIB_HEADERS, 	String.join(",", libHeaders));
+		properties.put(EXCLUDED_FILES, 	String.join(",", excludedFiles));
 	}
 
 	
