@@ -212,7 +212,7 @@ public class CdtUtilities {
 					}
 					else{
 						ITranslationUnit tu		= (ITranslationUnit) element;
-						if (! excludedFilesSet.contains(tu.getFile().getName()))
+						if (! excludedFilesSet.contains((tu.getFile().getLocation().toString())))
 							tuList.add(tu);
 					}
 
@@ -231,7 +231,7 @@ public class CdtUtilities {
 		}
 		
 		for (ITranslationUnit tu : container.getTranslationUnits()){
-			if (! excludedFilesSet.contains(tu.getFile().getName()))
+			if (! excludedFilesSet.contains((tu.getFile().getLocation().toString())))
 				tuList.add(tu);			
 		}
 	}

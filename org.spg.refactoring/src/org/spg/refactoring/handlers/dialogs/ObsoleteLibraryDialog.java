@@ -80,6 +80,7 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		loadProperties();
 
 		//preconfigured details
+//		headerText.
 		headerText.setText("tinyxml2.h");
 		exclusionText.setText("tinyxml2.cpp");
 		
@@ -134,8 +135,8 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		headerLabel = new Label(groupContent, SWT.NONE);
 		headerLabel.setText("Header files");
 
-		headerText = new Text(groupContent, SWT.BORDER);
-		headerText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		headerText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		headerText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		final Button selectBtn = new Button(groupContent, SWT.NONE); 
 		selectBtn.setText("Select..."); 
@@ -144,10 +145,10 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 			public void handleEvent(Event event) {
 				String[] extensions	= new String[] {"*.h"};
 				String[] names 		= new String[] {"Header"};
-				FilesSelection fileSelection = new FilesSelection(path, extensions, names);
+				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
 				libHeaders = fileSelection.getSelectedFiles();
 				if (libHeaders!= null && libHeaders.length > 0)
-					headerText.setText(String.join(",",libHeaders));
+					headerText.setText(String.join(",\n",libHeaders));
 			}
 		});
 	}
@@ -159,8 +160,8 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		exclusionLabel = new Label(groupContent, SWT.NONE);
 		exclusionLabel.setText("Excluded files");
 
-		exclusionText = new Text(groupContent, SWT.BORDER);
-		exclusionText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		exclusionText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		exclusionText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		final Button selectBtn = new Button(groupContent, SWT.NONE); 
 		selectBtn.setText("Select..."); 
@@ -169,10 +170,10 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 			public void handleEvent(Event event) {
 				String[] extensions	= new String[] {"*.cpp", "*.*"};
 				String[] names 		= new String[] {"cpp", "All files"};
-				FilesSelection fileSelection = new FilesSelection(path, extensions, names);
+				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
 				excludedFiles = fileSelection.getSelectedFiles();
 				if (excludedFiles!= null && excludedFiles.length > 0)
-					exclusionText.setText(String.join(",",excludedFiles));
+					exclusionText.setText(String.join(",\n",excludedFiles));
 			}
 		});
 	}

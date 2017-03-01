@@ -137,6 +137,9 @@ public class RefactoringProject {
  	 * @throws CoreException
  	 */
  	private void parseProject() throws CoreException{
+		MessageUtility.writeToConsole("Console", "Generating ASTs for project "+ currentCProject.getElementName());
+		System.out.println("\nGenerating ASTs for project " + currentCProject.getElementName());
+
 		List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(currentCProject,EXCLUDED_FILES);
 
 		// for each translation unit get its AST
@@ -145,7 +148,8 @@ public class RefactoringProject {
 			System.out.println(tu.getElementName());
 			IASTTranslationUnit ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
 			// cache the tu & ast pair
-			if (OLD_HEADERS.contains(tu.getElementName()))
+//			System.out.println(tu.get			getFileLocation().getFileName();
+			if (OLD_HEADERS.contains(tu.getFile().getLocation().toString()))
 				libASTCache.put(tu, ast);
 			else
 				projectASTCache.put(tu, ast);
@@ -157,10 +161,12 @@ public class RefactoringProject {
  	/**
 	 * Given an index name and a set of class names, this function searches the 
 	 * parent of the node with that name until it finds the parent which is instance of
-	 * 
-	 */
+ 	 * @param indexName
+ 	 * @param classes
+ 	 * @return
+ 	 */
 	@SuppressWarnings("rawtypes")
-	protected IASTNode findNodeFromIndex(IIndexName indexName, Class...classes){
+	protected IASTNode findNodeFromIndex(IIndexName indexName, boolean locked, Class...classes){
 		try {
 			//find translation unit & corresponding ast, cache ast if necessary
 			ITranslationUnit tu;
@@ -173,7 +179,8 @@ public class RefactoringProject {
 				ast = libASTCache.get(tu);
 			}
 			else{//then it's a native library (e.g., stdio.h); do we need in the AST?
-//				return null;
+				if (locked)
+					return null;
 				ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
 				projectASTCache.put(tu, ast);
 			}
@@ -218,7 +225,6 @@ public class RefactoringProject {
 			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject); 
 			
 			//1) find all translation units
-			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
 			parseProject();
 
 			//2) analyse project
