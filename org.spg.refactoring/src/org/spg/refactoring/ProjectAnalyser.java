@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.eclipse.cdt.core.dom.IName;
 import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
@@ -29,6 +29,7 @@ import org.eclipse.cdt.core.dom.ast.ICompositeType;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
+import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
@@ -40,7 +41,6 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPNamespaceScope;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPParameter;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
@@ -73,6 +73,10 @@ public class ProjectAnalyser {
 	//FIXME: not correct, do not use this list
 	List<IASTNode> nodesList = new ArrayList<IASTNode>();
 
+//	CDTSet<IASTName> namesSet2 	  = new CDTSet<IASTName>(IASTName.class);
+//	CDTSet<IBinding> bindingsSet2 = new CDTSet<IBinding>(IBinding.class);
+//	CDTSet<IASTNode> nodesList2   = new CDTSet<IASTNode>(IASTNode.class);
+	
 	/** Refactoring element*/
 	RefactoringProject refactoring;
 	
@@ -109,6 +113,12 @@ public class ProjectAnalyser {
 			
 			// if the list is not empty, then it uses the legacy library --> add it to cached library
 			if (fcVisitor.libraryCallsExist()) {
+				
+//				libraryCache.put(tu, fcVisitor.namesList);
+				if ( (fcVisitor.namesSet.size() != fcVisitor.nodesList.size()) 
+						|| (fcVisitor.bindingsSet.size() != fcVisitor.nodesList.size()) )
+					System.out.println("Something is wrong with the lists");
+				
 				libraryCache.put(tu, fcVisitor.namesList);
 				namesSet.addAll(fcVisitor.namesSet);
 				bindingsSet.addAll(fcVisitor.bindingsSet);
@@ -130,9 +140,24 @@ public class ProjectAnalyser {
 		
 		//find mappings class - members
 		classMembersMap = createClassMembersMapping();
-
+		printClassMembersMap();
  	}
  	
+ 	
+ 	private void printClassMembersMap(){
+ 		StringBuilder str = new StringBuilder();
+		for (ICompositeType composite : classMembersMap.keySet()){
+			str.setLength(0);
+			str.append(composite.getName() +":\t");
+			Iterator<ICPPMember> it =  classMembersMap.get(composite).iterator();
+			while (it.hasNext()){
+				str.append(it.next().getName());
+				if (it.hasNext())
+					str.append(",");
+			}
+			System.out.println(str.toString());
+		}
+ 	}
  	
  	private void checkReferences () {
  		try {
@@ -187,7 +212,7 @@ public class ProjectAnalyser {
 					IIndexName[] cDefs = projectIndex.findNames(baseBinding, IIndex.FIND_DEFINITIONS);
 					if (cDefs.length > 0){						
 						bindingsSet.add(baseBinding);
-						ICPPASTName nameNode = (ICPPASTName) refactoring.findNodeFromIndex(cDefs[0], ICPPASTName.class);
+						ICPPASTName nameNode = (ICPPASTName) refactoring.findNodeFromIndex(cDefs[0], false, ICPPASTName.class);
 						namesSet.add(nameNode);
 					}
 					//recursively check the base binding (parent class)
@@ -198,10 +223,10 @@ public class ProjectAnalyser {
  	}
  	
  	
- 	private void checkMethodSignature(ICPPMethod methodBinding) throws CoreException, DOMException{
+ 	private void checkMethodSignature(ICPPMethod methodBinding) throws CoreException, DOMException, InterruptedException{
 		IIndexName[] methodDecls = projectIndex.findNames(methodBinding, IIndex.FIND_DECLARATIONS);
 		if (methodDecls.length > 0){						
-			ICPPASTFunctionDeclarator methodDecl = (ICPPASTFunctionDeclarator) refactoring.findNodeFromIndex(methodDecls[0], ICPPASTFunctionDeclarator.class);
+			ICPPASTFunctionDeclarator methodDecl = (ICPPASTFunctionDeclarator) refactoring.findNodeFromIndex(methodDecls[0], false, ICPPASTFunctionDeclarator.class);
 			
 			//check return type
 			IASTNode parent = methodDecl.getParent(); 
@@ -263,6 +288,19 @@ public class ProjectAnalyser {
 	 */
 	private LinkedHashMap<ICPPClassType, List<ICPPMember>> createClassMembersMapping(){
 		HashMap<ICPPClassType, List<ICPPMember>> classMembersMap = new HashMap<ICPPClassType, List<ICPPMember>>(); 
+		
+		//sort binding set: 1st classes/enumerations, then methods and variables
+		//TODO: this breaks the consistency between the bindingsSet and sorted set; not needed for now
+		BindingsSet bindingsSetSorted = new BindingsSet();
+ 		for (IBinding binding : bindingsSet){
+ 			if ( (binding instanceof ICompositeType) || (binding instanceof IEnumeration) )
+ 				bindingsSetSorted.add(binding);
+ 		}
+ 		for (IBinding binding : bindingsSet){
+ 			if ( (binding instanceof IFunction) || (binding instanceof IVariable) )
+ 				bindingsSetSorted.add(binding); 			
+ 		}
+ 		bindingsSet = bindingsSetSorted;
 		
  		for (IBinding binding : bindingsSet){			
 			//if it is a member of a class (method or field) & its owner is actually a class

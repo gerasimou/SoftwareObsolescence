@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,7 +89,6 @@ public class RefactoringProject {
 	 */
  	public boolean refactor(IProject project) {
 		try {
-			
 			//get existing cProject
 			this.currentCProject		= CdtUtilities.getICProject(project);
 			this.projectIndex 	= CCorePlugin.getIndexManager().getIndex(currentCProject);			
@@ -100,6 +98,7 @@ public class RefactoringProject {
 			parseProject();
 
 			//2) analyse project
+			libraryAnalyser.analyseLibrary(libASTCache);
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
 						
 			//3) copy project

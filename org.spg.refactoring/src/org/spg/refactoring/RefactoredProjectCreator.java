@@ -246,7 +246,7 @@ public class RefactoredProjectCreator {
 					if (defs.length > 0){
 						IIndexName def    = defs[0];
 						
-						IASTNode fdecl = refactoring.findNodeFromIndex(def, IASTSimpleDeclaration.class);
+						IASTNode fdecl = refactoring.findNodeFromIndex(def, false, IASTSimpleDeclaration.class);
 						
 						IASTSimpleDeclaration enumDeclaration = ((IASTSimpleDeclaration)fdecl).copy(CopyStyle.withLocations);
 						
@@ -287,7 +287,7 @@ public class RefactoredProjectCreator {
 																		newName(owningclass.getName()));
 				
 				//if the class inherits from other classes, append this
-				ICPPASTCompositeTypeSpecifier classNode = (ICPPASTCompositeTypeSpecifier)refactoring.findNodeFromIndex(classDefs[0], ICPPASTCompositeTypeSpecifier.class);
+				ICPPASTCompositeTypeSpecifier classNode = (ICPPASTCompositeTypeSpecifier)refactoring.findNodeFromIndex(classDefs[0], false, ICPPASTCompositeTypeSpecifier.class);
 				for (ICPPASTBaseSpecifier superclass :classNode.getBaseSpecifiers()){
 					newClass.addBaseSpecifier(superclass.copy(CopyStyle.withLocations));
 				}
@@ -315,7 +315,7 @@ public class RefactoredProjectCreator {
 						if (memberDecls.length > 0){ // its size should be 1
 							IIndexName mDecl    = memberDecls[0];
 							
-							IASTSimpleDeclaration node = (IASTSimpleDeclaration)refactoring.findNodeFromIndex(mDecl, IASTSimpleDeclaration.class);
+							IASTSimpleDeclaration node = (IASTSimpleDeclaration)refactoring.findNodeFromIndex(mDecl, false, IASTSimpleDeclaration.class);
 							IASTSimpleDeclaration newDeclaration = (node).copy(CopyStyle.withLocations);
 							
 							newClass.addMemberDeclaration(newDeclaration);
@@ -325,7 +325,7 @@ public class RefactoredProjectCreator {
 							if (memberDefs.length > 0){ // its size should be 1
 								IIndexName mDef    = memberDefs[0];
 								
-								ICPPASTFunctionDefinition node 	  = (ICPPASTFunctionDefinition) refactoring.findNodeFromIndex(mDef, ICPPASTFunctionDefinition.class);
+								ICPPASTFunctionDefinition node 	  = (ICPPASTFunctionDefinition) refactoring.findNodeFromIndex(mDef, false, ICPPASTFunctionDefinition.class);
 								IASTFunctionDeclarator declarator = node.getDeclarator().copy(CopyStyle.withLocations); 
 								IASTDeclSpecifier      specifier  = node.getDeclSpecifier().copy(CopyStyle.withLocations);
 								IASTSimpleDeclaration newDeclaration = nodeFactory.newSimpleDeclaration(specifier);
@@ -375,7 +375,7 @@ public class RefactoredProjectCreator {
 						
 						if (methodDefs.length > 0){ // its size should be 1
 							IIndexName mDef    = methodDefs[0];
-							ICPPASTFunctionDefinition node = (ICPPASTFunctionDefinition)refactoring.findNodeFromIndex(mDef, ICPPASTFunctionDefinition.class);
+							ICPPASTFunctionDefinition node = (ICPPASTFunctionDefinition)refactoring.findNodeFromIndex(mDef, false, ICPPASTFunctionDefinition.class);
 							
 							//create new function definition
 							//we need to do it manually because of the chain initialisers, added later in this function
@@ -426,7 +426,7 @@ public class RefactoredProjectCreator {
 									IIndexName[] enumDefs = projectIndex.findNames(declBinding, IIndex.FIND_DEFINITIONS);
 									if (enumDefs.length > 0){ // its size should be 1
 										IIndexName enumDef    = enumDefs[0];
-										IASTEnumerationSpecifier enumNode 	  = (IASTEnumerationSpecifier) refactoring.findNodeFromIndex(enumDef, IASTEnumerationSpecifier.class);
+										IASTEnumerationSpecifier enumNode 	  = (IASTEnumerationSpecifier) refactoring.findNodeFromIndex(enumDef, false, IASTEnumerationSpecifier.class);
 										if (enumNode.getEnumerators().length !=1)
 											returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_false, enumNode.getEnumerators()[0].getName().toString()));
 										else 
@@ -462,7 +462,7 @@ public class RefactoredProjectCreator {
 	 * Refactor files (.h & .cpp) that use the old library to start using the new library
 	 * @throws CModelException 
 	 */
-	protected void refactorAffectedFiles(Collection<String> tusUsingLib) throws CModelException{
+	private void refactorAffectedFiles(Collection<String> tusUsingLib) throws CModelException{
 		
 		//get excluded files
 		String[] excludedFiles = new String[RefactoringProject.OLD_HEADERS.size()+2]; 
