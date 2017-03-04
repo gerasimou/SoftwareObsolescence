@@ -63,7 +63,7 @@ public class RefactoringProject {
 
 	LibraryAnalyser libraryAnalyser 	= new LibraryAnalyser();
 	ProjectAnalyser projectAnalyser 	= new ProjectAnalyser(this);
-	RefactoredProjectCreator refactorer = new RefactoredProjectCreator(this);
+	ProjectRefactorer refactorer = new ProjectRefactorer(this);
 
 	
 	

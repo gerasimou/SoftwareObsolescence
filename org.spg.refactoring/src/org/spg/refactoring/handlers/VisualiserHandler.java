@@ -24,7 +24,7 @@ import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
 import org.spg.refactoring.RefactoringProject;
-import org.spg.refactoring.Visualiser;
+import org.spg.refactoring.ProjectVisualiser;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -77,16 +77,16 @@ public class VisualiserHandler extends AbstractHandler {
 
 			if (cproject != null){
 
-				String[] oldHeader       	= new String[]{"tinyxml2.cpp", "tinyxml2.h"}; 
-				String oldNamespace			= "tinyxml2";
+				String[] oldHeader       	= new String[]{"tinyxml.cpp", "tinyxml.h"}; 
+//				String oldNamespace			= "tinyxml";
 //				ProjectAnalyserNew analyser = new ProjectAnalyserNew(project, oldHeader, oldNamespace);
 //				analyser.analyseProject();
-				RefactoringProject refactoring = new RefactoringProject(oldHeader, oldNamespace, null, null, null);
+				RefactoringProject refactoring = new RefactoringProject(oldHeader, null, null, null, null);
 				refactoring.analyseOnly(project);
 				Collection<String> tusUsing = refactoring.getTUsUsingLib();
 
 				
-				Visualiser vis = new Visualiser();
+				ProjectVisualiser vis = new ProjectVisualiser();
 				String jsonFile = vis.run(project, jsonPath, tusUsing);
 				
 				//TODO

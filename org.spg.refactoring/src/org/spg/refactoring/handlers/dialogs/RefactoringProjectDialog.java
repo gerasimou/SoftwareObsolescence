@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 
-public class LibraryDetailsDialog extends TitleAreaDialog{
+public class RefactoringProjectDialog extends TitleAreaDialog{
 
 	private StringProperties properties;	
 	
@@ -56,7 +56,7 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 	private String path;
 	
 	
-	public LibraryDetailsDialog() {
+	public RefactoringProjectDialog() {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 	}
 	

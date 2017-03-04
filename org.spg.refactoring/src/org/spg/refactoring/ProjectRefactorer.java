@@ -61,7 +61,7 @@ import org.spg.refactoring.ProjectAnalyser.BindingsSet;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
 
-public class RefactoredProjectCreator {
+public class ProjectRefactorer {
 	/** project */
 	protected ICProject cproject = null;
 
@@ -72,7 +72,7 @@ public class RefactoredProjectCreator {
 	RefactoringProject refactoring;
 
 	
-	public RefactoredProjectCreator(RefactoringProject refProject) {
+	public ProjectRefactorer(RefactoringProject refProject) {
 		this.refactoring = refProject;
 	}
 	

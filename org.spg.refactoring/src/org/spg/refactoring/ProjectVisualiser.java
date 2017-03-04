@@ -16,7 +16,8 @@ import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.JSONGenerator;
 import org.spg.refactoring.utilities.Utility;
 
-public class Visualiser {
+
+public class ProjectVisualiser {
 	/** City */
 	City city = null;
 	
@@ -43,7 +44,7 @@ public class Visualiser {
 	/**
 	 * Class constructor
 	 */
-	public Visualiser() {
+	public ProjectVisualiser() {
 		districtsList 		= new ArrayList<District>();
 		subDistrictsList	= new ArrayList<SubDistrict>();
 		buildingsList 		= new ArrayList<Building>();  
