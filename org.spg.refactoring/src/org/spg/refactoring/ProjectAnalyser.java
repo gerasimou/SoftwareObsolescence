@@ -226,36 +226,32 @@ public class ProjectAnalyser {
  	}
  	
  	
- 	private void checkDeclSpecifier(IASTDeclSpecifier declSpecifier) throws CoreException, DOMException{
+ 	private void checkDeclSpecifier(IASTDeclSpecifier declSpecifier) throws CoreException, DOMException, InterruptedException{
 		//if it's not not a simple specifier (void, int, double, etc.) 
 		//1) if it's part of the legacy library, include it in the set of elements to be migrated
 		//2) if it's part of a standard c++ library, add it to the set of include directives
-		if (declSpecifier instanceof ICPPASTNamedTypeSpecifier){
-			IASTName declSpecifierName 	= ((ICPPASTNamedTypeSpecifier) declSpecifier).getName();
+		if (declSpecifier instanceof IASTNamedTypeSpecifier){
+			IASTName declSpecifierName 	= ((IASTNamedTypeSpecifier) declSpecifier).getName();
 			IBinding declSpecifierBinding	= declSpecifierName.resolveBinding(); 
+			
 			//find where the param specifier is defined
-			IIndexName[] paramSpecifierDefs = projectIndex.findNames(declSpecifierBinding, IIndex.FIND_DEFINITIONS); 
-			if (paramSpecifierDefs.length>0){
-				IIndexName paramSpecifierDef = paramSpecifierDefs[0];
-				IASTSimpleDeclaration node 	= (IASTSimpleDeclaration)refactoring.findNodeFromIndex(paramSpecifierDef, IASTSimpleDeclaration.class);
+			if ( (declSpecifierBinding instanceof ICompositeType) || (declSpecifierBinding instanceof IEnumeration) ){
+				IASTNode node= checkBindingGeneral(declSpecifierBinding, IIndex.FIND_DEFINITIONS, true, true);
+						
+				if (node!=null){
+					bindingsSet.add(declSpecifierBinding);
+					namesSet.add(declSpecifierName);	
+				}
+				return;
+			}
+			else if (declSpecifierBinding instanceof ITypedef){//it is an include directive from the c++ libs
+				IASTNode node= checkBindingGeneral(declSpecifierBinding, IIndex.FIND_DEFINITIONS, false, false);
 				
-				// while not reached a namespace scope
-				ICPPNamespaceScope scope = (ICPPNamespaceScope) declSpecifierBinding.getScope();
-
-				while (!((scope != null) && (scope instanceof ICPPNamespaceScope))) {
-					scope = (ICPPNamespaceScope) scope.getParent();
-				}
-
-				IName scopeName = scope.getScopeName();
-				if ( (scopeName != null) &&
-				     (RefactoringProject.OLD_NAMESPACES.contains(scopeName.toString())) ){
-						bindingsSet.add(declSpecifierBinding);
-						namesSet.add(declSpecifierName);	
-				}
-				else{//it is an include directive from the c++ libs				
+				if (node!=null){
 					System.out.println(node +"\t"+ node.getContainingFilename() +"\t"+ node.getTranslationUnit().getFilePath());
 					includeDirectivesMap.put(declSpecifierName, node.getContainingFilename());
 				}
+				return;
 			}
 		}
  	}
@@ -329,7 +325,60 @@ public class ProjectAnalyser {
 		
 		return sortedClassMembersMap;
 	}
- 	
+	
+	
+	/**
+	 * Check if the given binding exists in the project index
+	 * @param binding
+	 * @param indexFlags
+	 * @param indexLocked
+	 * @return the IAST node corresponding to this item, NULL if it doesn't exist
+	 * @throws CoreException
+	 * @throws InterruptedException
+	 */
+	private IASTNode checkBindingGeneral (IBinding binding, int indexFlags, boolean indexLocked, boolean fromObsoleteLibrary) 
+			throws CoreException, InterruptedException{
+		if ( !((binding instanceof ICompositeType) ||
+			   (binding instanceof IEnumeration)   ||
+			   (binding instanceof IFunction) 	   ||
+			   (binding instanceof ITypedef))       ){
+			throw new IllegalArgumentException(binding + " has unexpected binding class " + binding.getClass());
+		}
+		
+//		boolean exists = false;
+		IASTNode node  = null;
+		projectIndex.acquireReadLock();
+		IIndexName[] defs = projectIndex.findNames(binding, indexFlags);
+		for (IIndexName dd : defs){
+			String path = dd.getFileLocation().getFileName();
+			
+			boolean valid = false;
+			if ( (binding instanceof ICompositeType) || (binding instanceof IEnumeration))
+				valid =  dd.isDefinition();
+			else if (binding instanceof IFunction)
+				valid =  dd.isDeclaration();
+			else if (binding instanceof ITypedef)
+				valid =  true;
+			
+			if (valid && (!fromObsoleteLibrary || RefactoringProject.OLD_HEADERS.contains(path))){
+//			if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
+				System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+				node = refactoring.findNodeFromIndex(dd, indexLocked, IASTNode.class);
+				if (node!=null)
+					System.out.println(node. getPropertyInParent());
+//				exists = true;
+				break;
+			}
+		}
+		projectIndex.releaseReadLock();
+		return node;
+	}
+	
+	
+	
+	
+	
+	
  	
 	private class NameFinderASTVisitor extends ASTVisitor {
 		/** List keeping all important IASTNames**/
