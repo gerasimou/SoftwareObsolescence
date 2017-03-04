@@ -16,7 +16,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.spg.refactoring.RefactoringProject;
-import org.spg.refactoring.handlers.dialogs.LibraryDetailsDialog;
+import org.spg.refactoring.handlers.dialogs.RefactoringProjectDialog;
+import org.spg.refactoring.handlers.dialogs.ObsoleteLibraryDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.old.RefactoringAST;
 import org.spg.refactoring.utilities.CdtUtilities;
@@ -25,12 +26,12 @@ import org.spg.refactoring.utilities.MessageUtility;
 public class RefactorHandler extends AbstractHandler {
 	/** Shell handler*/
 	private Shell shell = null;
-	
-	/** Excluded files*/
-	private String[] libFiles = new String[]{"tinyxml2.cpp", "tinyxml2.h"};
+		
+	/** Library dialog*/
+	private RefactoringProjectDialog libraryDialog;
 
-	
 	public RefactorHandler() {
+		libraryDialog = new RefactoringProjectDialog();
 	}
 
 
@@ -39,7 +40,6 @@ public class RefactorHandler extends AbstractHandler {
 		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 
 		//show library dialog
-		LibraryDetailsDialog libraryDialog = new LibraryDetailsDialog();
 		libraryDialog.create();
 		int reply = libraryDialog.open();
 		if (reply != TitleAreaDialog.OK)
@@ -61,15 +61,16 @@ public class RefactorHandler extends AbstractHandler {
 					
 				//get library dialogue properties
 				StringProperties properties = libraryDialog.getProperties();
-				String[] oldHeader       	= properties.getProperty(LibraryDetailsDialog.OLD_HEADER).split(",");
-				String oldNamespace			= properties.getProperty(LibraryDetailsDialog.OLD_NAMESPACE);
-				String newProject			= properties.getProperty(LibraryDetailsDialog.NEW_PROJECT);
-				String newLibrary			= properties.getProperty(LibraryDetailsDialog.NEW_LIBRARY);
-				String newNamespace			= properties.getProperty(LibraryDetailsDialog.NEW_NAMESPACE);
+				String[] libHeaders       	= properties.getProperty(RefactoringProjectDialog.LIB_HEADERS).split(",");
+				String[] excludedFiles		= properties.getProperty(RefactoringProjectDialog.EXCLUDED_FILES).split(",");
+				String newProject			= properties.getProperty(RefactoringProjectDialog.NEW_PROJECT);
+				String newLibrary			= properties.getProperty(RefactoringProjectDialog.NEW_LIBRARY);
+				String newNamespace			= properties.getProperty(RefactoringProjectDialog.NEW_NAMESPACE);
 				
 //					RefactoringAST refactorProject = new RefactoringAST(cproject, oldHeader, oldNamespace, newProject, newLibrary, newNamespace);
-				RefactoringProject refactorProject = new RefactoringProject(oldHeader, oldNamespace, newProject, newLibrary, newNamespace);
-				boolean refactorOK = refactorProject.refactor(project);
+				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, newProject, newLibrary, newNamespace);
+//				refactoring.analyseOnly(project);
+				boolean refactorOK = refactoring.refactor(project);
 				
 				if (refactorOK)					
 					MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 

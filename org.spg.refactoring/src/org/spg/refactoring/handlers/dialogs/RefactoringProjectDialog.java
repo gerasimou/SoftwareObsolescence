@@ -12,7 +12,6 @@
 package org.spg.refactoring.handlers.dialogs;
 
 
-import org.eclipse.epsilon.common.dt.launching.dialogs.BrowseWorkspaceUtil;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -33,23 +32,28 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 
 	private StringProperties properties;	
 	
+	private Label headerLabel;
+	private Label exclusionLabel;
 	private Label newProjectLabel;
 	private Label newLibraryLabel;
 	private Label newNamespaceLabel;
-	private Label oldNamespaceLabel;
-	private Label oldHeaderLabel;
 
+	private Text headerText;
+	private Text exclusionText;
 	private Text newProjectText;
 	private Text newLibraryText;
 	private Text newNamespaceText;
-	private Text oldNamespaceText;
-	private Text oldHeaderText;
 	
 	public final static String NEW_PROJECT   = "new_project";
 	public final static String NEW_LIBRARY   = "new_library";
-	public final static String NEW_NAMESPACE = "new_namespace";
-	public final static String OLD_NAMESPACE = "old_namespace";
-	public final static String OLD_HEADER 	  = "old_header";
+	public final static String NEW_NAMESPACE = "new_namespace";	
+	public final static String LIB_HEADERS 	  = "lib_headers";
+	public final static String EXCLUDED_FILES = "excluded_files";	
+
+	private String[] libHeaders;
+	private String[] excludedFiles;
+	
+	private String path;
 	
 	
 	public LibraryDetailsDialog() {
@@ -63,8 +67,8 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 		Composite superControl = (Composite) super.createDialogArea(parent);
 		
 		
-		this.setTitle("New library configuration");
-		this.setMessage("Please provide the details for the new library");
+		this.setTitle("Project refactoring configuration");
+		this.setMessage("Please provide the necessary information for refactoring the project");
 //		this.getShell().setText("New library details");
 		
 		Composite control = new Composite(superControl, SWT.FILL);
@@ -78,11 +82,11 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 		loadProperties();
 
 		//preconfigured details
-		oldNamespaceText.setText("tinyxml2");
-		oldHeaderText.setText("tinyxml2.cpp, tinyxml2.h");
-		newProjectText.setText("XMLExampleNew");
-		newNamespaceText.setText("myNewLib");
-		newLibraryText.setText("myNewLib");
+//		headerText.setText("tinyxml2.h");
+//		exclusionText.setText("tinyxml2.cpp");
+//		newProjectText.setText("XMLExampleNew");
+//		newNamespaceText.setText("myNewLib");
+//		newLibraryText.setText("myNewLib");
 		
 		control.layout();
 		control.pack();
@@ -92,40 +96,90 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 	
 	
 	protected void createGroups(Composite parent) {
-		createExistingProjectGroup(parent);
+//		createExistingProjectGroup(parent);
+		createSelectionGroup(parent);
+		createExclusionGroup(parent);
 		createNewProjectGroup(parent);
 	}
 	
-	protected void createExistingProjectGroup(Composite parent) {
-		final Composite groupContent = createGroupContainer(parent, "Existing project details", 3);
+//	protected void createExistingProjectGroup(Composite parent) {
+//		final Composite groupContent = createGroupContainer(parent, "Existing project details", 3);
+//		
+//		oldNamespaceLabel = new Label(groupContent, SWT.NONE);
+//		oldNamespaceLabel.setText("Namespace");
+//
+//		oldNamespaceText = new Text(groupContent, SWT.BORDER);
+//		oldNamespaceText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//		new Label(groupContent, SWT.NONE);
+//		
+//		oldHeaderLabel = new Label(groupContent, SWT.NONE);
+//		oldHeaderLabel.setText("Library files (header)");
+//
+//		oldHeaderText = new Text(groupContent, SWT.BORDER);
+//		oldHeaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//		
+//		final Button browseFile = new Button(groupContent, SWT.NONE); 
+//		browseFile.setText("Browse Workspace..."); 
+//		browseFile.addListener(SWT.Selection, new Listener() {
+//			@Override
+//			public void handleEvent(Event event) {
+//				String file = BrowseWorkspaceUtil.browseFilePath(getShell(),
+//						"Library files in the workspace", "Select a header file", "", null);
+//				if (file != null){
+//					oldHeaderText.setText(file);
+//				}
+//			}
+//		});
+//	}
+	
+	
+	protected void createSelectionGroup(Composite parent) {
+		final Composite groupContent = createGroupContainer(parent, "Obsolete library details", 3);
 		
-		oldNamespaceLabel = new Label(groupContent, SWT.NONE);
-		oldNamespaceLabel.setText("Namespace");
+		headerLabel = new Label(groupContent, SWT.NONE);
+		headerLabel.setText("Header files");
 
-		oldNamespaceText = new Text(groupContent, SWT.BORDER);
-		oldNamespaceText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		new Label(groupContent, SWT.NONE);
-		
-		oldHeaderLabel = new Label(groupContent, SWT.NONE);
-		oldHeaderLabel.setText("Library files (header)");
+		headerText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		headerText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		oldHeaderText = new Text(groupContent, SWT.BORDER);
-		oldHeaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		final Button browseFile = new Button(groupContent, SWT.NONE); 
-		browseFile.setText("Browse Workspace..."); 
-		browseFile.addListener(SWT.Selection, new Listener() {
+		final Button selectBtn = new Button(groupContent, SWT.NONE); 
+		selectBtn.setText("Select..."); 
+		selectBtn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				String file = BrowseWorkspaceUtil.browseFilePath(getShell(),
-						"Library files in the workspace", "Select a header file", "", null);
-				if (file != null){
-					oldHeaderText.setText(file);
-				}
+				String[] extensions	= new String[] {"*.h"};
+				String[] names 		= new String[] {"Header"};
+				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
+				libHeaders = fileSelection.getSelectedFiles();
+				if (libHeaders!= null && libHeaders.length > 0)
+					headerText.setText(String.join(",\n",libHeaders));
 			}
 		});
 	}
 	
+	protected void createExclusionGroup(Composite parent) {
+		final Composite groupContent = createGroupContainer(parent, "Files that  should not be parsed", 3);
+		
+		exclusionLabel = new Label(groupContent, SWT.NONE);
+		exclusionLabel.setText("Excluded files");
+
+		exclusionText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		exclusionText.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		final Button selectBtn = new Button(groupContent, SWT.NONE); 
+		selectBtn.setText("Select..."); 
+		selectBtn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String[] extensions	= new String[] {"*.cpp", "*.*"};
+				String[] names 		= new String[] {"cpp", "All files"};
+				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
+				excludedFiles = fileSelection.getSelectedFiles();
+				if (excludedFiles!= null && excludedFiles.length > 0)
+					exclusionText.setText(String.join(",\n",excludedFiles));
+			}
+		});
+	}
 	
 	protected void createNewProjectGroup(Composite parent) {
 		final Composite groupContent = createGroupContainer(parent, "Refactored project details", 2);
@@ -152,6 +206,7 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 		groupContent.pack();
 	}
 	
+	
 	protected static Composite createGroupContainer(Composite parent, String text, int columns) {
 		final Group group = new Group(parent, SWT.FILL);
 		
@@ -171,8 +226,8 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 		newProjectText.setText(properties.getProperty(NEW_PROJECT));
 		newLibraryText.setText(properties.getProperty(NEW_LIBRARY));
 		newNamespaceText.setText(properties.getProperty(NEW_NAMESPACE));
-		oldHeaderText.setText(properties.getProperty(OLD_HEADER));
-		oldNamespaceText.setText(properties.getProperty(OLD_NAMESPACE));
+		headerText.setText(properties.getProperty(LIB_HEADERS));
+		exclusionText.setText(properties.getProperty(EXCLUDED_FILES));
 	}
 	
 	protected void storeProperties() {
@@ -180,8 +235,8 @@ public class LibraryDetailsDialog extends TitleAreaDialog{
 		properties.put(NEW_PROJECT, newProjectText.getText().replaceAll("\\s",""));
 		properties.put(NEW_LIBRARY, newLibraryText.getText().replaceAll("\\s",""));
 		properties.put(NEW_NAMESPACE, newNamespaceText.getText().replaceAll("\\s",""));
-		properties.put(OLD_NAMESPACE, oldNamespaceText.getText().replaceAll("\\s",""));
-		properties.put(OLD_HEADER, oldHeaderText.getText().replaceAll("\\s",""));
+		properties.put(LIB_HEADERS, 	String.join(",", libHeaders));
+		properties.put(EXCLUDED_FILES, 	String.join(",", excludedFiles));
 	}
 
 	
