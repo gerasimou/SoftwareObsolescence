@@ -20,6 +20,7 @@ import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICElementVisitor;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.runtime.CoreException;
+import org.spg.refactoring.utilities.MessageUtility;
 
 public class LibraryAnalyser {
 
@@ -46,6 +47,9 @@ public class LibraryAnalyser {
 	
 	
 	private void generateCElementsSet(Collection<ITranslationUnit> tuSet) throws CoreException{
+		MessageUtility.writeToConsole("Console", "Generating CElements sets for selected project");
+		System.out.println("\nGenerating CElements sets for selected project");
+
 		//check if the headers have namespace
 		for (ITranslationUnit tu : tuSet){
 			if (tu.isHeaderUnit() ){

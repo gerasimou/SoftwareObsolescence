@@ -25,17 +25,17 @@ import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.ICompositeType;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
-import org.eclipse.cdt.core.dom.ast.IScope;
+import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPBase;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassScope;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
@@ -117,7 +117,7 @@ public class ProjectAnalyser {
 			}
 		}
 					
-		System.out.println(Arrays.toString(tusUsingLibList.toArray()));
+		System.out.println("\nAffected files:\t" + Arrays.toString(tusUsingLibList.toArray()));
 		
 		//check for library uses within the same library
 		MessageUtility.writeToConsole("Console", "Checking class inheritance and method signature.");
@@ -528,29 +528,95 @@ public class ProjectAnalyser {
 		
 		private boolean checkBinding(IBinding binding) {
 			try {				
-				// while not reached a namespace scope
-				if ( (binding==null) || (binding instanceof IProblemBinding) 
+				//if it's a template or unknown binding
+				if ( (binding==null) 
+						|| (binding instanceof IProblemBinding) 
 						|| (binding.getScope()==null) 
 						|| (binding instanceof ICPPUnknownBinding) 
 						){
-//					System.out.println("NULL\t" + name +"\t"+ binding.getClass().getSimpleName());
+//					System.out.println("NULL\t" + binding +"\t"+ binding.getClass().getSimpleName());
 					return false;
 				}
-
-				IScope scope = binding.getScope();
-				while (!((scope != null) && (scope instanceof ICPPNamespaceScope))) {
-					scope = scope.getParent();
+				//if it's a method/function
+				else if (binding instanceof IFunction){ 
+					boolean exists = false;
+					projectIndex.acquireReadLock();
+					IIndexName[] declDefs = projectIndex.findNames(binding, IIndex.FIND_DECLARATIONS_DEFINITIONS);
+					for (IIndexName dd : declDefs){
+						String path = dd.getFileLocation().getFileName();
+						if (dd.isDeclaration() && RefactoringProject.OLD_HEADERS.contains(path)){
+							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
+							if (node!=null)
+								System.out.println(node. getPropertyInParent());
+							exists = true;
+							break;
+						}
+					}
+					projectIndex.releaseReadLock();
+					return exists;
 				}
-				// System.out.println(scope.getScopeName() +"\t");
+				//if it's a class/structure etc
+				else if ( (binding instanceof ICompositeType) || (binding instanceof IEnumeration) ){
+					boolean exists = false;
+					projectIndex.acquireReadLock();
+					IIndexName[] defs = projectIndex.findNames(binding, IIndex.FIND_DEFINITIONS);
+					for (IIndexName dd : defs){
+						String path = dd.getFileLocation().getFileName();
+						if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
+							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
+							if (node!=null)
+								System.out.println(node. getPropertyInParent());
+							exists = true;
+							break;
+						}
+					}
+					projectIndex.releaseReadLock();
+					return exists;
+				}
+				else if (binding instanceof IVariable){
+//					throw new IllegalArgumentException(binding.getName() +"\t"+ binding.getClass().getName());					
+//					boolean exists = false;
+					projectIndex.acquireReadLock();
+					IIndexName[] defs = projectIndex.findNames(binding, IIndex.FIND_DECLARATIONS_DEFINITIONS);
+					for (IIndexName dd : defs){
+						String path = dd.getFileLocation().getFileName();
+//						if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
+						if (RefactoringProject.OLD_HEADERS.contains(path)){
+							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
+							if (node!=null)
+								System.out.println(node. getPropertyInParent());
+//							exists = true;
+//							break;
+						}
+					}
+					projectIndex.releaseReadLock();
+//					return exists;
+					return false;
+				}
+//				else 
+//					throw new IllegalArgumentException(binding.getName() +"\t"+ binding.getClass().getName());
+				
+//				IScope scope = binding.getScope();
+//				while ((scope != null) 
+//						&& (!(scope instanceof ICPPNamespaceScope))){ 
+////						&& (!(scope instanceof ICPPClassScope))) {
+//					scope = scope.getParent();
+//				}
+//
+//				if ((scope != null) 
+//						&&(scope.getScopeName() != null)
+//						&& (RefactoringProject.OLD_NAMESPACES.contains(scope.getScopeName().toString())))
+//					return true;
 
-				if ((scope.getScopeName() != null)
-						&& (RefactoringProject.OLD_NAMESPACES.contains(scope.getScopeName().toString())))
-//					appendToLists(name, binding, node);
-					return true;
-
-			} catch (DOMException e) {
+			} catch (DOMException | NullPointerException | CoreException | InterruptedException e) {
 				e.printStackTrace();
+			} catch (IllegalArgumentException  e){
+				System.err.println(e.getMessage());
 			}
+			
 			return false;
 		}
 		
