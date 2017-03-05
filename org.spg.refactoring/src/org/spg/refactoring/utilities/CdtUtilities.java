@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.index.IIndexFile;
@@ -192,13 +193,13 @@ public class CdtUtilities {
 	 * @param excludedFiles an array of filenames for which a translation unit <b>won't</b> be generated
 	 * @return
 	 */
-	public static List<ITranslationUnit> getProjectTranslationUnits (ICProject cproject,  String[] excludedFiles) {
+	public static List<ITranslationUnit> getProjectTranslationUnits (ICProject cproject,  Set<String> excludedFilesSet) {
 		List<ITranslationUnit> tuList = new ArrayList<ITranslationUnit>();
 		
-		HashSet<String> excludedFilesSet = new HashSet<String>();
-		if (excludedFiles != null)
-			excludedFilesSet.addAll(Arrays.asList(excludedFiles));
-		
+//		HashSet<String> excludedFilesSet = new HashSet<String>();
+//		if (excludedFiles != null)
+//			excludedFilesSet.addAll(Arrays.asList(excludedFiles));
+//		
 		//get source folders
 		try {
 			for (ISourceRoot sourceRoot : cproject.getSourceRoots()){
@@ -225,7 +226,7 @@ public class CdtUtilities {
 	}
 	
 	
-	private static void recursiveContainerTraversal (ICContainer container, List<ITranslationUnit> tuList, HashSet<String> excludedFilesSet) throws CModelException{
+	private static void recursiveContainerTraversal (ICContainer container, List<ITranslationUnit> tuList, Set<String> excludedFilesSet) throws CModelException{
 		for (ICContainer inContainer : container.getCContainers()){
 			recursiveContainerTraversal(inContainer, tuList, excludedFilesSet);
 		}
@@ -341,6 +342,9 @@ public class CdtUtilities {
 		    // copy project files
 		    project.copy(cloneDescription, true, monitor);
 		    IProject clone = workspaceRoot.getProject(newProject);
+		    
+		    //make it a CPP project
+		    CCorePlugin.getDefault().convertProjectToCC(clone, monitor, clone.getFullPath().toOSString());
 		    
 		    // copy the project properties
 		    cloneDescription.setNatureIds(projectDescription.getNatureIds());

@@ -76,7 +76,7 @@ public class LibraryAnalyser {
 						} 
 						else if (element.getElementType() == ICElement.C_NAMESPACE){
 							System.out.println(element.getElementName() +"\t"+ element.getClass().getSimpleName() +"\t"+ element.getElementType());
-							RefactoringProject.OLD_NAMESPACES.add(element.getElementName());
+							RefactoringProject.LIB_NAMESPACES.add(element.getElementName());
 							libCElements.add(element);
 							return false;
 						}

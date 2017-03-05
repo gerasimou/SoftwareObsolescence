@@ -17,6 +17,7 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNamedTypeSpecifier;
@@ -96,11 +97,7 @@ public class ProjectAnalyser {
  	 */
  	protected void analyseExistingProject(IIndex index, HashMap<ITranslationUnit, IASTTranslationUnit>  astCache) throws CoreException{
  		this.projectIndex = index;
- 		
-		/**Pairs of ITranslationUnit, List<IASTName>, where List
-		 * <IASTName> keeps the IASTNames used from the legacy library **/
-		HashMap<ITranslationUnit, List<IASTName>> libraryCache = new HashMap<>();
-		
+ 				
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
 
@@ -112,14 +109,11 @@ public class ProjectAnalyser {
 			astCache.get(tu).accept(fcVisitor);
 			
 			// if the list is not empty, then it uses the legacy library --> add it to cached library
-			if (fcVisitor.libraryCallsExist()) {
-				
-//				libraryCache.put(tu, fcVisitor.namesList);
+			if (fcVisitor.libraryCallsExist()) {				
 				if ( (fcVisitor.namesSet.size() != fcVisitor.nodesList.size()) 
 						|| (fcVisitor.bindingsSet.size() != fcVisitor.nodesList.size()) )
 					System.out.println("Something is wrong with the lists");
 				
-				libraryCache.put(tu, fcVisitor.namesList);
 				namesSet.addAll(fcVisitor.namesSet);
 				bindingsSet.addAll(fcVisitor.bindingsSet);
 				nodesList.addAll(fcVisitor.nodesList);
@@ -149,11 +143,13 @@ public class ProjectAnalyser {
 		for (ICompositeType composite : classMembersMap.keySet()){
 			str.setLength(0);
 			str.append(composite.getName() +":\t");
-			Iterator<ICPPMember> it =  classMembersMap.get(composite).iterator();
-			while (it.hasNext()){
-				str.append(it.next().getName());
-				if (it.hasNext())
-					str.append(",");
+			if (classMembersMap.get(composite).size()>0){
+				Iterator<ICPPMember> it =  classMembersMap.get(composite).iterator();
+				while (it.hasNext()){
+					str.append(it.next().getName());
+					if (it.hasNext())
+						str.append(",");
+				}
 			}
 			System.out.println(str.toString());
 		}
@@ -398,7 +394,7 @@ public class ProjectAnalyser {
 			else if (binding instanceof ITypedef)
 				valid =  true;
 			
-			if (valid && (!fromObsoleteLibrary || RefactoringProject.OLD_HEADERS.contains(path))){
+			if (valid && (!fromObsoleteLibrary || RefactoringProject.LIB_HEADERS.contains(path))){
 //			if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
 				System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 				node = refactoring.findNodeFromIndex(dd, indexLocked, IASTNode.class);
@@ -427,7 +423,6 @@ public class ProjectAnalyser {
 
 		/** List keeping all important IBindings, but doesn't accept duplicates **/
 		private BindingsSet bindingsSet;
-		
 		
 		private List<IASTNode> nodesList;
 
@@ -631,7 +626,7 @@ public class ProjectAnalyser {
 					IIndexName[] declDefs = projectIndex.findNames(binding, IIndex.FIND_DECLARATIONS_DEFINITIONS);
 					for (IIndexName dd : declDefs){
 						String path = dd.getFileLocation().getFileName();
-						if (dd.isDeclaration() && RefactoringProject.OLD_HEADERS.contains(path)){
+						if (dd.isDeclaration() && RefactoringProject.LIB_HEADERS.contains(path)){
 							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
 							if (node!=null)
@@ -650,7 +645,7 @@ public class ProjectAnalyser {
 					IIndexName[] defs = projectIndex.findNames(binding, IIndex.FIND_DEFINITIONS);
 					for (IIndexName dd : defs){
 						String path = dd.getFileLocation().getFileName();
-						if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
+						if (dd.isDefinition() && RefactoringProject.LIB_HEADERS.contains(path)){
 							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
 							if (node!=null)
@@ -670,7 +665,7 @@ public class ProjectAnalyser {
 					for (IIndexName dd : defs){
 						String path = dd.getFileLocation().getFileName();
 //						if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
-						if (RefactoringProject.OLD_HEADERS.contains(path)){
+						if (RefactoringProject.LIB_HEADERS.contains(path)){
 							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
 							if (node!=null)
@@ -778,20 +773,16 @@ public class ProjectAnalyser {
 	}
 	
 	
-	protected Collection<String> getTUsUsingLib (){
+	protected Collection<ITranslationUnit> getTUsUsingLib (){
+		return tusUsingLibList;
+	}
+
+	
+	protected Collection<String> getTUsUsingLibAsString (){
 		Collection<String> tusLibSet = new ListSet<String>();
 		for (ITranslationUnit tu : tusUsingLibList){
 			tusLibSet.add(tu.getElementName());
 		}
 		return tusLibSet;
-	}
-
-	
-	protected boolean tuExists (String tuName){
-		for (ITranslationUnit tu : tusUsingLibList){
-			if (tu.getElementName().equals(tuName.trim()))
-				return true;
-		}
-		return false;
-	}
+	}	
 }
