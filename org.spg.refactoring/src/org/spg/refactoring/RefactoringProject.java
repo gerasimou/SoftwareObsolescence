@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +73,6 @@ public class RefactoringProject {
 		LIB_NAMESPACES			= new HashSet<String>();
 		LIB_HEADERS				= new HashSet<String>(Arrays.asList(libHeaders));
 		EXCLUDED_FILES			= new HashSet<String>(Arrays.asList(excludedFiles));
-//		EXCLUDED_FILES			= excludedFiles;
 		NEW_PROJECT				= newProject;
 		NEW_NAMESPACE  			= newNamespace;
 		NEW_LIBRARYcpp			= newLibrary +".cpp";
@@ -93,41 +91,21 @@ public class RefactoringProject {
  	public boolean refactor(IProject project) {
 		try {
 			//1) copy project
-			this.currentCProject	= CdtUtilities.getICProject(project);
-			IProject newProject		= CdtUtilities.copyProject(currentCProject.getProject(), RefactoringProject.NEW_PROJECT);
+			IProject newProject		= CdtUtilities.copyProject(project, RefactoringProject.NEW_PROJECT);
 			if (newProject == null)
 				throw new Exception("There was something wrong with copying project " + currentCProject.getProject().getName());
-			newCProject = CdtUtilities.getICProject(newProject);
-			//since we work with a copy project we also need to change the absolute paths
-			String projectPath 		= project.getLocation().toOSString();
-			String newProjectPath	= newProject.getLocation().toOSString();
-			for (String libHeader : LIB_HEADERS){
-				if (libHeader.contains(projectPath)){
-					System.out.println("Header changed");
-					String libHeaderNewProject = libHeader.replace(projectPath, newProjectPath);
-					LIB_HEADERS.remove(libHeader);
-					LIB_HEADERS.add(libHeaderNewProject);
-				}
-			}
-			System.out.println("Headers:\t" + LIB_HEADERS);
-			for (String excFile : EXCLUDED_FILES){
-				if (excFile.contains(projectPath)){
-					System.out.println("Excluded file changed");
-					String excFileNewProject = excFile.replace(projectPath, newProjectPath);
-					EXCLUDED_FILES.remove(excFile);
-					EXCLUDED_FILES.add(excFileNewProject);
-				}
-			}
-			System.out.println("Excluded files:\t" + EXCLUDED_FILES);
+
+			//2) modify user selected files to match the structure of the copied project
+			modifySelectionsToNewProject(project, newProject);
 			
-			//get existing cProject
+			//3) get cProject and index it: currentCProject == newCProject since we operate on the copied project
 			this.currentCProject	= CdtUtilities.getICProject(newProject);
+			this.newCProject 		= CdtUtilities.getICProject(newProject);
 			CCorePlugin.getIndexManager().reindex(currentCProject);
 			CCorePlugin.getIndexManager().joinIndexer(IIndexManager.FOREVER, new NullProgressMonitor()); // wait for the indexing job to complete.
 			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject);			
 			
-
-			//1) find all translation units
+			//4) find all translation units
 			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
 			parseProject();
 
@@ -138,11 +116,10 @@ public class RefactoringProject {
 			for (ITranslationUnit tu : projectASTCache.keySet())
 				System.out.println(tu.getFile().getFullPath());
 			
-			if (projectASTCache.size()>10)
-				return true;
-			
-			//2) analyse project
+			//5) analyse library
 			libraryAnalyser.analyseLibrary(libASTCache);
+			
+			//6) analyse project
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
 						
 			
@@ -152,8 +129,10 @@ public class RefactoringProject {
 			Map<ICPPClassType, List<ICPPMember>> classMembersMap = projectAnalyser.getClassMembersMap();
 			Collection<ITranslationUnit> tusUsingLib			 = projectAnalyser.getTUsUsingLib();
 						
-			//5) create refactored project
+			//7) refactor
 			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap, projectASTCache.keySet(), tusUsingLib);
+			
+			System.out.println("DONE");
 			
 			return true;
 		} catch (Exception e) {
@@ -214,6 +193,31 @@ public class RefactoringProject {
 			return false;
 		}
 	}
+ 	
+ 	
+ 	private void modifySelectionsToNewProject(IProject project, IProject newProject){
+		//since we work with a copy project we also need to change the absolute paths
+		String projectPath 		= project.getLocation().toOSString();
+		String newProjectPath	= newProject.getLocation().toOSString();
+		for (String libHeader : LIB_HEADERS){
+			if (libHeader.contains(projectPath)){
+				System.out.println("Header changed");
+				String libHeaderNewProject = libHeader.replace(projectPath, newProjectPath);
+				LIB_HEADERS.remove(libHeader);
+				LIB_HEADERS.add(libHeaderNewProject);
+			}
+		}
+		System.out.println("Headers:\t" + LIB_HEADERS);
+		for (String excFile : EXCLUDED_FILES){
+			if (excFile.contains(projectPath)){
+				System.out.println("Excluded file changed");
+				String excFileNewProject = excFile.replace(projectPath, newProjectPath);
+				EXCLUDED_FILES.remove(excFile);
+				EXCLUDED_FILES.add(excFileNewProject);
+			}
+		}
+		System.out.println("Excluded files:\t" + EXCLUDED_FILES);
+ 	}
  	
  	
  	/**

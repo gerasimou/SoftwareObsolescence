@@ -82,11 +82,13 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 		loadProperties();
 
 		//preconfigured details
-//		headerText.setText("tinyxml2.h");
-//		exclusionText.setText("tinyxml2.cpp");
-//		newProjectText.setText("XMLExampleNew");
-//		newNamespaceText.setText("myNewLib");
-//		newLibraryText.setText("myNewLib");
+		headerText.setText("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon/XMLexample/src/TinyXML/tinyxml2.h");
+		exclusionText.setText("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon/XMLexample/src/TinyXML/tinyxml2.cpp");
+		newProjectText.setText("XMLExampleNew");
+		newNamespaceText.setText("myNewLib");
+		newLibraryText.setText("myNewLib");
+		libHeaders 		= new String[]{headerText.getText()};
+		excludedFiles	= new String[]{exclusionText.getText()};
 		
 		control.layout();
 		control.pack();

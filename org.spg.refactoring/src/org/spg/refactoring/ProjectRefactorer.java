@@ -84,21 +84,23 @@ public class ProjectRefactorer {
  	 */
  	protected void createRefactoredProject(ICProject project, IIndex index, BindingsSet bindingsSet, 
  											Map<IASTName, String> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap,
- 											Collection<String> tusUsingLib) throws Exception{
+ 											Collection<ITranslationUnit> TUs, Collection<ITranslationUnit> tusUsingLib) throws Exception{
  		this.projectIndex = index;
  		this.cproject	  = project;	
  		
 		
 		//create header file
+ 		System.out.println("\nCreating library header file: " + RefactoringProject.NEW_LIBRARYhpp);
 		MessageUtility.writeToConsole("Console", "Creating library header file: " + RefactoringProject.NEW_LIBRARYhpp);
 		createHeader(bindingsSet, includeDirectivesMap, classMembersMap);
 
 		//create source file
+ 		System.out.println("\nCreating library source file: " + RefactoringProject.NEW_LIBRARYcpp);
 		MessageUtility.writeToConsole("Console", "Creating library source file: " + RefactoringProject.NEW_LIBRARYcpp);
 		createSource(classMembersMap);
 		
 		//refactor the files that use the original library (include and using directives)
-		refactorAffectedFiles(tusUsingLib);
+		refactorAffectedFiles(TUs, tusUsingLib);
  	}
  	
  	
@@ -462,31 +464,26 @@ public class ProjectRefactorer {
 	 * Refactor files (.h & .cpp) that use the old library to start using the new library
 	 * @throws CModelException 
 	 */
-	private void refactorAffectedFiles(Collection<String> tusUsingLib) throws CModelException{
+	private void refactorAffectedFiles(Collection<ITranslationUnit> TUs, Collection<ITranslationUnit> tusUsingLib) throws CModelException{
 		
 		//get excluded files
-		String[] excludedFiles = new String[RefactoringProject.OLD_HEADERS.size()+2]; 
+		String[] excludedFiles = new String[RefactoringProject.LIB_HEADERS.size()+2]; 
 		int i=0;
-		List<String> oldHeaders = new ArrayList<String>(Arrays.asList(RefactoringProject.OLD_HEADERS.toArray(new String[RefactoringProject.OLD_HEADERS.size()]))); 
-		for (; i<RefactoringProject.OLD_HEADERS.size(); i++)
+		List<String> oldHeaders = new ArrayList<String>(Arrays.asList(RefactoringProject.LIB_HEADERS.toArray(new String[RefactoringProject.LIB_HEADERS.size()]))); 
+		for (; i<RefactoringProject.LIB_HEADERS.size(); i++)
 			excludedFiles[i] = oldHeaders.get(i);
 		excludedFiles[i++] = RefactoringProject.NEW_LIBRARYhpp;
 		excludedFiles[i]   = RefactoringProject.NEW_LIBRARYcpp;		
 		
-		List<ITranslationUnit> cProjectTUList = null;
-				
 		
-		cProjectTUList = CdtUtilities.getProjectTranslationUnits(cproject, excludedFiles); 
-		for (ITranslationUnit tu : cProjectTUList){			
-			String tuName = tu.getElementName();
-			
+		for (ITranslationUnit tu : TUs){			
 			//if this TU is in the list of TUs using the old library 
-			if (tusUsingLib.contains(tuName)){
+			if (tusUsingLib.contains(tu)){
 	
 				//change include directives
 				for (IInclude include : tu.getIncludes()){
-					for (String oldLibHeader : RefactoringProject.OLD_HEADERS){
-						if (include.getElementName().contains(oldLibHeader)){
+					for (String oldLibHeader : RefactoringProject.LIB_HEADERS){
+						if (include.getFullFileName().contains(oldLibHeader)){
 //							System.err.println("Removing include " + include.getElementName() +" from "+ tu.getFile().getFullPath());
 							//delete previous include
 							include.delete(false,  new NullProgressMonitor());
@@ -512,16 +509,14 @@ public class ProjectRefactorer {
 			}
 		}
 		
-		cProjectTUList = CdtUtilities.getProjectTranslationUnits(cproject, excludedFiles);
-		for (ITranslationUnit tu : cProjectTUList){			
-			String tuName = tu.getElementName();
-			
+
+		for (ITranslationUnit tu : TUs){						
 			//if this TU is in the list of TUs using the old library 
-			if (tusUsingLib.contains(tuName)){
+			if (tusUsingLib.contains(tu)){
 				
 				//change the namespace
 				for (IUsing using : tu.getUsings()){
-					if (RefactoringProject.OLD_NAMESPACES.contains(using.getElementName())){
+					if (RefactoringProject.LIB_NAMESPACES.contains(using.getElementName())){
 //						namespace. rename("BOOOB", true, new NullProgressMonitor());
 //						System.err.println("Removing using " + using.getElementName() +" from "+ tu.getFile().getFullPath());
 						//delete previous using directive

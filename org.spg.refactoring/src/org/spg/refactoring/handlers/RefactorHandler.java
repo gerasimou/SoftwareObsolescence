@@ -1,25 +1,21 @@
 package org.spg.refactoring.handlers;
 
+import java.util.Arrays;
+
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.handlers.dialogs.RefactoringProjectDialog;
-import org.spg.refactoring.handlers.dialogs.ObsoleteLibraryDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
-import org.spg.refactoring.old.RefactoringAST;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
 
@@ -67,9 +63,13 @@ public class RefactorHandler extends AbstractHandler {
 				String newLibrary			= properties.getProperty(RefactoringProjectDialog.NEW_LIBRARY);
 				String newNamespace			= properties.getProperty(RefactoringProjectDialog.NEW_NAMESPACE);
 				
-//					RefactoringAST refactorProject = new RefactoringAST(cproject, oldHeader, oldNamespace, newProject, newLibrary, newNamespace);
+				System.out.println("Library headers:\t" + Arrays.toString(libHeaders));
+				System.out.println("Excluded files:\t"  + Arrays.toString(excludedFiles));
+				System.out.println("New project:\t"     + newProject);
+				System.out.println("New library:\t"     + newLibrary);
+				System.out.println("New namespace:\t"     + newNamespace);
+				
 				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, newProject, newLibrary, newNamespace);
-//				refactoring.analyseOnly(project);
 				boolean refactorOK = refactoring.refactor(project);
 				
 				if (refactorOK)					
