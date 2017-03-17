@@ -26,7 +26,11 @@
 	   <command
 	          id="org.spg.refactoring.commands.copyProjectCommand"
 	          name="Copy Project">
-	   </command>  	  
+	   </command>
+    <command
+          id="org.spg.refactoring.commands.analyseProjectCommand"
+          name="Analyse Project">
+    </command>  	  
 	</extension>
 	
 	<!-- The handler -->
@@ -37,7 +41,7 @@
             commandId="org.spg.refactoring.commands.printMessageCommand">
       </handler>
       <handler
-            class="org.spg.refactoring.handlers.RefactorHandler"
+            class="org.spg.refactoring.handlers.ProjectRefactorHandler"
             commandId="org.spg.refactoring.commands.refactorCommand">
       </handler>
       <handler
@@ -49,8 +53,12 @@
             commandId="org.spg.refactoring.commands.copyProjectCommand">
       </handler>
       <handler
-            class="org.spg.refactoring.handlers.ShowCityHandler"
+            class="org.spg.refactoring.handlers.ProjectVisualiserHandler"
             commandId="org.spg.refactoring.commands.ShowCityCommand">
+      </handler>
+      <handler
+            class="org.spg.refactoring.handlers.ProjectAnalyserHandler"
+            commandId="org.spg.refactoring.commands.analyseProjectCommand">
       </handler>
    </extension>
    
@@ -132,6 +140,28 @@
                   </with>
                </visibleWhen>
             </command>            
+            <command
+                  commandId="org.spg.refactoring.commands.analyseProjectCommand"
+                  id="P"
+                  label="Analyse Project"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate
+                           ifEmpty="false">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="org.eclipse.cdt.core.cnature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </visibleWhen>
+            </command>
             <separator
                   name="org.spg.refactoring.separator2"
                   visible="true">

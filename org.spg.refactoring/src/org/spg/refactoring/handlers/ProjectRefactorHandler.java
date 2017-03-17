@@ -19,14 +19,14 @@ import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
 
-public class RefactorHandler extends AbstractHandler {
+public class ProjectRefactorHandler extends AbstractHandler {
 	/** Shell handler*/
 	private Shell shell = null;
 		
 	/** Library dialog*/
 	private RefactoringProjectDialog libraryDialog;
 
-	public RefactorHandler() {
+	public ProjectRefactorHandler() {
 		libraryDialog = new RefactoringProjectDialog();
 	}
 

@@ -1,6 +1,7 @@
 package org.spg.refactoring;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -49,7 +50,6 @@ public class ProjectVisualiser {
 		subDistrictsList	= new ArrayList<SubDistrict>();
 		buildingsList 		= new ArrayList<Building>();  
 	}
-
 	
 	
 	public String run (IProject project, String jsonPath, Collection<String> tusUsing){

@@ -34,7 +34,7 @@ import org.spg.refactoring.utilities.MessageUtility;
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
-public class VisualiserHandler extends AbstractHandler {
+public class ProjectVisualiserHandler extends AbstractHandler {
 	
 	/** Process for server.js*/
 	Process serverProcess;
@@ -52,8 +52,7 @@ public class VisualiserHandler extends AbstractHandler {
 
 	
 	
-	public VisualiserHandler() {
-//		this.setBaseEnabled(true);
+	public ProjectVisualiserHandler() {
 		serverProcess = null;
 		serverPid	  = -1;
 	}
@@ -83,7 +82,7 @@ public class VisualiserHandler extends AbstractHandler {
 //				analyser.analyseProject();
 				RefactoringProject refactoring = new RefactoringProject(oldHeader, null, null, null, null);
 				refactoring.analyseOnly(project);
-				Collection<String> tusUsing = refactoring.getTUsUsingLib();
+				Collection<String> tusUsing = refactoring.getTUsUsingLibAsString();
 
 				
 				ProjectVisualiser vis = new ProjectVisualiser();
