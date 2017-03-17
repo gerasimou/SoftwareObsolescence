@@ -33,7 +33,7 @@ public class ProjectVisualiser {
 	
 	
 	final String DISTRICT_COLOR 		 = "0xF7AB29";
-	final String CITY_COLOR	 			 = "0xD5C8B2";
+	final String CITY_COLOR	 			 = "0xF9F7F4";
 	final String BUILDING_COLOR 		 = "0x2A75B3";
 	final String BUILDING_COLOR_AFFECTED = "0xB22029";
 	final String[] SUB_DISTRICT_COLOR 	 = {"0xA0522D", "0xD2691E", "0xDAA520", "0xF4A460", "0xD2B48C", "0xF5DEB3", "0xFFF8DC"};
@@ -113,7 +113,7 @@ public class ProjectVisualiser {
 				String name 	= element.getElementName();
 				String tooltip	= name + ", LoC : ";
 				String colour	= tusUsing.contains(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
-				String height	= rand.nextInt(500) + "";
+				String height	= tusUsing.contains(name) ? "50" : "2"; //rand.nextInt(500) + "";
 				String width	= rand.nextInt(100) + "";
 				String district = element.getParent() instanceof ISourceRoot ? defaultDistrict.name : element.getParent().getElementName(); 
 				Building building = new Building(name, tooltip, colour, height, width, district);

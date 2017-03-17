@@ -104,7 +104,7 @@ public class RefactoringAST {
 	protected static String NEW_NAMESPACE;
 	protected static String NEW_DIR;
 	protected static Set<String> OLD_NAMESPACES;
-	protected static String[] OLD_HEADERS;
+	protected static Set<String> OLD_HEADERS;
 
 	/** Pairs of ITranslationUnit, IASTTranslationUnit **/
 	HashMap<ITranslationUnit, IASTTranslationUnit> astCache = new HashMap<ITranslationUnit, IASTTranslationUnit>();
@@ -136,7 +136,8 @@ public class RefactoringAST {
 			NEW_LIBRARYhpp	= newLibrary +".hpp";
 			NEW_DIR		= "src/" + newLibrary;
 			OLD_NAMESPACES	= new HashSet<String>(Arrays.asList(oldNamespace));
-			OLD_HEADERS	= oldHeader;
+//			OLD_HEADERS	= oldHeader;
+			OLD_HEADERS	= new HashSet<String>(Arrays.asList(oldHeader));
 //		}
 	}
 

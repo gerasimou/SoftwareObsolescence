@@ -17,7 +17,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
@@ -25,6 +27,7 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
 import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.ProjectVisualiser;
+import org.spg.refactoring.handlers.dialogs.ObsoleteLibraryDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -62,26 +65,39 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		
-		MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
-									"Showing City",
-									"Showing JSCity.");
-		
-		
-		IProject project = null; 
+
+		IProject project = null;
 		try{
 			project = SelectionUtility.getSelectedProject();
 			//check if the project is a C project
 			ICProject cproject = CdtUtilities.getICProject(project);
 
 			if (cproject != null){
+				//show library dialog
+				ObsoleteLibraryDialog libraryDialog = new ObsoleteLibraryDialog(project.getLocation().toString());// getFullPath()..toString());
+				libraryDialog.create();
+				int reply = libraryDialog.open();
+				if (reply != TitleAreaDialog.OK)
+					return null;		
 
-				String[] oldHeader       	= new String[]{"tinyxml.cpp", "tinyxml.h"}; 
-//				String oldNamespace			= "tinyxml";
-//				ProjectAnalyserNew analyser = new ProjectAnalyserNew(project, oldHeader, oldNamespace);
-//				analyser.analyseProject();
-				RefactoringProject refactoring = new RefactoringProject(oldHeader, null, null, null, null);
+				boolean OK = MessageUtility.showMessage(shell, MessageDialog.CONFIRM, "Showing City", 
+														"Project analysis will begin now, OK?");		
+				if (!OK)
+					return null;
+				
+				//get library dialogue properties
+				StringProperties properties = libraryDialog.getProperties();
+				String[] libHeaders       	= properties.getProperty(ObsoleteLibraryDialog.LIB_HEADERS).split(",");
+				String[] excludedFiles		= properties.getProperty(ObsoleteLibraryDialog.EXCLUDED_FILES).split(",");
+
+				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
 				refactoring.analyseOnly(project);
+		
+		
+//		MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
+//									"Showing City",
+//									"Showing JSCity.");
+				
 				Collection<String> tusUsing = refactoring.getTUsUsingLibAsString();
 
 				

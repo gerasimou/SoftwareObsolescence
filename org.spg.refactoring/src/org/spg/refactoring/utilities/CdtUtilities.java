@@ -166,7 +166,7 @@ public class CdtUtilities {
 		}
 		return null;
 	}
-	
+		
 	
 	public static boolean appendToFile (IFile file, String output){
 		try {
@@ -196,13 +196,9 @@ public class CdtUtilities {
 	public static List<ITranslationUnit> getProjectTranslationUnits (ICProject cproject,  Set<String> excludedFilesSet) {
 		List<ITranslationUnit> tuList = new ArrayList<ITranslationUnit>();
 		
-//		HashSet<String> excludedFilesSet = new HashSet<String>();
-//		if (excludedFiles != null)
-//			excludedFilesSet.addAll(Arrays.asList(excludedFiles));
-//		
 		//get source folders
 		try {
-			for (ISourceRoot sourceRoot : cproject.getSourceRoots()){
+			for (ISourceRoot sourceRoot : cproject. getSourceRoots()){
 //				System.out.println(sourceRoot.getLocationURI().getPath());
 				//get all elements
 				for (ICElement element : sourceRoot.getChildren()){
