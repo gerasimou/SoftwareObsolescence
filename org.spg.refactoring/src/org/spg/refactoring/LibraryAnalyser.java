@@ -40,6 +40,7 @@ public class LibraryAnalyser {
 			
 //			generateASTElementsSet(libASTCache);
 			
+			System.out.println("\n");
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}

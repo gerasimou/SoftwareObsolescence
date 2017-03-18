@@ -17,7 +17,6 @@ import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNamedTypeSpecifier;
@@ -60,33 +59,35 @@ public class ProjectAnalyser {
 	protected IIndex projectIndex = null;
 
 	/** Pairs of elements-potential name from standard C++ library that should be included using #include directives*/
-	LinkedHashMap<IASTName, String> includeDirectivesMap; 
+	protected LinkedHashMap<IASTName, String> includeDirectivesMap; 
 	
 	/** Map that between classes and members (functions, methods etc) */
-	Map<ICPPClassType, List<ICPPMember>> classMembersMap;
+	protected Map<ICPPClassType, List<ICPPMember>> classMembersMap;
 
 	/** List keeping the translation units using the old library*/
-	List<ITranslationUnit> tusUsingLibList;
+//	List<ITranslationUnit> tusUsingLibList;
+	protected Map<ITranslationUnit, Integer> tusUsingLibMap;
 
 	/** Keep refactoring information*/
-	NamesSet 	namesSet 	 = new NamesSet();
-	BindingsSet bindingsSet  = new BindingsSet();
+	protected NamesSet 	namesSet 	 = new NamesSet();
+	protected BindingsSet bindingsSet  = new BindingsSet();
 	//FIXME: not correct, do not use this list
-	List<IASTNode> nodesList = new ArrayList<IASTNode>();
+	protected List<IASTNode> nodesList = new ArrayList<IASTNode>();
 
 //	CDTSet<IASTName> namesSet2 	  = new CDTSet<IASTName>(IASTName.class);
 //	CDTSet<IBinding> bindingsSet2 = new CDTSet<IBinding>(IBinding.class);
 //	CDTSet<IASTNode> nodesList2   = new CDTSet<IASTNode>(IASTNode.class);
 	
 	/** Refactoring element*/
-	RefactoringProject refactoring;
+	private RefactoringProject refactoring;
 	
 	
 	
 	public ProjectAnalyser(RefactoringProject refProject) {
 		this.refactoring 		  = refProject;
 		this.includeDirectivesMap = new LinkedHashMap<IASTName, String>();
-		this.tusUsingLibList 	  = new ArrayList<ITranslationUnit>();
+//		this.tusUsingLibList 	  = new ArrayList<ITranslationUnit>();
+		this.tusUsingLibMap		  = new HashMap<ITranslationUnit, Integer>();
 	}
 
 	
@@ -100,10 +101,6 @@ public class ProjectAnalyser {
  				
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
-
-//			if (tu.getElementName().contains("xmlfunctions") ){
-//				System.out.println("analysing " + tu.getElementName());
-//			}
 			
 			NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
 			astCache.get(tu).accept(fcVisitor);
@@ -117,11 +114,15 @@ public class ProjectAnalyser {
 				namesSet.addAll(fcVisitor.namesSet);
 				bindingsSet.addAll(fcVisitor.bindingsSet);
 				nodesList.addAll(fcVisitor.nodesList);
-				tusUsingLibList.add(tu);
+//				tusUsingLibList.add(tu);
+				tusUsingLibMap.put(tu, bindingsSet.size());
+				System.out.println(tu +"\t"+ fcVisitor.bindingsSet.size() +"\t"+ fcVisitor.namesSet.size() +"\t"+ 
+											 fcVisitor.nodesList.size()   +"\t"+ fcVisitor.namesList.size());
 			}
 		}
 					
-		System.out.println("\nAffected files:\t" + Arrays.toString(tusUsingLibList.toArray()));
+		System.out.println("\nAffected files:\t" + Arrays.toString(tusUsingLibMap.keySet().toArray()));
+		System.exit(-1);
 		
 		//check for library uses within the same library
 		MessageUtility.writeToConsole("Console", "Checking class inheritance and method signature.");
@@ -210,6 +211,7 @@ public class ProjectAnalyser {
 						bindingsSet.add(baseBinding);
 						ICPPASTName nameNode = (ICPPASTName) refactoring.findNodeFromIndex(cDefs[0], false, ICPPASTName.class);
 						namesSet.add(nameNode);
+						nodesList.add(nameNode);
 					}
 					//recursively check the base binding (parent class)
 					checkClassInheritance((ICPPClassType)baseBinding);
@@ -415,10 +417,10 @@ public class ProjectAnalyser {
 	
  	
 	private class NameFinderASTVisitor extends ASTVisitor {
-		/** List keeping all important IASTNames**/
+		/** Set keeping all important IASTNames, but doesn't accept duplicates **/
 		private NamesSet namesSet;
 		
-		/** Set keeping all important IASTNames, but doesn't accept duplicates **/
+		/** List keeping all important IASTNames**/
 		private List<IASTName> namesList;
 
 		/** List keeping all important IBindings, but doesn't accept duplicates **/
@@ -556,7 +558,8 @@ public class ProjectAnalyser {
 					IASTName funDeclName = funDecl.getName();
 					IBinding binding = funDeclName.resolveBinding();
 					
-					//check if it a method; since this methods overloads another function --> there exists a base class (superclass) 
+					//check if it's a method; since this methods overloads another function 
+					//--> there is a base class (superclass) 
 					if (binding instanceof ICPPMethod){
 						ICPPMethod methodBinding = (ICPPMethod)binding;
 						
@@ -627,7 +630,8 @@ public class ProjectAnalyser {
 					for (IIndexName dd : declDefs){
 						String path = dd.getFileLocation().getFileName();
 						if (dd.isDeclaration() && RefactoringProject.LIB_HEADERS.contains(path)){
-							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+							System.out.print(binding.getClass().getSimpleName() +"\t" + binding.getName() + "\t"+path +"\t"+ 
+											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
 							if (node!=null)
 								System.out.println(node. getPropertyInParent());
@@ -646,7 +650,8 @@ public class ProjectAnalyser {
 					for (IIndexName dd : defs){
 						String path = dd.getFileLocation().getFileName();
 						if (dd.isDefinition() && RefactoringProject.LIB_HEADERS.contains(path)){
-							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+							System.out.print(binding.getClass().getSimpleName() +"\t"+ binding.getName() +"\t"+ path +"\t"+ 
+											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
 							if (node!=null)
 								System.out.println(node. getPropertyInParent());
@@ -657,16 +662,16 @@ public class ProjectAnalyser {
 					projectIndex.releaseReadLock();
 					return exists;
 				}
+				//if it's a variable
 				else if (binding instanceof IVariable){
-//					throw new IllegalArgumentException(binding.getName() +"\t"+ binding.getClass().getName());					
-//					boolean exists = false;
 					projectIndex.acquireReadLock();
 					IIndexName[] defs = projectIndex.findNames(binding, IIndex.FIND_DECLARATIONS_DEFINITIONS);
 					for (IIndexName dd : defs){
 						String path = dd.getFileLocation().getFileName();
 //						if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
 						if (RefactoringProject.LIB_HEADERS.contains(path)){
-							System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+							System.out.print(binding.getClass().getSimpleName() +"\t"+ binding.getName() + "\t"+path +"\t"+ 
+											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
 							if (node!=null)
 								System.out.println(node. getPropertyInParent());
@@ -756,6 +761,7 @@ public class ProjectAnalyser {
 			}
 		}
 	}
+	
 
 	
 	protected BindingsSet getBindings(){
@@ -774,13 +780,13 @@ public class ProjectAnalyser {
 	
 	
 	protected Collection<ITranslationUnit> getTUsUsingLib (){
-		return tusUsingLibList;
+		return tusUsingLibMap.keySet();
 	}
 
 	
 	protected Collection<String> getTUsUsingLibAsString (){
 		Collection<String> tusLibSet = new ListSet<String>();
-		for (ITranslationUnit tu : tusUsingLibList){
+		for (ITranslationUnit tu : tusUsingLibMap.keySet()){
 			tusLibSet.add(tu.getElementName());
 		}
 		return tusLibSet;

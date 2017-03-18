@@ -149,6 +149,7 @@ public class RefactoringProject {
 	}
  	
  	
+ 	@Deprecated
  	public boolean refactor2(IProject project) {
 		try {
 			//get existing cProject
@@ -319,6 +320,11 @@ public class RefactoringProject {
 			libraryAnalyser.analyseLibrary(libASTCache);
 			projectAnalyser = new ProjectAnalyser(this);
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
+			
+//			for (ITranslationUnit tuEntry : projectAnalyser.tusUsingLibMap.keySet()){
+			for (Map.Entry<ITranslationUnit, Integer> entry : projectAnalyser. tusUsingLibMap.entrySet()){
+				System.out.println(entry.getKey() +"\t"+ entry.getValue());
+			}
 			
 			return true;
 		} catch (CoreException e) {
