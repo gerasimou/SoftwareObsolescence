@@ -15,19 +15,22 @@ import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDeclarator;
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
+import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTStandardFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTConstructorChainInitializer;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTElaboratedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
@@ -35,6 +38,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPBase;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPEnumeration;
@@ -200,7 +204,7 @@ public class ProjectRefactorer {
 			rewriter.insertBefore(sourceAST, null, nsDef, null);
 			rewriter.rewriteAST().perform(new NullProgressMonitor()); 
 		} 
-		catch (NoSuchFileException | CoreException e) {
+		catch (NoSuchFileException | CoreException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 	}
@@ -358,10 +362,11 @@ public class ProjectRefactorer {
 	 * @param nsDef
 	 * @param nodeFactory
 	 * @throws CoreException
+	 * @throws IllegalAccessException 
 	 * @throws DOMException 
 	 */
 	private void refactorFunctionDefinitions (ICPPNodeFactory nodeFactory, Map<ICPPClassType, List<ICPPMember>> classMembersMap, 
-												 	ICPPASTNamespaceDefinition nsDef) throws CoreException{		
+												 	ICPPASTNamespaceDefinition nsDef) throws CoreException, IllegalAccessException{		
 		try {
 			projectIndex.acquireReadLock();
 
@@ -373,80 +378,144 @@ public class ProjectRefactorer {
 				
 					if (member instanceof ICPPMethod){
 						//add definition
-						IIndexName[] methodDefs = projectIndex.findNames(member, IIndex.FIND_DEFINITIONS);
+						IIndexName[] methodDeclsDefs = projectIndex.findNames(member, IIndex.FIND_DECLARATIONS_DEFINITIONS);
 						
-						if (methodDefs.length > 0){ // its size should be 1
-							IIndexName mDef    = methodDefs[0];
-							ICPPASTFunctionDefinition node = (ICPPASTFunctionDefinition)refactoring.findNodeFromIndex(mDef, false, ICPPASTFunctionDefinition.class);
+						if (methodDeclsDefs.length > 0){ // its size should be > 0
 							
-							//create new function definition
-							//we need to do it manually because of the chain initialisers, added later in this function
-	//						ICPPASTFunctionDefinition newFunctionDef = node.copy(CopyStyle.withLocations);
-	//						newFunctionDef.setBody(nodeFactory.newCompoundStatement());
-							ICPPASTFunctionDefinition newFunctionDef = nodeFactory.newFunctionDefinition(node.getDeclSpecifier().copy(CopyStyle.withLocations),
-									  																	 node.getDeclarator().copy(CopyStyle.withLocations),
-									  																	 nodeFactory.newCompoundStatement());
-																			
-							//manage function declarator qualified names so that are in the form Class::Function(...){}, in cpp file. 
-							//if the specifier of this function does not include class name (e.g., defined in header) modify this
-							ICPPASTFunctionDeclarator fDecl = (ICPPASTFunctionDeclarator) newFunctionDef.getDeclarator();
-							if (!(fDecl.getName() instanceof ICPPASTQualifiedName)){
-								ICPPASTQualifiedName qualName =  nodeFactory.newQualifiedName(new String[]{owningclass.getName()}, member.getName());
-								fDecl.setName(qualName);
-							}
-							
-							//manage initialiser lists: any constructor (superclass) initialisers should be added here 
-							for (ICPPASTConstructorChainInitializer initialiser: node.getMemberInitializers()){
-								IASTName initialiserName = initialiser.getMemberInitializerId();
-								IBinding initialiserBinding = initialiserName.resolveBinding(); 
-								
-								if ( (initialiserBinding instanceof ICPPConstructor) ){
-									IBinding bindingClass = initialiserBinding.getOwner();
-									if (classMembersMap.keySet().contains(bindingClass))
-										newFunctionDef.addMemberInitializer(initialiser.copy(CopyStyle.withLocations));
-									else 
-										throw new IllegalArgumentException("Class " + bindingClass + "not found!");	
-								}
-							}
-							
-							//manage return function specifiers
-							IASTDeclSpecifier declSpecifier 	= node.getDeclSpecifier();
-							IASTReturnStatement returnStatement	= nodeFactory.newReturnStatement(null);
-							//if the return type is simple specifier except void --> add a null return statement
-							if ( (declSpecifier instanceof IASTSimpleDeclSpecifier) && 
-								 (((IASTSimpleDeclSpecifier)declSpecifier).getType() > IASTSimpleDeclSpecifier.t_void) ){
-								returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr"));
-							}
-							//if the return type is a qualified name (e.g., class, enumeration etc) --> 
-							//   if it is a class --> add a null return statement
-							//   if it is an enumerator --> select a random enum item
-							else if (declSpecifier instanceof ICPPASTNamedTypeSpecifier){
-								IASTName declName 		= ((ICPPASTNamedTypeSpecifier) declSpecifier).getName();
-								IBinding declBinding	= declName.resolveBinding();
-	
-								if (declBinding instanceof ICPPEnumeration){
-									IIndexName[] enumDefs = projectIndex.findNames(declBinding, IIndex.FIND_DEFINITIONS);
-									if (enumDefs.length > 0){ // its size should be 1
-										IIndexName enumDef    = enumDefs[0];
-										IASTEnumerationSpecifier enumNode 	  = (IASTEnumerationSpecifier) refactoring.findNodeFromIndex(enumDef, false, IASTEnumerationSpecifier.class);
-										if (enumNode.getEnumerators().length !=1)
-											returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_false, enumNode.getEnumerators()[0].getName().toString()));
-										else 
-											throw new IllegalArgumentException("Enumerator " + declBinding + "not found!");	
+							for (IIndexName dd : methodDeclsDefs){
+								String path = dd.getFileLocation().getFileName();
+								if (dd.isDeclaration() && RefactoringProject.LIB_HEADERS.contains(path)){
+									
+									IASTNode node = refactoring.findNodeFromIndex(dd, false, IASTSimpleDeclaration.class, IASTFunctionDefinition.class);
+									if (node!=null){
+										
+										ICPPASTFunctionDefinition newFunctionDef = null;
+										IASTDeclSpecifier 	  declSpecifier  = null;
+										
+										//if it is a declaration, i.e., only the signature exists in header file &
+										//it has only one declarator 
+										if (node instanceof IASTSimpleDeclaration){
+											IASTSimpleDeclaration declaration = (IASTSimpleDeclaration) node;
+											
+											//check that only one declarator exists
+											if ( (declaration.getDeclarators().length != 1) || (! (declaration.getDeclarators()[0] instanceof IASTFunctionDeclarator)) )
+												throw new IllegalArgumentException("Unexpected declarator:\n" + node.getRawSignature());
+											
+											//create new function definition
+											//we need to do it manually because of the chain initialisers, added later in this function
+											newFunctionDef 	= nodeFactory.newFunctionDefinition(declaration.getDeclSpecifier().copy(CopyStyle.withLocations),
+																							   (IASTFunctionDeclarator) declaration.getDeclarators()[0].copy(CopyStyle.withLocations),
+																							   nodeFactory.newCompoundStatement());
+																														
+											declSpecifier	= declaration.getDeclSpecifier();
+										}
+										//else if it is a definition
+										else if (node instanceof IASTFunctionDefinition){
+											IASTFunctionDefinition definition = (IASTFunctionDefinition) node;
+											
+											newFunctionDef 	= nodeFactory.newFunctionDefinition(definition.getDeclSpecifier().copy(CopyStyle.withLocations),
+																							   definition.getDeclarator().copy(CopyStyle.withLocations),
+																							   nodeFactory.newCompoundStatement());
+											
+											declSpecifier	= definition.getDeclSpecifier();										
+										} 
+										
+										
+										//manage function declarator qualified names so they are in the form Class::Function(...){}, in cpp file. 
+										//if the specifier of this function does not include class name (e.g., defined in header) modify this
+										ICPPASTFunctionDeclarator fDecl = (ICPPASTFunctionDeclarator) newFunctionDef.getDeclarator();
+										if (!(fDecl.getName() instanceof ICPPASTQualifiedName)){
+											ICPPASTQualifiedName qualName =  nodeFactory.newQualifiedName(new String[]{owningclass.getName()}, member.getName());
+											fDecl.setName(qualName);
+										}
+
+										
+										//C++ manage initialiser lists: any constructor (superclass) initialisers should be added here
+										if (member instanceof ICPPConstructor){
+											ICPPConstructor constructor =  (ICPPConstructor)member;
+											
+											ICPPBase bases[] = constructor.getClassOwner().getBases();
+											for (ICPPBase base : bases){
+												ICPPClassType baseClazz = (ICPPClassType)base.getBaseClass();
+												if ( (classMembersMap.containsKey(baseClazz)) && (baseClazz.getConstructors().length >0) ){													
+													IASTLiteralExpression litExpressions[] = new IASTLiteralExpression[]{nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL")};
+													newFunctionDef.addMemberInitializer(nodeFactory.newConstructorChainInitializer(nodeFactory.newName(baseClazz.getName()), 
+																																   nodeFactory.newConstructorInitializer(litExpressions)));
+												}
+												else 
+													throw new IllegalArgumentException("Class " + baseClazz + "not found!");
+											}
+											
+//											for (ICPPASTConstructorChainInitializer initialiser: ((ICPPASTFunctionDefinition) definition).getMemberInitializers()){
+//												IASTName initialiserName = initialiser.getMemberInitializerId();
+//												IBinding initialiserBinding = initialiserName.resolveBinding(); 
+//												
+//												if ( (initialiserBinding instanceof ICPPConstructor) ){
+//													IBinding bindingClass = initialiserBinding.getOwner();
+//													if (classMembersMap.keySet().contains(bindingClass))
+//														newFunctionDef.addMemberInitializer(initialiser.copy(CopyStyle.withLocations));
+//													else 
+//														throw new IllegalArgumentException("Class " + bindingClass + "not found!");	
+//												}
+//											}
+										}
+
+										
+										//manage return function specifiers
+										IASTReturnStatement returnStatement	= nodeFactory.newReturnStatement(null);
+										//if the return type is simple specifier except void --> add a null return statement
+										if ( (declSpecifier instanceof IASTSimpleDeclSpecifier) && 
+											 (((IASTSimpleDeclSpecifier)declSpecifier).getType() > IASTSimpleDeclSpecifier.t_void) ){
+											returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr"));
+										}
+										//if the return type is a qualified name (e.g., class, enumeration etc) --> 
+										//   if it is a class --> add a null return statement
+										//   if it is an enumerator --> select a random enum item
+										else if (declSpecifier instanceof ICPPASTNamedTypeSpecifier){
+											IASTName declName 		= ((ICPPASTNamedTypeSpecifier) declSpecifier).getName();
+											IBinding declBinding	= declName.resolveBinding();
+				
+											if (declBinding instanceof ICPPEnumeration){
+												IIndexName[] enumDefs = projectIndex.findNames(declBinding, IIndex.FIND_DEFINITIONS);
+												if (enumDefs.length > 0){ // its size should be 1
+													IIndexName enumDef    = enumDefs[0];
+													IASTEnumerationSpecifier enumNode 	  = (IASTEnumerationSpecifier) refactoring.findNodeFromIndex(enumDef, false, IASTEnumerationSpecifier.class);
+													if (enumNode.getEnumerators().length !=1)
+														returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_false, enumNode.getEnumerators()[0].getName().toString()));
+													else 
+														throw new IllegalArgumentException("Enumerator " + declBinding + "not found!");	
+												}
+											}
+											else
+												returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL"));
+												
+										}
+										IASTCompoundStatement compoundStatement = (IASTCompoundStatement) newFunctionDef.getBody();
+										compoundStatement.addStatement(returnStatement);
+										
+										
+										//clean the new function definition: remove any virtual identifiers, e.g., virtual bool XMLVisitor::VisitEnter(const XMLElement&, const XMLAttribute*){}
+										if (newFunctionDef.getDeclSpecifier() instanceof ICPPASTDeclSpecifier){
+											ICPPASTDeclSpecifier specifier = (ICPPASTDeclSpecifier) newFunctionDef.getDeclSpecifier();
+											specifier.setVirtual(false);
+										}
+										
+										
+										//clean the new function definition: remove any parameter initialisers, e.g., bool XMLVisitor::VisitEnter(const XMLElement&, const XMLAttribute* = X){}
+										IASTStandardFunctionDeclarator funDeclarator = (IASTStandardFunctionDeclarator) newFunctionDef.getDeclarator();
+										for (IASTParameterDeclaration paramDeclaration : funDeclarator.getParameters()){
+											paramDeclaration.getDeclarator().setInitializer(null);// (nodeFactory.newEqualsInitializer(nodeFactory.newIdExpression(nodeFactory.newName(""))));
+										}
+
+										
+										//add the new definition to the namespace
+										nsDef.addDeclaration(newFunctionDef);										
+										break;
 									}
 								}
-								else
-									returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL"));
-									
 							}
-							IASTCompoundStatement compoundStatement = (IASTCompoundStatement) newFunctionDef.getBody();
-							compoundStatement.addStatement(returnStatement);
-	
-	
-							//add the new definition to the namespace
-							nsDef.addDeclaration(newFunctionDef);
 						}
-						
+
 					}
 				}
 			}			
@@ -458,6 +527,7 @@ public class ProjectRefactorer {
  			projectIndex.releaseReadLock();
  		}
 	}
+	
 
 
 	/**
