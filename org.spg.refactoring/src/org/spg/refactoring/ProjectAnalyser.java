@@ -115,14 +115,13 @@ public class ProjectAnalyser {
 				bindingsSet.addAll(fcVisitor.bindingsSet);
 				nodesList.addAll(fcVisitor.nodesList);
 //				tusUsingLibList.add(tu);
-				tusUsingLibMap.put(tu, bindingsSet.size());
+				tusUsingLibMap.put(tu, fcVisitor.bindingsSet.size());
 				System.out.println(tu +"\t"+ fcVisitor.bindingsSet.size() +"\t"+ fcVisitor.namesSet.size() +"\t"+ 
 											 fcVisitor.nodesList.size()   +"\t"+ fcVisitor.namesList.size());
 			}
 		}
 					
 		System.out.println("\nAffected files:\t" + Arrays.toString(tusUsingLibMap.keySet().toArray()));
-		System.exit(-1);
 		
 		//check for library uses within the same library
 		MessageUtility.writeToConsole("Console", "Checking class inheritance and method signature.");
@@ -242,7 +241,6 @@ public class ProjectAnalyser {
 			ICPPASTParameterDeclaration paramDecls[] = methodDecl.getParameters();
 			for (ICPPASTParameterDeclaration paramDecl :paramDecls ){
 				IASTDeclSpecifier paramDeclSpecifier = paramDecl.getDeclSpecifier();
-				
 				checkDeclSpecifier(paramDeclSpecifier);
 			}
 		}
@@ -255,15 +253,16 @@ public class ProjectAnalyser {
 		//2) if it's part of a standard c++ library, add it to the set of include directives
 		if (declSpecifier instanceof IASTNamedTypeSpecifier){
 			IASTName declSpecifierName 	= ((IASTNamedTypeSpecifier) declSpecifier).getName();
-			IBinding declSpecifierBinding	= declSpecifierName.resolveBinding(); 
+			IBinding declSpecifierBinding	= declSpecifierName.resolveBinding();
 			
 			//find where the param specifier is defined
 			if ( (declSpecifierBinding instanceof ICompositeType) || (declSpecifierBinding instanceof IEnumeration) ){
 				IASTNode node= checkBindingGeneral(declSpecifierBinding, IIndex.FIND_DEFINITIONS, true, true);
-						
+								
 				if (node!=null){
 					bindingsSet.add(declSpecifierBinding);
-					namesSet.add(declSpecifierName);	
+					namesSet.add(declSpecifierName);
+					nodesList.add(node);
 				}
 				return;
 			}
@@ -398,7 +397,7 @@ public class ProjectAnalyser {
 			
 			if (valid && (!fromObsoleteLibrary || RefactoringProject.LIB_HEADERS.contains(path))){
 //			if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
-				System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+//				System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 				node = refactoring.findNodeFromIndex(dd, indexLocked, IASTNode.class);
 				if (node!=null)
 					System.out.println(node. getPropertyInParent());
@@ -566,9 +565,10 @@ public class ProjectAnalyser {
 						//get superclasses
 						ICPPBase baseClasses[] = methodBinding.getClassOwner().getBases();
 						for (ICPPBase baseClass : baseClasses){
-							if ( (baseClass.getBaseClass() instanceof ICPPClassType) && 
-								 (checkBinding(baseClass.getBaseClass())) ){
-								ICPPClassType clazz = (ICPPClassType)baseClass.getBaseClass();
+							IBinding baseClassType = baseClass.getBaseClass(); 
+							if ( (baseClassType instanceof ICPPClassType) && 
+								 (checkBinding(baseClassType))){
+								ICPPClassType clazz = (ICPPClassType)baseClassType;
 								for (ICPPMethod clazzMethod : clazz.getAllDeclaredMethods()){
 									if (checkOverloadedMethodsSignature(methodBinding, clazzMethod)){
 										System.out.println("Original Method found\t" + simpleDecl.getRawSignature() +"\t"+ simpleDecl.getTranslationUnit().getOriginatingTranslationUnit());
@@ -630,15 +630,26 @@ public class ProjectAnalyser {
 					for (IIndexName dd : declDefs){
 						String path = dd.getFileLocation().getFileName();
 						if (dd.isDeclaration() && RefactoringProject.LIB_HEADERS.contains(path)){
-							System.out.print(binding.getClass().getSimpleName() +"\t" + binding.getName() + "\t"+path +"\t"+ 
-											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
-							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
-							if (node!=null)
-								System.out.println(node. getPropertyInParent());
+//							System.out.print(binding.getClass().getSimpleName() +"\t" + binding.getName() + "\t"+path +"\t"+ 
+//											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+//							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
+//							if (node!=null) System.out.println(node. getPropertyInParent());
 							exists = true;
 							break;
 						}
 					}
+					
+					//if the function exists, find its definition
+					//TODO: find definition --> no virtual, const etc
+//					if (exists){
+//						IIndexName[] defs = projectIndex.findNames(binding, IIndex.FIND_DEFINITIONS);
+//						for (IIndexName def : defs){
+//							String path = def.getFileLocation().getFileName();
+////							IASTFunctionDefinition funDef = (IASTFunctionDefinition) refactoring.findNodeFromIndex(def, true, IASTFunctionDefinition.class);
+////							System.out.println(path +"\t"+ def.isDefinition());// +"\n"+ funDef.getRawSignature());
+//						}
+//					}
+					
 					projectIndex.releaseReadLock();
 					return exists;
 				}
@@ -650,11 +661,10 @@ public class ProjectAnalyser {
 					for (IIndexName dd : defs){
 						String path = dd.getFileLocation().getFileName();
 						if (dd.isDefinition() && RefactoringProject.LIB_HEADERS.contains(path)){
-							System.out.print(binding.getClass().getSimpleName() +"\t"+ binding.getName() +"\t"+ path +"\t"+ 
-											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
-							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
-							if (node!=null)
-								System.out.println(node. getPropertyInParent());
+//							System.out.print(binding.getClass().getSimpleName() +"\t"+ binding.getName() +"\t"+ path +"\t"+ 
+//											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+//							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
+//							if (node!=null) System.out.println(node. getPropertyInParent());
 							exists = true;
 							break;
 						}
@@ -670,11 +680,10 @@ public class ProjectAnalyser {
 						String path = dd.getFileLocation().getFileName();
 //						if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
 						if (RefactoringProject.LIB_HEADERS.contains(path)){
-							System.out.print(binding.getClass().getSimpleName() +"\t"+ binding.getName() + "\t"+path +"\t"+ 
-											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
-							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
-							if (node!=null)
-								System.out.println(node. getPropertyInParent());
+//							System.out.print(binding.getClass().getSimpleName() +"\t"+ binding.getName() + "\t"+path +"\t"+ 
+//											 dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
+//							IASTNode node = refactoring.findNodeFromIndex(dd, true, IASTNode.class);
+//							if (node!=null)	System.out.println(node. getPropertyInParent());
 //							exists = true;
 //							break;
 						}
@@ -683,20 +692,8 @@ public class ProjectAnalyser {
 //					return exists;
 					return false;
 				}
-//				else 
-//					throw new IllegalArgumentException(binding.getName() +"\t"+ binding.getClass().getName());
-				
-//				IScope scope = binding.getScope();
-//				while ((scope != null) 
-//						&& (!(scope instanceof ICPPNamespaceScope))){ 
-////						&& (!(scope instanceof ICPPClassScope))) {
-//					scope = scope.getParent();
-//				}
-//
-//				if ((scope != null) 
-//						&&(scope.getScopeName() != null)
-//						&& (RefactoringProject.OLD_NAMESPACES.contains(scope.getScopeName().toString())))
-//					return true;
+				else 
+					throw new IllegalArgumentException(binding.getName() +"\t"+ binding.getClass().getName());
 
 			} catch (DOMException | NullPointerException | CoreException | InterruptedException e) {
 				e.printStackTrace();

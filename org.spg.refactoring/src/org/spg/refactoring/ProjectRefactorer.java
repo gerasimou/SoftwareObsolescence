@@ -34,7 +34,6 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTElaboratedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
@@ -439,11 +438,6 @@ public class ProjectRefactorer {
 											for (ICPPBase base : bases){
 												ICPPClassType baseClazz = (ICPPClassType)base.getBaseClass();
 												
-												for (ICPPConstructor cstr : baseClazz.getConstructors()){													
-													System.out.println(cstr.toString() +"\t"+ cstr.isDestructor() +"\t"+ cstr.getVisibility() +"\t"+ cstr.isImplicit() +"\t"+ cstr.isInline() +"\t"+ cstr.isExplicit()); //ICPPASTVisibilityLabel.v_public;
-//													cstr.getParameters()[0].get
-												}
-
 												//the superclass should be in the map
 												if (classMembersMap.containsKey(baseClazz)) {
 													int numberOfConstructorParams = -1; 

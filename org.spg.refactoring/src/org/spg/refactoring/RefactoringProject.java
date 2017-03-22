@@ -109,10 +109,10 @@ public class RefactoringProject {
 			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
 			parseProject();
 
-			System.out.println("Lib:\t" 	+ libASTCache.size());
+			System.out.println("\nLib:\t" 	+ libASTCache.size());
 			for (ITranslationUnit tu : libASTCache.keySet())
 				System.out.println(tu.getFile().getFullPath());
-			System.out.println("Project:\t" + projectASTCache.size());
+			System.out.println("\nProject:\t" + projectASTCache.size());
 			for (ITranslationUnit tu : projectASTCache.keySet())
 				System.out.println(tu.getFile().getFullPath());
 			
@@ -198,11 +198,12 @@ public class RefactoringProject {
  	
  	private void modifySelectionsToNewProject(IProject project, IProject newProject){
 		//since we work with a copy project we also need to change the absolute paths
+		System.out.println("\nModifying selections to new project");
+		
 		String projectPath 		= project.getLocation().toOSString();
 		String newProjectPath	= newProject.getLocation().toOSString();
 		for (String libHeader : LIB_HEADERS){
 			if (libHeader.contains(projectPath)){
-				System.out.println("Header changed");
 				String libHeaderNewProject = libHeader.replace(projectPath, newProjectPath);
 				LIB_HEADERS.remove(libHeader);
 				LIB_HEADERS.add(libHeaderNewProject);
@@ -211,7 +212,6 @@ public class RefactoringProject {
 		System.out.println("Headers:\t" + LIB_HEADERS);
 		for (String excFile : EXCLUDED_FILES){
 			if (excFile.contains(projectPath)){
-				System.out.println("Excluded file changed");
 				String excFileNewProject = excFile.replace(projectPath, newProjectPath);
 				EXCLUDED_FILES.remove(excFile);
 				EXCLUDED_FILES.add(excFileNewProject);
