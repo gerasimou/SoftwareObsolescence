@@ -585,17 +585,21 @@ public class ProjectAnalyser {
 		}
 
 		
-		
 		/**
 		 * Check if a method actually matches the signature of this original (base) method
-		 * To this end, it checks (1) name; (2) return type; (3) signature
+		 * It checks (1) name; (2) return type; (3) signature
 		 * @param overloadMethod
 		 * @param originalMethod
 		 * @throws DOMException 
 		 */
 		private boolean checkOverloadedMethodsSignature (ICPPMethod originalMethod, ICPPMethod overloadMethod) {
+			//same names
 			if (!originalMethod.getName().equals(overloadMethod.getName()))
 				return false;
+			//same return types
+			if (!originalMethod.getType().getReturnType().isSameType(overloadMethod.getType().getReturnType()))
+				return false;
+			//same #params and param types
 			if (originalMethod.getParameters().length != overloadMethod.getParameters().length)
 				return false;
 			ICPPParameter originalMethodParams[] = originalMethod.getParameters();
