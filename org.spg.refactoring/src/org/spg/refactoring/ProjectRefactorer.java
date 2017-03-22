@@ -34,6 +34,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTElaboratedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
@@ -437,27 +438,30 @@ public class ProjectRefactorer {
 											ICPPBase bases[] = constructor.getClassOwner().getBases();
 											for (ICPPBase base : bases){
 												ICPPClassType baseClazz = (ICPPClassType)base.getBaseClass();
-												if ( (classMembersMap.containsKey(baseClazz)) && (baseClazz.getConstructors().length >0) ){													
-													IASTLiteralExpression litExpressions[] = new IASTLiteralExpression[]{nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL")};
+												
+												for (ICPPConstructor cstr : baseClazz.getConstructors()){													
+													System.out.println(cstr.toString() +"\t"+ cstr.isDestructor() +"\t"+ cstr.getVisibility() +"\t"+ cstr.isImplicit() +"\t"+ cstr.isInline() +"\t"+ cstr.isExplicit()); //ICPPASTVisibilityLabel.v_public;
+//													cstr.getParameters()[0].get
+												}
+
+												//the superclass should be in the map
+												if (classMembersMap.containsKey(baseClazz)) {
+													int numberOfConstructorParams = -1; 
+													for (ICPPConstructor baseClassConstructor: baseClazz.getConstructors()){
+														numberOfConstructorParams = baseClassConstructor.getParameters().length;
+														if  (baseClassConstructor.isImplicit())
+															break;
+													}
+													//populate list of constructor params
+													IASTLiteralExpression litExpressions[] = new IASTLiteralExpression[numberOfConstructorParams];
+													Arrays.fill(litExpressions, nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr"));
+													
 													newFunctionDef.addMemberInitializer(nodeFactory.newConstructorChainInitializer(nodeFactory.newName(baseClazz.getName()), 
 																																   nodeFactory.newConstructorInitializer(litExpressions)));
 												}
 												else 
 													throw new IllegalArgumentException("Class " + baseClazz + "not found!");
-											}
-											
-//											for (ICPPASTConstructorChainInitializer initialiser: ((ICPPASTFunctionDefinition) definition).getMemberInitializers()){
-//												IASTName initialiserName = initialiser.getMemberInitializerId();
-//												IBinding initialiserBinding = initialiserName.resolveBinding(); 
-//												
-//												if ( (initialiserBinding instanceof ICPPConstructor) ){
-//													IBinding bindingClass = initialiserBinding.getOwner();
-//													if (classMembersMap.keySet().contains(bindingClass))
-//														newFunctionDef.addMemberInitializer(initialiser.copy(CopyStyle.withLocations));
-//													else 
-//														throw new IllegalArgumentException("Class " + bindingClass + "not found!");	
-//												}
-//											}
+											}											
 										}
 
 										
