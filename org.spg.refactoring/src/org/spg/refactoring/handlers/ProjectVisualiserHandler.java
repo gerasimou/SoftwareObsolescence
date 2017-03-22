@@ -53,11 +53,14 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	final String NODE				= "/usr/local/bin/node";
 	final String GENERATOR_SCRIPT	= "generatorPromises9.js";
 
-	
+	/** Library dialog*/
+	ObsoleteLibraryDialog libraryDialog;
 	
 	public ProjectVisualiserHandler() {
 		serverProcess = null;
 		serverPid	  = -1;
+		
+		libraryDialog = new ObsoleteLibraryDialog();
 	}
 
 	
@@ -73,8 +76,9 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 			ICProject cproject = CdtUtilities.getICProject(project);
 
 			if (cproject != null){
+
 				//show library dialog
-				ObsoleteLibraryDialog libraryDialog = new ObsoleteLibraryDialog(project.getLocation().toString());// getFullPath()..toString());
+				libraryDialog.setDialogPath(project.getLocation().toOSString());				
 				libraryDialog.create();
 				int reply = libraryDialog.open();
 				if (reply != TitleAreaDialog.OK)

@@ -143,6 +143,7 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 
 		headerText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		headerText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		headerText.setEditable(false);
 
 		final Button selectBtn = new Button(groupContent, SWT.NONE); 
 		selectBtn.setText("Select..."); 
@@ -167,6 +168,7 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 
 		exclusionText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		exclusionText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		exclusionText.setEditable(false);
 
 		final Button selectBtn = new Button(groupContent, SWT.NONE); 
 		selectBtn.setText("Select..."); 
@@ -255,5 +257,9 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 	
 	public StringProperties getProperties(){
 		return properties;
+	}
+	
+	public void setDialogPath (String path){
+		this.path = path;
 	}
 }

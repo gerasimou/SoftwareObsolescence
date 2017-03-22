@@ -35,18 +35,6 @@ public class ProjectRefactorHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 
-		//show library dialog
-		libraryDialog.create();
-		int reply = libraryDialog.open();
-		if (reply != TitleAreaDialog.OK)
-			return null;		
-		
-		boolean OK = MessageUtility.showMessage(shell, MessageDialog.CONFIRM, "Refactor project", 
-				"Do you want to refactor the selected project?");		
-
-		if (!OK)
-			return null;
-		
 		IProject project = null;
 		try{
 			project = SelectionUtility.getSelectedProject();
@@ -55,6 +43,19 @@ public class ProjectRefactorHandler extends AbstractHandler {
 
 			if (cproject != null){
 					
+				//show library dialog
+				libraryDialog.setDialogPath(project.getLocation().toOSString());
+				libraryDialog.create();
+				int reply = libraryDialog.open();
+				if (reply != TitleAreaDialog.OK)
+					return null;		
+				
+				boolean OK = MessageUtility.showMessage(shell, MessageDialog.CONFIRM, "Refactor project", 
+						"Do you want to refactor the selected project?");		
+
+				if (!OK)
+					return null;
+				
 				//get library dialogue properties
 				StringProperties properties = libraryDialog.getProperties();
 				String[] libHeaders       	= properties.getProperty(RefactoringProjectDialog.LIB_HEADERS).split(",");
