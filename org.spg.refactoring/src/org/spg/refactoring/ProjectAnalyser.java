@@ -29,6 +29,7 @@ import org.eclipse.cdt.core.dom.ast.ICompositeType;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
+import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.ITypedef;
 import org.eclipse.cdt.core.dom.ast.IVariable;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
@@ -154,6 +155,7 @@ public class ProjectAnalyser {
 			System.out.println(str.toString());
 		}
  	}
+
  	
  	private void checkReferences () {
  		try {
@@ -223,6 +225,10 @@ public class ProjectAnalyser {
  	private void checkMethodSignature(ICPPMethod methodBinding) throws CoreException, DOMException, InterruptedException{
 		IIndexName[] methodDecls = projectIndex.findNames(methodBinding, IIndex.FIND_DECLARATIONS);
 		if (methodDecls.length > 0){						
+//			ICPPParameter[] params = methodBinding.getParameters(); 
+			IType returnType = methodBinding.getType().getReturnType();
+			IType paramTypes[] = methodBinding.getType().getParameterTypes();
+			
 			ICPPASTFunctionDeclarator methodDecl = (ICPPASTFunctionDeclarator) refactoring.findNodeFromIndex(methodDecls[0], false, ICPPASTFunctionDeclarator.class);
 			
 			//check return type
@@ -254,7 +260,7 @@ public class ProjectAnalyser {
 		if (declSpecifier instanceof IASTNamedTypeSpecifier){
 			IASTName declSpecifierName 	= ((IASTNamedTypeSpecifier) declSpecifier).getName();
 			IBinding declSpecifierBinding	= declSpecifierName.resolveBinding();
-			
+						
 			//find where the param specifier is defined
 			if ( (declSpecifierBinding instanceof ICompositeType) || (declSpecifierBinding instanceof IEnumeration) ){
 				IASTNode node= checkBindingGeneral(declSpecifierBinding, IIndex.FIND_DEFINITIONS, true, true);
@@ -399,8 +405,7 @@ public class ProjectAnalyser {
 //			if (dd.isDefinition() && RefactoringProject.OLD_HEADERS.contains(path)){
 //				System.out.print(binding.getName() + "\t"+path +"\t"+ dd.isBaseSpecifier() +"\t"+ dd.isDeclaration() +"\t"+ dd.isDefinition() +"\t");
 				node = refactoring.findNodeFromIndex(dd, indexLocked, IASTNode.class);
-				if (node!=null)
-					System.out.println(node. getPropertyInParent());
+//				if (node!=null) System.out.println(node. getPropertyInParent());
 //				exists = true;
 				break;
 			}
@@ -408,10 +413,6 @@ public class ProjectAnalyser {
 		projectIndex.releaseReadLock();
 		return node;
 	}
-	
-	
-	
-	
 	
 	
  	
@@ -458,7 +459,6 @@ public class ProjectAnalyser {
 			if (!(exp instanceof IASTFunctionCallExpression))
 				return PROCESS_CONTINUE;
 			IASTFunctionCallExpression funcCallExp = (IASTFunctionCallExpression) exp;
-
 			IASTExpression funcExpression = funcCallExp.getFunctionNameExpression();
 
 			IASTName name = null;
@@ -537,7 +537,6 @@ public class ProjectAnalyser {
 			// check if there are any declarators: they should, otherwise there
 			// would be a compilation error (e.g., int ;)
 			if ((simpleDecl.getDeclSpecifier() instanceof IASTNamedTypeSpecifier)){				
-
 				// find bindings for the declaration specifier
 				IASTName declSpecifierName = ((IASTNamedTypeSpecifier) simpleDecl.getDeclSpecifier()).getName();
 				IBinding binding = declSpecifierName.resolveBinding();
@@ -624,7 +623,8 @@ public class ProjectAnalyser {
 						|| (binding instanceof ICPPUnknownBinding) 
 						){
 //					System.out.println("NULL\t" + binding +"\t"+ binding.getClass().getSimpleName());
-					return false;
+					throw new IllegalArgumentException(binding.getName() +"\t"+ binding.getClass().getName());
+//					return false;
 				}
 				//if it's a method/function
 				else if (binding instanceof IFunction){ 
@@ -702,7 +702,8 @@ public class ProjectAnalyser {
 			} catch (DOMException | NullPointerException | CoreException | InterruptedException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException  e){
-				System.err.println(e.getMessage());
+//				System.out.println("NULL\t" + binding +"\t"+ binding.getClass().getSimpleName());
+//				System.err.println(e.getMessage());
 			}
 			
 			return false;
@@ -713,6 +714,7 @@ public class ProjectAnalyser {
 			boolean added = this.namesSet.add(name);
 			this.namesList.add(name);
 			if (added){
+//				System.out.println(binding.getClass().getSimpleName() +"\t" + binding.getName());
 				this.bindingsSet.add(binding);
 				this.nodesList.add(node);
 			}
