@@ -139,7 +139,8 @@ public class RefactoringProject {
 			e.printStackTrace();
 			try {
 				//if an exception is thrown --> delete the newly created project
-				newCProject.getProject().delete(false, new NullProgressMonitor());
+				if (newCProject!=null)
+					newCProject.getProject().delete(false, new NullProgressMonitor());
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 				return false;

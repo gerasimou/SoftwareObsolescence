@@ -1,7 +1,6 @@
 package org.spg.refactoring;
 
 import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -10,9 +9,11 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
@@ -37,6 +38,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTUsingDirective;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPBase;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
@@ -53,6 +55,8 @@ import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IInclude;
+import org.eclipse.cdt.core.model.INamespace;
+import org.eclipse.cdt.core.model.IParent;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.core.model.IUsing;
 import org.eclipse.cdt.internal.core.model.CreateUsingOperation;
@@ -104,7 +108,8 @@ public class ProjectRefactorer {
 		createSource(classMembersMap);
 		
 		//refactor the files that use the original library (include and using directives)
-		refactorAffectedFiles(TUs, tusUsingLib);
+		refactorIncludeDirectives(tusUsingLib);
+		refactorUsingDirectives(tusUsingLib);
  	}
  	
  	
@@ -187,7 +192,7 @@ public class ProjectRefactorer {
 			ASTRewrite rewriter = ASTRewrite.create(sourceAST);
 			// get node factory
 			ICPPNodeFactory nodeFactory = (ICPPNodeFactory) sourceAST.getASTNodeFactory();
-
+			
 			//1) add include directives
 			IASTName myLibInclude = nodeFactory.newName("#include \"" + RefactoringProject.NEW_LIBRARYhpp +"\"");
 			rewriter.insertBefore(sourceAST, null, myLibInclude, null);
@@ -529,88 +534,170 @@ public class ProjectRefactorer {
 
 
 	/**
-	 * Refactor files (.h & .cpp) that use the old library to start using the new library
-	 * @throws CModelException 
+	 * Refactor include directives in files (.h & .cpp) that use the old library to start using the new library
+	 * @throws CoreException 
 	 */
-	private void refactorAffectedFiles(Collection<ITranslationUnit> TUs, Collection<ITranslationUnit> tusUsingLib) throws CModelException{
-		
-		//get excluded files
-		String[] excludedFiles = new String[RefactoringProject.LIB_HEADERS.size()+2]; 
-		int i=0;
-		List<String> oldHeaders = new ArrayList<String>(Arrays.asList(RefactoringProject.LIB_HEADERS.toArray(new String[RefactoringProject.LIB_HEADERS.size()]))); 
-		for (; i<RefactoringProject.LIB_HEADERS.size(); i++)
-			excludedFiles[i] = oldHeaders.get(i);
-		excludedFiles[i++] = RefactoringProject.NEW_LIBRARYhpp;
-		excludedFiles[i]   = RefactoringProject.NEW_LIBRARYcpp;		
-		
-		
-		for (ITranslationUnit tu : TUs){			
-			//if this TU is in the list of TUs using the old library 
-			if (tusUsingLib.contains(tu)){
-	
-				//change include directives
-				for (IInclude include : tu.getIncludes()){
-					for (String oldLibHeader : RefactoringProject.LIB_HEADERS){
-						if (include.getFullFileName().contains(oldLibHeader)){
-//							System.err.println("Removing include " + include.getElementName() +" from "+ tu.getFile().getFullPath());
-							//delete previous include
-							include.delete(false,  new NullProgressMonitor());
-							tu.save(new NullProgressMonitor(), true);
-							
-							//find insert position
-							ICElement sibling = null;
-							if (tu.getIncludes().length > 0)
-								sibling = tu.getIncludes()[tu.getIncludes().length-1];
-							else if (tu.getUsings().length > 0)
-								sibling = tu.getUsings()[0];
-							else if (tu.getNamespaces().length > 0)
-								sibling = tu.getNamespaces()[0];
-							
-							//add new include directive
-							tu.createInclude(RefactoringProject.NEW_INCLUDE_DIRECTIVE, true, 
-												sibling, new NullProgressMonitor());
-							tu.save(new NullProgressMonitor(), true);
-//							include.rename(RefactoringProject.NEW_LIBRARYhpp, true, new NullProgressMonitor());
-						}
-					}
-				}
-			}
-		}
-		
+	private void refactorIncludeDirectives(Collection<ITranslationUnit> tusUsingLib) throws CoreException{
+		for (ITranslationUnit tu : tusUsingLib){
 
-		for (ITranslationUnit tu : TUs){						
-			//if this TU is in the list of TUs using the old library 
-			if (tusUsingLib.contains(tu)){
-				
-				//change the namespace
-				for (IUsing using : tu.getUsings()){
-					if (RefactoringProject.LIB_NAMESPACES.contains(using.getElementName())){
-//						namespace. rename("BOOOB", true, new NullProgressMonitor());
-//						System.err.println("Removing using " + using.getElementName() +" from "+ tu.getFile().getFullPath());
-						//delete previous using directive
-						using.delete(true,  new NullProgressMonitor());
+			//change include directives
+			for (IInclude include : tu.getIncludes()){
+				for (String oldLibHeader : RefactoringProject.LIB_HEADERS){
+					if (include.getFullFileName().contains(oldLibHeader)){
+//							System.err.println("Removing include " + include.getElementName() +" from "+ tu.getFile().getFullPath());
+						//delete previous include
+						include.delete(false,  new NullProgressMonitor());
 						tu.save(new NullProgressMonitor(), true);
 						
 						//find insert position
-						ICElement sibling = null; 
-						if (tu.getUsings().length > 0)
-							sibling = tu.getUsings()[0];
-						else if (tu.getIncludes().length > 0)
+						ICElement sibling = null;
+						if (tu.getIncludes().length > 0)
 							sibling = tu.getIncludes()[tu.getIncludes().length-1];
+						else if (tu.getUsings().length > 0)
+							sibling = tu.getUsings()[0];
 						else if (tu.getNamespaces().length > 0)
 							sibling = tu.getNamespaces()[0];
-
-						//add new using directive
-						myTranslationUnit myTU = new myTranslationUnit(tu.getParent(), tu.getFile(), 
-													tu.isHeaderUnit()?CCorePlugin.CONTENT_TYPE_CXXHEADER:CCorePlugin.CONTENT_TYPE_CXXSOURCE);
-						myTU.createUsing(RefactoringProject.NEW_NAMESPACE, true, sibling, new NullProgressMonitor());
 						
+						//add new include directive
+						tu.createInclude(RefactoringProject.NEW_INCLUDE_DIRECTIVE, true, 
+											sibling, new NullProgressMonitor());
 						tu.save(new NullProgressMonitor(), true);
+//							include.rename(RefactoringProject.NEW_LIBRARYhpp, true, new NullProgressMonitor());
 					}
 				}
 			}
+		}			
+	}
+	 
+	
+	/**
+	 * Refactor using directives in files (.h & .cpp) that use the old library to start using the new library
+	 * @param tusUsingLib
+	 * @throws CoreException
+	 */
+	private void refactorUsingDirectives(Collection<ITranslationUnit> tusUsingLib) throws CoreException{
+		for (ITranslationUnit tu : tusUsingLib){
+	
+			// get ast
+			IASTTranslationUnit tuAST = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
+			// get rewriter
+			ASTRewrite rewriter = ASTRewrite.create(tuAST);
+			// get node factory
+			ICPPNodeFactory nodeFactory = (ICPPNodeFactory) tuAST.getASTNodeFactory();
+			
+			tuAST.accept(new ASTVisitor() {
+				{
+					shouldVisitDeclarations = true;
+				}
+				
+				@Override
+				public int visit(IASTDeclaration element) {
+					if (element instanceof ICPPASTUsingDirective) {
+						ICPPASTUsingDirective using = (ICPPASTUsingDirective)element;
+						if (RefactoringProject.LIB_NAMESPACES.contains(using.getQualifiedName().toString())){
+							System.out.println("Found\t" + using.getQualifiedName().toString());
+	
+							ICPPASTUsingDirective newUsing = (ICPPASTUsingDirective) nodeFactory.newUsingDirective(nodeFactory.newName(RefactoringProject.NEW_NAMESPACE));
+							
+							rewriter.replace(element, (IASTNode) newUsing, null);
+							try {
+								rewriter.rewriteAST().perform(new NullProgressMonitor());
+							} 
+							catch (CoreException e) {
+								e.printStackTrace();
+							} 
+						}
+					}
+					return PROCESS_CONTINUE;
+				}
+			});
 		}
+	}
+	
+	
+	@Deprecated
+	private void refactorUsingDirectivesOld(Collection<ITranslationUnit> tusUsingLib) throws CModelException{
+		for (ITranslationUnit tu : tusUsingLib){
 		
+			//change the namespace
+			for (IUsing using : tu.getUsings()){
+				if (RefactoringProject.LIB_NAMESPACES.contains(using.getElementName())){
+	//				namespace. rename("BOOOB", true, new NullProgressMonitor());
+	//				System.err.println("Removing using " + using.getElementName() +" from "+ tu.getFile().getFullPath());
+					//delete previous using directive
+					using.delete(true,  new NullProgressMonitor());
+					tu.save(new NullProgressMonitor(), true);
+					
+					//find insert position
+					ICElement sibling = null; 
+					if (tu.getUsings().length > 0)
+						sibling = tu.getUsings()[tu.getUsings().length-1];
+					else if (tu.getIncludes().length > 0)
+						sibling = tu.getIncludes()[tu.getIncludes().length-1];
+					else if (tu.getNamespaces().length > 0)
+						sibling = tu.getNamespaces()[0];
+					
+	
+					//add new using directive
+					myTranslationUnit myTU = new myTranslationUnit(tu.getParent(), tu.getFile(), 
+												tu.isHeaderUnit()?CCorePlugin.CONTENT_TYPE_CXXHEADER:CCorePlugin.CONTENT_TYPE_CXXSOURCE);
+					myTU.createUsing(RefactoringProject.NEW_NAMESPACE, true, sibling, new NullProgressMonitor());
+					
+					myTU.save(new NullProgressMonitor(), true);
+				}
+			}
+		}
+	}
+	
+	
+	@Deprecated
+	private void checkNamespaceUsing (ITranslationUnit tu, IParent parent) throws CModelException{
+		List<ICElement> namespaces = parent.getChildrenOfType(ICElement.C_NAMESPACE);
+		for (ICElement namespace : namespaces){
+			rename(tu, ((INamespace)namespace));
+		
+			checkNamespaceUsing(tu, (INamespace)namespace);			
+		}
+	}
+
+	
+	@Deprecated
+	private void rename(ITranslationUnit tu, IParent parent) throws CModelException{
+		List<ICElement> usings		  = parent.getChildrenOfType(ICElement.C_USING);
+		for (ICElement using : usings){
+			if (RefactoringProject.LIB_NAMESPACES.contains(((IUsing)using).getElementName())){				
+//				//delete previous using directive
+//				((IUsing)using).delete(true,  new NullProgressMonitor());
+//				tu.save(new NullProgressMonitor(), true);			
+//
+//				//find insert position
+//				ICElement sibling = null; 
+//				if (parent.getChildrenOfType(ICElement.C_USING).size() > 0)
+//					sibling = parent.getChildrenOfType(ICElement.C_USING).get(parent.getChildrenOfType(ICElement.C_USING).size()-1); 					
+//				else if (parent.getChildrenOfType(ICElement.C_INCLUDE).size() > 0)
+//					sibling = parent.getChildrenOfType(ICElement.C_INCLUDE).get(parent.getChildrenOfType(ICElement.C_INCLUDE).size()-1); 					
+//				else if (parent.getChildrenOfType(ICElement.C_NAMESPACE).size() > 0)
+//					sibling = parent.getChildrenOfType(ICElement.C_NAMESPACE).get(0);
+//				else
+//					sibling = parent.getChildren()[0];
+//				
+//				//add new using directive
+//				myTranslationUnit myTU = new myTranslationUnit(tu.getParent(), tu.getFile(), 
+//											tu.isHeaderUnit()?CCorePlugin.CONTENT_TYPE_CXXHEADER:CCorePlugin.CONTENT_TYPE_CXXSOURCE);
+//				myTU.createUsing(RefactoringProject.NEW_NAMESPACE, true, sibling, new NullProgressMonitor());
+//				
+//				myTU.save(new NullProgressMonitor(), true);					
+			}
+		}		
+		
+		
+//		//Doesn't work
+//		List<ICElement> usings		  = parent.getChildrenOfType(ICElement.C_USING);
+//		for (ICElement using : usings){
+//			if (RefactoringProject.LIB_NAMESPACES.contains(((IUsing)using).getElementName())){
+//				((IUsing)using).rename(RefactoringProject.NEW_NAMESPACE, true, new NullProgressMonitor());
+//			}
+//		}
 	}
 	
 	
