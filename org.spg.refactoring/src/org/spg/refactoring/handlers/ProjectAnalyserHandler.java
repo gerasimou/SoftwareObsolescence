@@ -42,9 +42,8 @@ public class ProjectAnalyserHandler extends AbstractHandler {
 			if (cproject != null){
 
 				//show library dialog
-				libraryDialog.setDialogPath(project.getLocation().toOSString());				
-				libraryDialog.create();
-				libraryDialog.create();
+//				libraryDialog.setDialogPath(project.getLocation().toOSString());				
+				libraryDialog.create(project.getName(), project.getLocation().toOSString());
 				int reply = libraryDialog.open();
 				if (reply != TitleAreaDialog.OK)
 					return null;		

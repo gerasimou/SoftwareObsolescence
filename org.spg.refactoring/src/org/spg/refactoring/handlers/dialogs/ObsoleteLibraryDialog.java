@@ -12,7 +12,6 @@
 package org.spg.refactoring.handlers.dialogs;
 
 
-import org.eclipse.epsilon.common.dt.launching.dialogs.BrowseWorkspaceUtil;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -33,11 +32,11 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 
 	private StringProperties properties;	
 	
-	private Label oldNamespaceLabel;
-	private Label oldHeaderLabel;
-
-	private Text oldNamespaceText;
-	private Text oldHeaderText;
+//	private Label oldNamespaceLabel;
+//	private Label oldHeaderLabel;
+//
+//	private Text oldNamespaceText;
+//	private Text oldHeaderText;
 	
 	private Label headerLabel;
 	private Label exclusionLabel;
@@ -79,9 +78,8 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		loadProperties();
 
 		//preconfigured details
-//		headerText.
-		headerText.setText("tinyxml2.h");
-		exclusionText.setText("tinyxml2.cpp");
+//		headerText.setText("tinyxml2.h");
+//		exclusionText.setText("tinyxml2.cpp");
 		
 		control.layout();
 		control.pack();
@@ -91,41 +89,40 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	
 	
 	protected void createGroups(Composite parent) {
-//		createExistingProjectGroup(parent);
 		createSelectionGroup(parent);
 		createExclusionGroup(parent);
 	}
 	
 	
-	protected void createExistingProjectGroup(Composite parent) {
-		final Composite groupContent = createGroupContainer(parent, "Existing project details", 3);
-		
-		oldNamespaceLabel = new Label(groupContent, SWT.NONE);
-		oldNamespaceLabel.setText("Namespace");
-
-		oldNamespaceText = new Text(groupContent, SWT.BORDER);
-		oldNamespaceText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		new Label(groupContent, SWT.NONE);
-		
-		oldHeaderLabel = new Label(groupContent, SWT.NONE);
-		oldHeaderLabel.setText("Library files (header)");
-
-		oldHeaderText = new Text(groupContent, SWT.BORDER);
-		oldHeaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		final Button browseFile = new Button(groupContent, SWT.NONE); 
-		browseFile.setText("Browse Workspace..."); 
-		browseFile.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				String file = BrowseWorkspaceUtil.browseFilePath(getShell(), 
-						"Library files in the workspace", "Select a header file", "", null);
-				if (file != null){
-					oldHeaderText.setText(file);
-				}
-			}
-		});
-	}
+//	protected void createExistingProjectGroup(Composite parent) {
+//		final Composite groupContent = createGroupContainer(parent, "Existing project details", 3);
+//		
+//		oldNamespaceLabel = new Label(groupContent, SWT.NONE);
+//		oldNamespaceLabel.setText("Namespace");
+//
+//		oldNamespaceText = new Text(groupContent, SWT.BORDER);
+//		oldNamespaceText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//		new Label(groupContent, SWT.NONE);
+//		
+//		oldHeaderLabel = new Label(groupContent, SWT.NONE);
+//		oldHeaderLabel.setText("Library files (header)");
+//
+//		oldHeaderText = new Text(groupContent, SWT.BORDER);
+//		oldHeaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//		
+//		final Button browseFile = new Button(groupContent, SWT.NONE); 
+//		browseFile.setText("Browse Workspace..."); 
+//		browseFile.addListener(SWT.Selection, new Listener() {
+//			@Override
+//			public void handleEvent(Event event) {
+//				String file = BrowseWorkspaceUtil.browseFilePath(getShell(), 
+//						"Library files in the workspace", "Select a header file", "", null);
+//				if (file != null){
+//					oldHeaderText.setText(file);
+//				}
+//			}
+//		});
+//	}
 	
 	
 	protected void createSelectionGroup(Composite parent) {
@@ -194,10 +191,18 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		return groupContent;
 	}
 	
+	
+	public void create (String projectName, String projectPath){
+		this.path = projectPath;
+
+		super.create();		
+	}
+	
+	
 	protected void loadProperties() {
 		if (properties == null) return;
-		oldHeaderText.setText(properties.getProperty(LIB_HEADERS));
-		oldNamespaceText.setText(properties.getProperty(EXCLUDED_FILES));
+//		oldHeaderText.setText(properties.getProperty(LIB_HEADERS));
+//		oldNamespaceText.setText(properties.getProperty(EXCLUDED_FILES));
 	}
 	
 	protected void storeProperties() {
@@ -220,9 +225,5 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	
 	public StringProperties getProperties(){
 		return properties;
-	}
-	
-	public void setDialogPath (String path){
-		this.path = path;
-	}
+	}	
 }

@@ -80,15 +80,6 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 //		PlatformUI.getWorkbench().getHelpSystem().setHelp(control, "org.eclipse.epsilon.help.emc_dialogs");
 		
 		loadProperties();
-
-		//preconfigured details
-		headerText.setText("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon/XMLexample/src/TinyXML/tinyxml2.h");
-		exclusionText.setText("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon/XMLexample/src/TinyXML/tinyxml2.cpp");
-		newProjectText.setText("XMLExampleNew");
-		newNamespaceText.setText("myNewLib");
-		newLibraryText.setText("myNewLib");
-		libHeaders 		= new String[]{headerText.getText()};
-		excludedFiles	= new String[]{exclusionText.getText()};
 		
 		control.layout();
 		control.pack();
@@ -103,36 +94,6 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 		createExclusionGroup(parent);
 		createNewProjectGroup(parent);
 	}
-	
-//	protected void createExistingProjectGroup(Composite parent) {
-//		final Composite groupContent = createGroupContainer(parent, "Existing project details", 3);
-//		
-//		oldNamespaceLabel = new Label(groupContent, SWT.NONE);
-//		oldNamespaceLabel.setText("Namespace");
-//
-//		oldNamespaceText = new Text(groupContent, SWT.BORDER);
-//		oldNamespaceText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-//		new Label(groupContent, SWT.NONE);
-//		
-//		oldHeaderLabel = new Label(groupContent, SWT.NONE);
-//		oldHeaderLabel.setText("Library files (header)");
-//
-//		oldHeaderText = new Text(groupContent, SWT.BORDER);
-//		oldHeaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-//		
-//		final Button browseFile = new Button(groupContent, SWT.NONE); 
-//		browseFile.setText("Browse Workspace..."); 
-//		browseFile.addListener(SWT.Selection, new Listener() {
-//			@Override
-//			public void handleEvent(Event event) {
-//				String file = BrowseWorkspaceUtil.browseFilePath(getShell(),
-//						"Library files in the workspace", "Select a header file", "", null);
-//				if (file != null){
-//					oldHeaderText.setText(file);
-//				}
-//			}
-//		});
-//	}
 	
 	
 	protected void createSelectionGroup(Composite parent) {
@@ -225,6 +186,19 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 		return groupContent;
 	}
 	
+	
+	public void create (String projectName, String projectPath){
+		this.path = projectPath;
+
+		super.create();
+		
+		//preconfigured details
+		newProjectText.setText(projectName + "Refactored");
+		newNamespaceText.setText("myNewLib");
+		newLibraryText.setText("myNewLib");
+	}
+	
+	
 	protected void loadProperties() {
 		if (properties == null) return;
 		newProjectText.setText(properties.getProperty(NEW_PROJECT));
@@ -259,7 +233,4 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 		return properties;
 	}
 	
-	public void setDialogPath (String path){
-		this.path = path;
-	}
 }
