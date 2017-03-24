@@ -130,7 +130,7 @@ public class ProjectAnalyser {
 
 		System.out.println(namesSet.size() +"\t"+ bindingsSet.size() +"\t"+ nodesList.size());
 		for (int i=0; i<namesSet.size(); i++){
-			System.out.println(namesSet.getList().get(i) +"\t"+ bindingsSet.getList().get(i).getClass().getSimpleName());// +"\t"+ nodesList.get(i));
+			System.out.println(namesSet.getList().get(i) +"\t"+ bindingsSet.getList().get(i).getClass().getSimpleName()  +"\t"+ bindingsSet.getList().get(i).getOwner());
 		}
 		
 		//find mappings class - members
@@ -350,7 +350,7 @@ public class ProjectAnalyser {
 				//if the base binding (base class) is not in the bindings set
 				//then checkClassInheritance() failed
 				if (!bindingsSet.contains(baseBinding))
-					throw new NoSuchElementException("Base class " + baseBinding + "not exists in bindings set!");
+					throw new NoSuchElementException("Base class " + baseBinding + " does not exist in bindings set!");
 					
 				if (baseBinding instanceof ICPPClassType)
 					bindingsGraph.add((ICPPClassType)baseBinding, classBinding);
@@ -711,18 +711,18 @@ public class ProjectAnalyser {
 		
 		
 		private void appendToLists(IASTName name, IBinding binding, IASTNode node){
-			boolean added = this.namesSet.add(name);
+			boolean added =  this.bindingsSet.add(binding);
 			this.namesList.add(name);
 			if (added){
 //				System.out.println(binding.getClass().getSimpleName() +"\t" + binding.getName());
-				this.bindingsSet.add(binding);
+				this.namesSet.add(name);
 				this.nodesList.add(node);
 			}
 		}
 	}
 	
 	
-	private static class NamesSet extends ListSet<IASTName> {
+	private class NamesSet extends ListSet<IASTName> {
 		@Override
 		public boolean contains(Object o) {
 			for (IASTName e : storage) {
@@ -744,11 +744,23 @@ public class ProjectAnalyser {
 	}
 	
 	
-	public static class BindingsSet extends ListSet<IBinding> {
+	public class BindingsSet extends ListSet<IBinding> {
 		@Override
 		public boolean contains(Object o) {
 			for (IBinding e : storage) {
-				if (e == o || e.getName().equals(((IBinding) o).getName().toString())) {
+				if ( (e == o) 
+					||
+					((o instanceof ICPPMethod) 
+						&& (e instanceof ICPPMethod)
+						&&  (((ICPPMethod)o).getName().equals( ((ICPPMethod)e).getName()))
+						&& (((ICPPMethod)e).getClassOwner().equals(((ICPPMethod) o).getClassOwner()))) 
+					||
+					((o instanceof ICompositeType) 
+							&& (e instanceof ICompositeType)
+							&&  (((ICompositeType)o).getName().equals( ((ICompositeType)e).getName())))
+
+					){
+//						&& (checkOverloadedMethodsSignature((ICPPMethod)o, (ICPPMethod)e))) )
 					return true;
 				}
 			}
