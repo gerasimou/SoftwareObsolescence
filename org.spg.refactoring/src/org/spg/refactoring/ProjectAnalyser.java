@@ -415,6 +415,35 @@ public class ProjectAnalyser {
 	}
 	
 	
+	/**
+	 * Check if a method actually matches the signature of this original (base) method
+	 * It checks (1) name; (2) return type; (3) signature
+	 * @param overloadMethod
+	 * @param originalMethod
+	 * @throws DOMException 
+	 */
+	private boolean checkOverloadedMethodsSignature (ICPPMethod originalMethod, ICPPMethod overloadMethod) {
+		//same names
+		if (!originalMethod.getName().equals(overloadMethod.getName()))
+			return false;
+		//same return types
+		if (!originalMethod.getType().getReturnType().isSameType(overloadMethod.getType().getReturnType()))
+			return false;
+		//same #params and param types
+		if (originalMethod.getParameters().length != overloadMethod.getParameters().length)
+			return false;
+		ICPPParameter originalMethodParams[] = originalMethod.getParameters();
+		ICPPParameter overloadMethodParams[] = overloadMethod.getParameters();
+		for (int paramIndex=0; paramIndex<originalMethodParams.length; paramIndex++){
+			ICPPParameter originalParam =  originalMethodParams[paramIndex];
+			ICPPParameter overloadParam =  overloadMethodParams[paramIndex];
+//			System.out.println(originalParam.getType().toString() +"\t"+ overloadParam.getType().toString());
+				if (!originalParam.getType().isSameType(overloadParam.getType()))
+						return false;
+		}
+		return true;
+	}
+	
  	
 	private class NameFinderASTVisitor extends ASTVisitor {
 		/** Set keeping all important IASTNames, but doesn't accept duplicates **/
@@ -584,36 +613,6 @@ public class ProjectAnalyser {
 		}
 
 		
-		/**
-		 * Check if a method actually matches the signature of this original (base) method
-		 * It checks (1) name; (2) return type; (3) signature
-		 * @param overloadMethod
-		 * @param originalMethod
-		 * @throws DOMException 
-		 */
-		private boolean checkOverloadedMethodsSignature (ICPPMethod originalMethod, ICPPMethod overloadMethod) {
-			//same names
-			if (!originalMethod.getName().equals(overloadMethod.getName()))
-				return false;
-			//same return types
-			if (!originalMethod.getType().getReturnType().isSameType(overloadMethod.getType().getReturnType()))
-				return false;
-			//same #params and param types
-			if (originalMethod.getParameters().length != overloadMethod.getParameters().length)
-				return false;
-			ICPPParameter originalMethodParams[] = originalMethod.getParameters();
-			ICPPParameter overloadMethodParams[] = overloadMethod.getParameters();
-			for (int paramIndex=0; paramIndex<originalMethodParams.length; paramIndex++){
-				ICPPParameter originalParam =  originalMethodParams[paramIndex];
-				ICPPParameter overloadParam =  overloadMethodParams[paramIndex];
-//				System.out.println(originalParam.getType().toString() +"\t"+ overloadParam.getType().toString());
-					if (!originalParam.getType().isSameType(overloadParam.getType()))
-							return false;
-			}
-			return true;
-		}
-		
-		
 		private boolean checkBinding(IBinding binding) {
 			try {				
 				//if it's a template or unknown binding
@@ -758,7 +757,10 @@ public class ProjectAnalyser {
 					((o instanceof ICompositeType) 
 							&& (e instanceof ICompositeType)
 							&&  (((ICompositeType)o).getName().equals( ((ICompositeType)e).getName())))
-
+					||
+					((o instanceof IEnumeration) 
+							&& (e instanceof IEnumeration)
+							&&  (((IEnumeration)o).getName().equals( ((IEnumeration)e).getName())))
 					){
 //						&& (checkOverloadedMethodsSignature((ICPPMethod)o, (ICPPMethod)e))) )
 					return true;

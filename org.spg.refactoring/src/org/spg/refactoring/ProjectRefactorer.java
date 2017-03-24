@@ -1,6 +1,7 @@
 package org.spg.refactoring;
 
 import java.nio.file.NoSuchFileException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.eclipse.cdt.core.dom.ast.IASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
 import org.eclipse.cdt.core.dom.ast.IASTName;
+import org.eclipse.cdt.core.dom.ast.IASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
@@ -65,6 +67,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.ltk.core.refactoring.Change;
 import org.spg.refactoring.ProjectAnalyser.BindingsSet;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -110,6 +113,7 @@ public class ProjectRefactorer {
 		//refactor the files that use the original library (include and using directives)
 		refactorIncludeDirectives(tusUsingLib);
 		refactorUsingDirectives(tusUsingLib);
+//		refactorFullyQualifiedNames(tusUsingLib);
  	}
  	
  	
@@ -575,7 +579,7 @@ public class ProjectRefactorer {
 	 * @param tusUsingLib
 	 * @throws CoreException
 	 */
-	private void refactorUsingDirectives(Collection<ITranslationUnit> tusUsingLib) throws CoreException{
+	private void refactorUsingDirectives (Collection<ITranslationUnit> tusUsingLib) throws CoreException{
 		for (ITranslationUnit tu : tusUsingLib){
 	
 			// get ast
@@ -599,7 +603,7 @@ public class ProjectRefactorer {
 	
 							ICPPASTUsingDirective newUsing = (ICPPASTUsingDirective) nodeFactory.newUsingDirective(nodeFactory.newName(RefactoringProject.NEW_NAMESPACE));
 							
-							rewriter.replace(element, (IASTNode) newUsing, null);
+							rewriter.replace(element, newUsing, null);
 							try {
 								rewriter.rewriteAST().perform(new NullProgressMonitor());
 							} 
@@ -611,6 +615,86 @@ public class ProjectRefactorer {
 					return PROCESS_CONTINUE;
 				}
 			});
+		}
+	}
+	
+	
+	private void refactorFullyQualifiedNames (Collection<ITranslationUnit> tusUsingLib) throws CoreException {
+		for (ITranslationUnit tu : tusUsingLib){
+			// get ast
+			IASTTranslationUnit tuAST = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
+			// get rewriter
+			ASTRewrite rewriter = ASTRewrite.create(tuAST);
+			// get node factory
+			ICPPNodeFactory nodeFactory = (ICPPNodeFactory) tuAST.getASTNodeFactory();
+			// List of changes
+			List<Change> changeList = new ArrayList<Change>();
+			
+			tuAST.accept(new ASTVisitor() {
+				// static initialiser: executed when the class is loaded
+				{
+					shouldVisitParameterDeclarations	= true;
+					shouldVisitDeclarations 			= true;
+				}
+
+				@Override
+				public int visit(IASTDeclaration decl) {
+					if (!(decl instanceof IASTSimpleDeclaration))
+						return PROCESS_CONTINUE; 
+					IASTSimpleDeclaration simpleDecl = (IASTSimpleDeclaration) decl;
+
+					// check if there are any declarators: they should, otherwise there
+					// would be a compilation error (e.g., int ;)
+					if ((simpleDecl.getDeclSpecifier() instanceof IASTNamedTypeSpecifier)){				
+						// find bindings for the declaration specifier
+						IASTNamedTypeSpecifier declSpecifier = ((IASTNamedTypeSpecifier) simpleDecl.getDeclSpecifier());
+						processDeclarationSpecifier(declSpecifier);
+					}
+					return PROCESS_CONTINUE;
+				}
+				
+				
+				@Override
+				public int visit(IASTParameterDeclaration pDecl) {
+					// check if there are any declarators: they should, otherwise there
+					// would be a compilation error (e.g., int ;)
+					if ((pDecl.getDeclSpecifier() instanceof IASTNamedTypeSpecifier)){
+						// find bindings for the declaration specifier
+						IASTNamedTypeSpecifier declSpecifier = ((IASTNamedTypeSpecifier) pDecl.getDeclSpecifier());
+						processDeclarationSpecifier(declSpecifier);
+					}
+					return PROCESS_CONTINUE;
+				}
+				
+				
+				private void processDeclarationSpecifier(IASTNamedTypeSpecifier declSpecifier ){
+					try {
+						IASTName declSpecifierName = declSpecifier.getName();
+						if (declSpecifierName instanceof ICPPASTQualifiedName){
+							ICPPASTQualifiedName qualifiedName 		= (ICPPASTQualifiedName)declSpecifierName;
+							System.out.println(qualifiedName +"\t"+ qualifiedName.isQualified() +"\t"+ qualifiedName.isFullyQualified());
+							ICPPASTQualifiedName newQualifiedName	= nodeFactory.newQualifiedName(new String[]{RefactoringProject.NEW_NAMESPACE}, qualifiedName.getLastName().toString());
+							rewriter.replace(qualifiedName, newQualifiedName, null);
+							rewriter.rewriteAST().perform(new NullProgressMonitor());
+							
+							
+
+//							Change c = rewriter.rewriteAST();
+//							changeList.add(c);
+//							declSpecifier.setName(newQualifiedName);//AST froze, does not work
+							System.out.println(Arrays.toString(qualifiedName.getQualifier()));
+							System.out.println(declSpecifier.getRawSignature());
+						} 
+					}
+					catch (CoreException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			
+			
+//			for (Change c : changeList)
+//				c.perform(new NullProgressMonitor());
 		}
 	}
 	
