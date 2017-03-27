@@ -154,48 +154,28 @@ public class RefactoringProject {
 	}
  	
  	
- 	@Deprecated
- 	public boolean refactor2(IProject project) {
+	public boolean analyseOnly (IProject project){
 		try {
 			//get existing cProject
 			this.currentCProject	= CdtUtilities.getICProject(project);
-//			CCorePlugin.getIndexManager().reindex(currentCProject);
-			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject);
-
+			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject); 
+			
 			//1) find all translation units
-			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
 			parseProject();
 
 			//2) analyse project
 			libraryAnalyser.analyseLibrary(libASTCache);
+			projectAnalyser = new ProjectAnalyser(this);
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
-						
 			
-//			/** Get refactoring information*/
-//			BindingsSet bindingsSet  							 = projectAnalyser.getBindings();
-//			Map<IASTName, String> includeDirectivesMap 			 = projectAnalyser.getIncludeDirectives();
-//			Map<ICPPClassType, List<ICPPMember>> classMembersMap = projectAnalyser.getClassMembersMap();
-//			Collection<ITranslationUnit> tusUsingLib			 = projectAnalyser.getTUsUsingLib();
-//			
-//			//3) copy project
-//			IProject newProject	= CdtUtilities.copyProject(currentCProject.getProject(), RefactoringProject.NEW_PROJECT);
-//			if (newProject == null)
-//				throw new Exception("There was something wrong with copying project " + currentCProject.getProject().getName());
-//			newCProject = CdtUtilities.getICProject(newProject);
-						
-			//5) create refactored project
-//			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap, projectASTCache.keySet(), tusUsingLib);
+//			for (ITranslationUnit tuEntry : projectAnalyser.tusUsingLibMap.keySet()){
+			for (Map.Entry<ITranslationUnit, Integer> entry : projectAnalyser. tusUsingLibMap.entrySet()){
+				System.out.println(entry.getKey() +"\t"+ entry.getValue());
+			}
 			
 			return true;
-		} catch (Exception e) {
+		} catch (CoreException e) {
 			e.printStackTrace();
-			try {
-				//if an exception is thrown --> delete the newly created project
-				newCProject.getProject().delete(false, new NullProgressMonitor());
-			} catch (CoreException e1) {
-				e1.printStackTrace();
-				return false;
-			}
 			return false;
 		}
 	}
@@ -205,23 +185,26 @@ public class RefactoringProject {
 		//since we work with a copy project we also need to change the absolute paths
 		System.out.println("\nModifying selections to new project");
 		
+		Set<String> headersSet = new HashSet<String>();
 		String projectPath 		= project.getLocation().toOSString();
 		String newProjectPath	= newProject.getLocation().toOSString();
 		for (String libHeader : LIB_HEADERS){
 			if (libHeader.contains(projectPath)){
 				String libHeaderNewProject = libHeader.replace(projectPath, newProjectPath);
-				LIB_HEADERS.remove(libHeader);
-				LIB_HEADERS.add(libHeaderNewProject);
+				headersSet.add(libHeaderNewProject);
 			}
 		}
+		LIB_HEADERS = headersSet;
 		System.out.println("Headers:\t" + LIB_HEADERS);
+		
+		Set<String> excludedFilesSet = new HashSet<String>();
 		for (String excFile : EXCLUDED_FILES){
 			if (excFile.contains(projectPath)){
 				String excFileNewProject = excFile.replace(projectPath, newProjectPath);
-				EXCLUDED_FILES.remove(excFile);
-				EXCLUDED_FILES.add(excFileNewProject);
+				excludedFilesSet.add(excFileNewProject);
 			}
 		}
+		EXCLUDED_FILES = excludedFilesSet;
 		System.out.println("Excluded files:\t" + EXCLUDED_FILES);
  	}
  	
@@ -309,33 +292,6 @@ public class RefactoringProject {
 				return true;
 		}
 		return false;
-	}
-
-
-	public boolean analyseOnly (IProject project){
-		try {
-			//get existing cProject
-			this.currentCProject	= CdtUtilities.getICProject(project);
-			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject); 
-			
-			//1) find all translation units
-			parseProject();
-
-			//2) analyse project
-			libraryAnalyser.analyseLibrary(libASTCache);
-			projectAnalyser = new ProjectAnalyser(this);
-			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
-			
-//			for (ITranslationUnit tuEntry : projectAnalyser.tusUsingLibMap.keySet()){
-			for (Map.Entry<ITranslationUnit, Integer> entry : projectAnalyser. tusUsingLibMap.entrySet()){
-				System.out.println(entry.getKey() +"\t"+ entry.getValue());
-			}
-			
-			return true;
-		} catch (CoreException e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 	
 	
