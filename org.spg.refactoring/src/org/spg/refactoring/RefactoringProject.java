@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.spg.refactoring;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +33,8 @@ import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.spg.refactoring.ProjectAnalyser.BindingsSet;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -88,7 +91,8 @@ public class RefactoringProject {
 	/**
 	 * The main refactoring method
 	 */
- 	public boolean refactor(IProject project) {
+ 	@SuppressWarnings("restriction")
+	public boolean refactor(IProject project) {
 		try {
 			//1) copy project
 			IProject newProject		= CdtUtilities.copyProject(project, RefactoringProject.NEW_PROJECT);
@@ -130,7 +134,7 @@ public class RefactoringProject {
 			Collection<ITranslationUnit> tusUsingLib			 = projectAnalyser.getTUsUsingLib();
 						
 			//7) refactor
-			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap, projectASTCache.keySet(), tusUsingLib);
+			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap, projectASTCache, tusUsingLib);
 			
 			System.out.println("DONE");
 			
