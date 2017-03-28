@@ -311,48 +311,50 @@ public class ProjectRefactorer {
 							
 				
 				//create members of this class, group the based on their visibilities (//TODO optimise this)
-				List<ICPPMember> membersList = classMembersMap.get(owningclass);
-				int visibilities[] = new int[]{ICPPASTVisibilityLabel.v_public, ICPPASTVisibilityLabel.v_protected, ICPPASTVisibilityLabel.v_private};
-				
-				for (int visibility : visibilities){
-					boolean visLabelAdded = false;
+				if (classMembersMap.get(owningclass)!=null){
+					List<ICPPMember> membersList = classMembersMap.get(owningclass);
+					int visibilities[] = new int[]{ICPPASTVisibilityLabel.v_public, ICPPASTVisibilityLabel.v_protected, ICPPASTVisibilityLabel.v_private};
 					
-					for (ICPPMember member : membersList){
-						if (member.getVisibility() != visibility)
-							continue;
+					for (int visibility : visibilities){
+						boolean visLabelAdded = false;
 						
-						//add visibility label
-						if (!visLabelAdded){
-							newClass.addDeclaration(nodeFactory.newVisibilityLabel(member.getVisibility()));
-							visLabelAdded = true;
-						}
-		
-						//add declaration
-						IIndexName[] memberDecls = projectIndex.findNames(member, IIndex.FIND_DECLARATIONS); //. Declarations(constructor);
-						if (memberDecls.length > 0){ // its size should be 1
-							IIndexName mDecl    = memberDecls[0];
+						for (ICPPMember member : membersList){
+							if (member.getVisibility() != visibility)
+								continue;
 							
-							IASTSimpleDeclaration node = (IASTSimpleDeclaration)refactoring.findNodeFromIndex(mDecl, false, IASTSimpleDeclaration.class);
-							IASTSimpleDeclaration newDeclaration = (node).copy(CopyStyle.withLocations);
-							
-							newClass.addMemberDeclaration(newDeclaration);
-						}
-						else {//if no declaration exists, try to find a definition and extract the declaration
-							IIndexName[] memberDefs = projectIndex.findNames(member, IIndex.FIND_DEFINITIONS);
-							if (memberDefs.length > 0){ // its size should be 1
-								IIndexName mDef    = memberDefs[0];
-								
-								ICPPASTFunctionDefinition node 	  = (ICPPASTFunctionDefinition) refactoring.findNodeFromIndex(mDef, false, ICPPASTFunctionDefinition.class);
-								IASTFunctionDeclarator declarator = node.getDeclarator().copy(CopyStyle.withLocations); 
-								IASTDeclSpecifier      specifier  = node.getDeclSpecifier().copy(CopyStyle.withLocations);
-								IASTSimpleDeclaration newDeclaration = nodeFactory.newSimpleDeclaration(specifier);
-								
-								newDeclaration.addDeclarator(declarator);						
-								newClass.addMemberDeclaration(newDeclaration);	
+							//add visibility label
+							if (!visLabelAdded){
+								newClass.addDeclaration(nodeFactory.newVisibilityLabel(member.getVisibility()));
+								visLabelAdded = true;
 							}
-						}
-					}//end member
-				}//end visibitilies
+			
+							//add declaration
+							IIndexName[] memberDecls = projectIndex.findNames(member, IIndex.FIND_DECLARATIONS); //. Declarations(constructor);
+							if (memberDecls.length > 0){ // its size should be 1
+								IIndexName mDecl    = memberDecls[0];
+								
+								IASTSimpleDeclaration node = (IASTSimpleDeclaration)refactoring.findNodeFromIndex(mDecl, false, IASTSimpleDeclaration.class);
+								IASTSimpleDeclaration newDeclaration = (node).copy(CopyStyle.withLocations);
+								
+								newClass.addMemberDeclaration(newDeclaration);
+							}
+							else {//if no declaration exists, try to find a definition and extract the declaration
+								IIndexName[] memberDefs = projectIndex.findNames(member, IIndex.FIND_DEFINITIONS);
+								if (memberDefs.length > 0){ // its size should be 1
+									IIndexName mDef    = memberDefs[0];
+									
+									ICPPASTFunctionDefinition node 	  = (ICPPASTFunctionDefinition) refactoring.findNodeFromIndex(mDef, false, ICPPASTFunctionDefinition.class);
+									IASTFunctionDeclarator declarator = node.getDeclarator().copy(CopyStyle.withLocations); 
+									IASTDeclSpecifier      specifier  = node.getDeclSpecifier().copy(CopyStyle.withLocations);
+									IASTSimpleDeclaration newDeclaration = nodeFactory.newSimpleDeclaration(specifier);
+									
+									newDeclaration.addDeclarator(declarator);						
+									newClass.addMemberDeclaration(newDeclaration);	
+								}
+							}
+						}//end member
+					}//end visibitilies
+				}
 	
 				//add the new class to the namespace
 				IASTSimpleDeclaration newDeclaration = nodeFactory.newSimpleDeclaration(newClass);
