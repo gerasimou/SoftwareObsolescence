@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +45,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPParameter;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
 import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPClassType;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPUnknownBinding;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.epsilon.common.util.ListSet;
@@ -102,7 +102,7 @@ public class ProjectAnalyser {
  				
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
-			
+						
 			NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
 			astCache.get(tu).accept(fcVisitor);
 			
@@ -117,8 +117,8 @@ public class ProjectAnalyser {
 				nodesList.addAll(fcVisitor.nodesList);
 //				tusUsingLibList.add(tu);
 				tusUsingLibMap.put(tu, fcVisitor.bindingsSet.size());
-				System.out.println(tu +"\t"+ fcVisitor.bindingsSet.size() +"\t"+ fcVisitor.namesSet.size() +"\t"+ 
-											 fcVisitor.nodesList.size()   +"\t"+ fcVisitor.namesList.size());
+				System.out.println(tu +"\t"+ fcVisitor.bindingsSet.size() +"\t"+ fcVisitor.namesSet.size()  +"\t"+ 
+											 fcVisitor.nodesList.size()   +"\t"+ fcVisitor.namesList.size() +"\t"+ Arrays.toString(fcVisitor.bindingsSet.toArray()));
 			}
 		}
 					
@@ -135,23 +135,18 @@ public class ProjectAnalyser {
 		
 		//find mappings class - members
 		classMembersMap = createClassMembersMapping();
-		printClassMembersMap();
+		printClassMembersMap(classMembersMap);
  	}
  	
  	
- 	private void printClassMembersMap(){
+ 	private void printClassMembersMap(Map<ICPPClassType, List<ICPPMember>> map){
  		StringBuilder str = new StringBuilder();
-		for (ICompositeType composite : classMembersMap.keySet()){
+		for (ICompositeType composite : map.keySet()){
 			str.setLength(0);
 			str.append(composite.getName() +":\t");
-			if (classMembersMap.get(composite).size()>0){
-				Iterator<ICPPMember> it =  classMembersMap.get(composite).iterator();
-				while (it.hasNext()){
-					str.append(it.next().getName());
-					if (it.hasNext())
-						str.append(",");
-				}
-			}
+			str.append(composite.getClass().getName() +":\t");
+			if (map.get(composite)!=null)
+				str.append(Arrays.toString(map.get(composite).toArray()));				
 			System.out.println(str.toString());
 		}
  	}
@@ -258,13 +253,14 @@ public class ProjectAnalyser {
 		//1) if it's part of the legacy library, include it in the set of elements to be migrated
 		//2) if it's part of a standard c++ library, add it to the set of include directives
 		if (declSpecifier instanceof IASTNamedTypeSpecifier){
-			IASTName declSpecifierName 	= ((IASTNamedTypeSpecifier) declSpecifier).getName();
+			IASTName declSpecifierName 		= ((IASTNamedTypeSpecifier) declSpecifier).getName();
 			IBinding declSpecifierBinding	= declSpecifierName.resolveBinding();
 						
 			//find where the param specifier is defined
 			if ( (declSpecifierBinding instanceof ICompositeType) || (declSpecifierBinding instanceof IEnumeration) ){
 				IASTNode node= checkBindingGeneral(declSpecifierBinding, IIndex.FIND_DEFINITIONS, true, true);
-								
+				
+				//TODO: need to check the inheritance
 				if (node!=null){
 					bindingsSet.add(declSpecifierBinding);
 					namesSet.add(declSpecifierName);
@@ -313,10 +309,20 @@ public class ProjectAnalyser {
 
 				//if this class is not in the hashmap, create an arraylist and add the mapping
 				if (!classMembersMap.containsKey(owningClass)){
-					ArrayList<ICPPMember> membersList = new ArrayList<ICPPMember>();
-					membersList.addAll(Arrays.asList(owningClass.getConstructors()));//add class constructors
-					membersList.add(classMember); //add the member
-					classMembersMap.put(owningClass, membersList);
+					//FIXME: Dirty solution for bug with ICPPClassType & PDOMCPPClassType: Needs further investigation
+					ICPPClassType clazz = findClassByNameInClassSet(classMembersMap.keySet(), (ICPPClassType)owningClass);
+					if (clazz!=null){
+						List<ICPPMember> membersList = classMembersMap.get(clazz);
+						membersList.add(classMember); //add the member
+						classMembersMap.remove(clazz);
+						classMembersMap.put(owningClass, membersList);						
+					}
+					else{
+						ArrayList<ICPPMember> membersList = new ArrayList<ICPPMember>();
+						membersList.addAll(Arrays.asList(owningClass.getConstructors()));//add class constructors
+						membersList.add(classMember); //add the member
+						classMembersMap.put(owningClass, membersList);
+					}
 				}
 				//if the class exists in the hashmap, simply add the member to the list
 				else{
@@ -335,13 +341,28 @@ public class ProjectAnalyser {
 //					throw new IllegalArgumentException("Class " + owningClass.getName() + " already exists in hashmap");
 			}
 		}
+ 		
+		System.out.println(Arrays.toString(classMembersMap.keySet().toArray()));
+		printClassMembersMap(classMembersMap);
 		
 		//once the mapping is done, do a dependency/inheritance topological sorting of the classes
 		//do determine their insertion order in the header file
 		//TODO: optimise this; it can be embedded into the previous for loop, or in checkClassInheritance()
 		Digraph<ICPPClassType> bindingsGraph = new Digraph<ICPPClassType>();
-		for (ICPPClassType classBinding : classMembersMap.keySet()){		
-			bindingsGraph.add(classBinding);
+		for (ICPPClassType classBinding : classMembersMap.keySet()){
+			//FIXME: Dirty solution for bug with ICPPClassType & PDOMCPPClassType: Needs further investigation
+			boolean exists = false;
+			Class c = classBinding.getClass();
+			if (c.equals(CPPClassType.class)){
+				for (ICPPClassType clazz : bindingsGraph.getSources()){
+					if (classBinding.getName().equals(clazz.getName())){
+						exists = true;
+						break;
+					}
+				}
+			}
+			if (!exists)
+				bindingsGraph.add(classBinding);
 
 			//find base classes and add them to the DAG
 			for (ICPPBase baseClazz : classBinding.getBases()){
@@ -352,19 +373,45 @@ public class ProjectAnalyser {
 				if (!bindingsSet.contains(baseBinding))
 					throw new NoSuchElementException("Base class " + baseBinding + " does not exist in bindings set!");
 					
-				if (baseBinding instanceof ICPPClassType)
+				if (baseBinding instanceof ICPPClassType){
 					bindingsGraph.add((ICPPClassType)baseBinding, classBinding);
+				}
 			}
 		}
-        System.out.println("\nA topological sort of the vertices: " + bindingsGraph.topSort());
 		
-		List<ICPPClassType> topSortedBindings = bindingsGraph.topSort();
+        System.out.println("\nA topological sort of the vertices: " + bindingsGraph.topSort());
+
+        List<ICPPClassType> topSortedBindings = bindingsGraph.topSort();
 		LinkedHashMap<ICPPClassType, List<ICPPMember>> sortedClassMembersMap = new LinkedHashMap<ICPPClassType, List<ICPPMember>>(); 
 		for (ICPPClassType binding : topSortedBindings){
-			sortedClassMembersMap.put(binding, classMembersMap.get(binding));
+			List<ICPPMember> membersList = classMembersMap.get(binding);
+			if (membersList == null)
+				membersList = new ArrayList<ICPPMember>();
+			sortedClassMembersMap.put(binding, membersList);
 		}
 		
+		printClassMembersMap(sortedClassMembersMap);
+
 		return sortedClassMembersMap;
+	}
+	
+	
+	/**
+	 * Check by name if a classType exists in the mape
+	 * Temporary solution/workaround because checkDeclSpecifier(...) introduces CPPClassType elements
+	 * in the map, which has only class elements of PDOMCPPClassType  
+	 * @param owningClass
+	 * @return
+	 */
+	private ICPPClassType findClassByNameInClassSet (Collection<ICPPClassType> classes, ICPPClassType owningClass){
+		ICPPClassType parentClass = null;
+		for (ICPPClassType clazz : classes){
+			if ( clazz.getName().equals(owningClass.getName())) {
+				parentClass = clazz;
+				break;
+			}
+		}
+		return parentClass;
 	}
 	
 	
