@@ -21,6 +21,8 @@ To compile the source code and install FileZilla
 - ./configure.sh
 - ./install.sh
 
+If everything compiles successfully, the FileZilla application will be under compile directory.
+
 
 Features
 --------
