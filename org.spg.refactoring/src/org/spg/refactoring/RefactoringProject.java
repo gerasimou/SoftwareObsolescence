@@ -298,4 +298,9 @@ public class RefactoringProject {
 	public Collection<String> getTUsUsingLibAsString (){
 		return projectAnalyser.getTUsUsingLibAsString();
 	}
+	
+	public Map<String, String> getTUsUsingMapAsString (){
+		return projectAnalyser.getTUsUsingMapAsString();
+	}
+
 }

@@ -9,7 +9,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.commands.AbstractHandler;
@@ -25,8 +25,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
-import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.ProjectVisualiser;
+import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.handlers.dialogs.ObsoleteLibraryDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
@@ -102,11 +102,13 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 //									"Showing City",
 //									"Showing JSCity.");
 				
-				Collection<String> tusUsing = refactoring.getTUsUsingLibAsString();
-
+//				Collection<String> tusUsing = refactoring.getTUsUsingLibAsString();
+				Map<String,String> tusUsingMap = refactoring.getTUsUsingMapAsString();
+				
 				
 				ProjectVisualiser vis = new ProjectVisualiser();
-				String jsonFile = vis.run(project, jsonPath, tusUsing);
+//				String jsonFile = vis.run(project, jsonPath, tusUsing);
+				String jsonFile = vis.run(project, jsonPath, tusUsingMap);
 				
 				//TODO
 				if (jsonFile!=null){

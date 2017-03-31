@@ -846,6 +846,14 @@ public class ProjectAnalyser {
 	protected Collection<ITranslationUnit> getTUsUsingLib (){
 		return tusUsingLibMap.keySet();
 	}
+	
+	protected Map<String, String> getTUsUsingMapAsString (){
+		Map<String, String> tusLibMap = new HashMap<String, String>();
+		for (Map.Entry<ITranslationUnit, Integer> entry : tusUsingLibMap.entrySet()){
+			tusLibMap.put(entry.getKey().getElementName(), entry.getValue() +"");
+		}
+		return tusLibMap;
+	}
 
 	
 	protected Collection<String> getTUsUsingLibAsString (){

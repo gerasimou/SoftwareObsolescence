@@ -1,9 +1,9 @@
 package org.spg.refactoring;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.eclipse.cdt.core.model.ICContainer;
@@ -52,10 +52,12 @@ public class ProjectVisualiser {
 	}
 	
 	
-	public String run (IProject project, String jsonPath, Collection<String> tusUsing){
+//	public String run (IProject project, String jsonPath, Collection<String> tusUsing){
+		public String run (IProject project, String jsonPath, Map<String,String> tusUsingMap){
 		try {
 			
-			generateCityElements(project, tusUsing);
+//			generateCityElements(project, tusUsing);
+			generateCityElements(project, tusUsingMap);
 			
 			String json = generateJSON();
 			
@@ -74,7 +76,7 @@ public class ProjectVisualiser {
 	
 	
 	
-	private void generateCityElements(IProject project, Collection<String> tusUsing) throws CoreException{
+	private void generateCityElements(IProject project, Map<String,String> tusUsingMap) throws CoreException{
 		List<ICElement> icElementsList = new ArrayList<ICElement>(); 
 		ICProject cproject = CdtUtilities.getICProject(project);
 		
@@ -112,8 +114,8 @@ public class ProjectVisualiser {
 			else if (element instanceof ITranslationUnit){//source/header
 				String name 	= element.getElementName();
 				String tooltip	= name + ", LoC : ";
-				String colour	= tusUsing.contains(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
-				String height	= tusUsing.contains(name) ? "50" : "2"; //rand.nextInt(500) + "";
+				String colour	= tusUsingMap.keySet().contains(name) ? BUILDING_COLOR_AFFECTED : BUILDING_COLOR;
+				String height	= tusUsingMap.keySet().contains(name) ? tusUsingMap.get(name): "2"; //rand.nextInt(500) + "";
 				String width	= rand.nextInt(100) + "";
 				String district = element.getParent() instanceof ISourceRoot ? defaultDistrict.name : element.getParent().getElementName(); 
 				Building building = new Building(name, tooltip, colour, height, width, district);
