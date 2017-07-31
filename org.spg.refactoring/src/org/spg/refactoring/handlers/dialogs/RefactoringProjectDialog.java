@@ -74,6 +74,8 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 		Composite control = new Composite(superControl, SWT.FILL);
 		control.setLayout(new GridLayout(1,true));
 		control.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		superControl.setSize(100,50);
+		control.setSize(100, 50);
 		
 		createGroups(parent);
 		
@@ -105,6 +107,7 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 		headerText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		headerText.setLayoutData(new GridData(GridData.FILL_BOTH));
 		headerText.setEditable(false);
+		headerText.setSize(100, 50);
 
 		final Button selectBtn = new Button(groupContent, SWT.NONE); 
 		selectBtn.setText("Select..."); 

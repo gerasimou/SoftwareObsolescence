@@ -121,7 +121,7 @@ public class RefactoringProject {
 				System.out.println(tu.getFile().getFullPath());
 			
 			//5) analyse library
-			libraryAnalyser.analyseLibrary(libASTCache);
+			libraryAnalyser.analyseLibrary(projectIndex, libASTCache);
 			
 			//6) analyse project
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
@@ -132,7 +132,9 @@ public class RefactoringProject {
 			Map<IASTName, String> includeDirectivesMap 			 = projectAnalyser.getIncludeDirectives();
 			Map<ICPPClassType, List<ICPPMember>> classMembersMap = projectAnalyser.getClassMembersMap();
 			Collection<ITranslationUnit> tusUsingLib			 = projectAnalyser.getTUsUsingLib();
-						
+				
+//			doRefactor(tusUsingLib);
+			
 			//7) refactor
 			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap, projectASTCache, tusUsingLib);
 			
@@ -161,16 +163,17 @@ public class RefactoringProject {
 			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject); 
 			
 			//1) find all translation units
+			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
 			parseProject();
 
 			//2) analyse project
-			libraryAnalyser.analyseLibrary(libASTCache);
+			libraryAnalyser.analyseLibrary(projectIndex, libASTCache);
 			projectAnalyser = new ProjectAnalyser(this);
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
 			
 //			for (ITranslationUnit tuEntry : projectAnalyser.tusUsingLibMap.keySet()){
 			for (Map.Entry<ITranslationUnit, Integer> entry : projectAnalyser. tusUsingLibMap.entrySet()){
-				System.out.println(entry.getKey() +"\t"+ entry.getValue());
+				System.out.println(entry.getKey() +"\t"+ entry.getKey().getLocation() +"\t"+ entry.getValue());
 			}
 			
 			return true;
@@ -179,10 +182,51 @@ public class RefactoringProject {
 			return false;
 		}
 	}
+	
+	
+	@SuppressWarnings("restriction")
+	private void doRefactor(Collection<ITranslationUnit> tusUsingLib) throws CoreException, InvocationTargetException, InterruptedException{
+		try{
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		
+//			refactorer.refactorFullyQualifiedNames(tusUsingLib, );
+			
+//			ITranslationUnit tu = (ITranslationUnit) tusUsingLib.toArray()[0];
+	//		CRefactory.getInstance().rename(shell, tu.getIncludes()[0]);
+	//		CRenameAction rename = new CRenameAction();
+			
+//			CRefactoringArgument refArgument	= new CRefactoringArgument( tu.getIncludes()[0]);
+//			CRenameProcessor refProcessor		= new CRenameProcessor(CRefactory.getInstance(), refArgument);
+//			refProcessor.setReplacementText("replacementInclude");
+			
+//			CRenameRefactoring renRefactoring = new CRenameRefactoring(refProcessor);
+	//		RenameSupport.openDialog(shell, renRefactoring);
+	//		renRefactoring.checkInitialConditions(new NullProgressMonitor());
+//			refProcessor.lockIndex();
+	////		renRefactoring.set
+	//		Change c = renRefactoring.createChange(new NullProgressMonitor());
+	//        CRenameRefactoringPreferences preferences = new CRenameRefactoringPreferences();
+	//        refProcessor.setSelectedOptions(preferences.getOptions());
+	//        refProcessor.setExhaustiveSearchScope(preferences.getScope());
+	//        refProcessor.setWorkingSetName(preferences.getWorkingSet());
+//			RenameSupport renameSupport  = RenameSupport.create(refProcessor);
+//			renameSupport.perform(shell, CUIPlugin.getActivePage().getWorkbenchWindow());
+//			refProcessor.unlockIndex();
+	//		RenameSupport.openDialog(shell, refactoring);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+ 	}
  	
  	
+	
+	/**
+	 * Since we work with a copy project we also need to change the absolute paths
+	 * @param project
+	 * @param newProject
+	 */
  	private void modifySelectionsToNewProject(IProject project, IProject newProject){
-		//since we work with a copy project we also need to change the absolute paths
 		System.out.println("\nModifying selections to new project");
 		
 		Set<String> headersSet = new HashSet<String>();

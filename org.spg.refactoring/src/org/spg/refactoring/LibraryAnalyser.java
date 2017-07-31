@@ -12,10 +12,15 @@ import org.eclipse.cdt.core.dom.ast.IASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier;
-import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBinding;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier;
+import org.eclipse.cdt.core.index.IIndex;
+import org.eclipse.cdt.core.index.IIndexName;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNameSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamespaceDefinition;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICElementVisitor;
 import org.eclipse.cdt.core.model.ITranslationUnit;
@@ -23,6 +28,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.spg.refactoring.utilities.MessageUtility;
 
 public class LibraryAnalyser {
+
+	/** project index */
+	protected IIndex projectIndex = null;
 
 	/** Set with the top elements in an obsolete library: 
 	 * e.g., namespace, class, structs, unions, global variables, methods not in classes etc*/
@@ -33,12 +41,15 @@ public class LibraryAnalyser {
 	}
 	
 	
-	protected void analyseLibrary(HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache){
+	protected void analyseLibrary(IIndex index, HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache){
 		try {
+	 		this.projectIndex = index;
+	 		
 			//generate CElements Set
 			generateCElementsSet(libASTCache.keySet());
 			
 //			generateASTElementsSet(libASTCache);
+//			extractLibSuperClasses(libASTCache);
 			
 			System.out.println("\n");
 		} catch (CoreException e) {
@@ -89,6 +100,41 @@ public class LibraryAnalyser {
 	}
 	
 	
+	private void extractLibSuperClasses(HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache){
+		//check if the headers have namespace
+		for (ITranslationUnit tu : libASTCache.keySet()){
+			if (tu.isHeaderUnit() ){
+				IASTTranslationUnit ast = libASTCache.get(tu);
+				ast.accept(new ASTVisitor() {
+					{
+						shouldVisitBaseSpecifiers = true;
+					}
+					
+					@Override
+					public int visit(ICPPASTBaseSpecifier baseSpecifier) {
+						ICPPASTNameSpecifier name = baseSpecifier.getNameSpecifier();
+						IBinding binding = name.resolveBinding();
+						if (binding instanceof ICPPClassType){
+							try {
+								projectIndex.acquireReadLock();
+								IIndexName[] defs = projectIndex.findNames(binding, IIndex.FIND_DEFINITIONS);
+								for (IIndexName dd : defs){
+									if (dd.isDeclaration()){
+										String path = dd.getFileLocation().getFileName();
+										RefactoringProject.LIB_HEADERS.add(path);
+									}
+								}
+							} catch (InterruptedException | CoreException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						return PROCESS_CONTINUE;
+					}
+				});
+			}
+		}	
+	}
 	
 	private void generateASTElementsSet(HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache){
 		//check if the headers have namespace
