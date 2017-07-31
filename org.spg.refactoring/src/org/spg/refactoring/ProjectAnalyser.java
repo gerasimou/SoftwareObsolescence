@@ -99,7 +99,12 @@ public class ProjectAnalyser {
  	 */
  	protected void analyseExistingProject(IIndex index, HashMap<ITranslationUnit, IASTTranslationUnit>  astCache) throws CoreException{
  		this.projectIndex = index;
- 				
+ 		
+ 		if (bindingsSet!=null)
+ 			bindingsSet.clear();
+ 		if(classMembersMap!=null)
+ 			classMembersMap.clear();
+ 		
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
 						
@@ -442,7 +447,7 @@ public class ProjectAnalyser {
 			
 			boolean valid = false;
 			if ( (binding instanceof ICompositeType) || (binding instanceof IEnumeration))
-				valid =  dd.isDefinition();
+				valid =  dd.isDeclaration();// isDefinition();
 			else if (binding instanceof IFunction)
 				valid =  dd.isDeclaration();
 			else if (binding instanceof ITypedef)
@@ -539,6 +544,7 @@ public class ProjectAnalyser {
 
 			IASTName name = null;
 			IASTNode node = null; 
+			IASTName ownerName   = null;
 			
 			// Functions that belong to a class: e.g.,
 			// xmlDoc.LoadFile(filename);
@@ -548,6 +554,15 @@ public class ProjectAnalyser {
 				// get the name
 				name = fieldRef.getFieldName();
 				node = fieldRef;
+				try{
+					IASTExpression owner = fieldRef.getFieldOwner();
+					if (owner instanceof IASTFieldReference)
+						ownerName = ((IASTFieldReference) owner).getFieldName();
+					else if (owner instanceof IASTIdExpression)
+						ownerName = ((IASTIdExpression)owner).getName();
+				}catch (ClassCastException e){
+					e.printStackTrace();
+				}
 			}
 			// Functions that *do not* belong to a class: 
 			//e.g., printf("%s", filename);
@@ -562,9 +577,18 @@ public class ProjectAnalyser {
 			if (name != null) {
 				// get the binding
 				IBinding binding = name.resolveBinding();
+				IBinding ownerBinding = ownerName != null ? ownerName.resolveBinding() : null;
+				if (ownerBinding instanceof IVariable){
+					IVariable variable = (IVariable)ownerBinding;
+					IType type 		   = variable.getType();
+					if (type instanceof ICompositeType)
+						ownerBinding = (ICompositeType)type;
+					else 
+						ownerBinding = null;
+				}
 				// check whether this binding is part of the legacy library
 //				checkBinding(name, binding, node);
-				boolean inLibrary = checkBinding(binding);
+				boolean inLibrary = checkBinding(ownerBinding, binding);
 				if (inLibrary)
 					appendToLists(name, binding, node);
 				
@@ -590,7 +614,7 @@ public class ProjectAnalyser {
 
 			// check whether this binding is part of the legacy library
 //			checkBinding(declSpecifierName, binding, pDecl);
-			boolean inLibrary = checkBinding(binding);
+			boolean inLibrary = checkBinding(null, binding);
 			if (inLibrary)
 				appendToLists(declSpecifierName, binding, pDecl);
 
@@ -619,7 +643,7 @@ public class ProjectAnalyser {
 	
 				// check whether this binding is part of the legacy library
 //				checkBinding(declSpecifierName, binding, simpleDecl);
-				boolean inLibrary = checkBinding(binding);
+				boolean inLibrary = checkBinding(null, binding);
 				if (inLibrary)
 					appendToLists(declSpecifierName, binding, simpleDecl);
 
@@ -642,7 +666,7 @@ public class ProjectAnalyser {
 						for (ICPPBase baseClass : baseClasses){
 							IBinding baseClassType = baseClass.getBaseClass(); 
 							if ( (baseClassType instanceof ICPPClassType) && 
-								 (checkBinding(baseClassType))){
+								 (checkBinding(null, baseClassType))){
 								ICPPClassType clazz = (ICPPClassType)baseClassType;
 								for (ICPPMethod clazzMethod : clazz.getAllDeclaredMethods()){
 									if (checkOverloadedMethodsSignature(methodBinding, clazzMethod)){
@@ -660,7 +684,7 @@ public class ProjectAnalyser {
 		}
 
 		
-		private boolean checkBinding(IBinding binding) {
+		private boolean checkBinding(IBinding ownerBinding, IBinding binding) {
 			try {				
 				//if it's a template or unknown binding
 				if ( (binding==null) 
@@ -689,6 +713,17 @@ public class ProjectAnalyser {
 						}
 					}
 					
+					//check for method from superclass
+					if (!exists && ownerBinding != null){
+						IIndexName[] declDefsOwner = projectIndex.findNames(ownerBinding, IIndex.FIND_DEFINITIONS);
+						for (IIndexName dd : declDefsOwner){
+							String path = dd.getFileLocation().getFileName();
+							if (dd.isDefinition() && RefactoringProject.LIB_HEADERS.contains(path)){
+								exists = true;
+								break;
+							}
+						}
+					}
 					//if the function exists, find its definition
 					//TODO: find definition --> no virtual, const etc
 //					if (exists){
@@ -749,7 +784,7 @@ public class ProjectAnalyser {
 				e.printStackTrace();
 			} catch (IllegalArgumentException  e){
 //				System.out.println("NULL\t" + binding +"\t"+ binding.getClass().getSimpleName());
-//				System.err.println(e.getMessage());
+//				System.err.println(binding +"\t"+ e.getMessage());
 			}
 			
 			return false;
@@ -796,11 +831,6 @@ public class ProjectAnalyser {
 			for (IBinding e : storage) {
 				if ( (e == o) 
 					||
-					((o instanceof ICPPMethod) 
-						&& (e instanceof ICPPMethod)
-						&&  (((ICPPMethod)o).getName().equals( ((ICPPMethod)e).getName()))
-						&& (((ICPPMethod)e).getClassOwner().equals(((ICPPMethod) o).getClassOwner()))) 
-					||
 					((o instanceof ICompositeType) 
 							&& (e instanceof ICompositeType)
 							&&  (((ICompositeType)o).getName().equals( ((ICompositeType)e).getName())))
@@ -812,6 +842,33 @@ public class ProjectAnalyser {
 //						&& (checkOverloadedMethodsSignature((ICPPMethod)o, (ICPPMethod)e))) )
 					return true;
 				}
+				if 	((o instanceof ICPPMethod) 
+						&& (e instanceof ICPPMethod)
+						&&  (((ICPPMethod)o).getName().equals( ((ICPPMethod)e).getName()))
+						&& (((ICPPMethod)e).getClassOwner().equals(((ICPPMethod) o).getClassOwner()))){
+					ICPPMethod mo = (ICPPMethod) o;
+					ICPPMethod me = (ICPPMethod) e;
+					ICPPParameter[] moParams = mo.getParameters();
+					ICPPParameter[] meParams = me.getParameters();
+//					System.out.println(moParams.length == meParams.length);
+					if (moParams.length == meParams.length){
+						boolean exists = true;
+						for (int i=0; i<moParams.length; i++){
+							ICPPParameter moParam = moParams[i];
+							ICPPParameter meParam = meParams[i];
+							IType moType = moParam.getType();
+							IType meType = meParam.getType();
+							if (!moType.isSameType(meType)){
+								exists = false;
+								break;
+							}
+								
+						}
+						if (exists)
+							return true;
+					}
+				}
+
 			}
 			return false;
 		}
@@ -846,6 +903,7 @@ public class ProjectAnalyser {
 	protected Collection<ITranslationUnit> getTUsUsingLib (){
 		return tusUsingLibMap.keySet();
 	}
+	
 	
 	protected Map<String, String> getTUsUsingMapAsString (){
 		Map<String, String> tusLibMap = new HashMap<String, String>();
