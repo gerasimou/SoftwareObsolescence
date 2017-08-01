@@ -31,6 +31,10 @@
           id="org.spg.refactoring.commands.analyseProjectCommand"
           name="Analyse Project">
     </command>  	  
+    <command
+          id="org.spg.refactoring.commands.loggerCommand"
+          name="Log">
+    </command>  	  
 	</extension>
 	
 	<!-- The handler -->
@@ -59,6 +63,10 @@
       <handler
             class="org.spg.refactoring.handlers.ProjectAnalyserHandler"
             commandId="org.spg.refactoring.commands.analyseProjectCommand">
+      </handler>
+      <handler
+            class="org.spg.refactoring.handlers.LoggerHandler"
+            commandId="org.spg.refactoring.commands.loggerCommand">
       </handler>
    </extension>
    
@@ -209,6 +217,11 @@
                      </iterate>
                   </with>
                </visibleWhen>
+            </command>
+            <command
+                  commandId="org.spg.refactoring.commands.loggerCommand"
+                  label="Log "
+                  style="push">
             </command>
          </menu>
       </menuContribution>
