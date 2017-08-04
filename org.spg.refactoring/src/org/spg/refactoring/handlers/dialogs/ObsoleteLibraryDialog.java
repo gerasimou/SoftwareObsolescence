@@ -201,8 +201,8 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	
 	protected void loadProperties() {
 		if (properties == null) return;
-//		oldHeaderText.setText(properties.getProperty(LIB_HEADERS));
-//		oldNamespaceText.setText(properties.getProperty(EXCLUDED_FILES));
+		headerText.setText(properties.getProperty(LIB_HEADERS));
+		exclusionText.setText(properties.getProperty(EXCLUDED_FILES));
 	}
 	
 	protected void storeProperties() {

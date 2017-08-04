@@ -14,7 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -187,7 +186,7 @@ public class CdtUtilities {
 	
 	/**
 	 * Returns as List all the translation units for the given project.
-	 * This function considers all the source directories and sub-directories of this projects
+	 * This function considers all the source directories and sub-directories of this project
 	 * and excludes any translation units whose name is within {@code excludedFiles} array
 	 * @param cproject the current C/C++ project
 	 * @param excludedFiles an array of filenames for which a translation unit <b>won't</b> be generated
@@ -198,7 +197,7 @@ public class CdtUtilities {
 		
 		//get source folders
 		try {
-			for (ISourceRoot sourceRoot : cproject. getSourceRoots()){
+			for (ISourceRoot sourceRoot : cproject.getSourceRoots()){
 //				System.out.println(sourceRoot.getLocationURI().getPath());
 				//get all elements
 				for (ICElement element : sourceRoot.getChildren()){
@@ -403,5 +402,4 @@ public class CdtUtilities {
 		project.close(null);
 		}
 	}
-	
 }

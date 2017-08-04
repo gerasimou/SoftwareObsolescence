@@ -6,6 +6,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spg.refactoring.RefactoringProject;
 
 public class FilesSelectionDialog{
     private Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
@@ -15,6 +18,10 @@ public class FilesSelectionDialog{
     private String selectedFilesFullPath[];
   
     private String fileFilterPath;
+    
+	/** Logger instance*/
+	Logger LOG = LoggerFactory.getLogger (FilesSelectionDialog.class);
+
     
     public FilesSelectionDialog(String path, String[] filterExtensions, String[] filterNames) {
     	this.fileFilterPath 	= path;
@@ -49,7 +56,7 @@ public class FilesSelectionDialog{
                 }
             }
         }
-        System.out.println("Selected files:\n" + sb);
+        LOG.info("\nSelected files:\n" + sb);
     }
     
     
