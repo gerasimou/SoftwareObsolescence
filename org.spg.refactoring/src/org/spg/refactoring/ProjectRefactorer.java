@@ -419,7 +419,7 @@ public class ProjectRefactorer {
 							
 							for (IIndexName dd : methodDeclsDefs){
 								String path = dd.getFileLocation().getFileName();
-								if (dd.isDeclaration() && RefactoringProject.LIB_HEADERS.contains(path)){
+								if (dd.isDeclaration()){// && RefactoringProject.LIB_HEADERS.contains(path)){
 									
 									IASTNode node = refactoring.findNodeFromIndex(dd, false, IASTSimpleDeclaration.class, IASTFunctionDefinition.class);
 									if (node!=null){
@@ -551,7 +551,10 @@ public class ProjectRefactorer {
 						ICPPParameter param 	= constructorParams[i];
 						IType 		  paramType	= param.getType();
 						if (paramType instanceof IBasicType)
-							litExpressions[i] = nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL");
+							litExpressions[i] = nodeFactory.newLiteralExpression(IASTLiteralExpression. lk_nullptr, "NULL");
+						else if (paramType instanceof ICPPEnumeration){
+							litExpressions[i] = nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_integer_constant, ((ICPPEnumeration)paramType).getEnumerators()[0].getName());
+						}
 						else
 							litExpressions[i] = nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr");
 					}

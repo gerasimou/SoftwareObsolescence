@@ -56,6 +56,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNewExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTParameterDeclaration;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTQualifiedName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPBase;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPConstructor;
@@ -133,6 +134,9 @@ public class ProjectAnalyser {
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
 			LOG.info("Analysing: " + tu);
+//			String path = tu.getFile().getLocation().toOSString();
+//			if (path.equals("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/FileZilla-3.11.0/src/interface/xmlfunctions.cpp"))
+//				System.out.println("FOUND");
 			NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
 			astCache.get(tu).accept(fcVisitor);
 			
@@ -599,9 +603,11 @@ public class ProjectAnalyser {
 		 * (3) function that <b>do not</b> belong to a class: e.g., {@code printf("%s", filename)}
 		 */
 		@Override
-		public int visit(IASTExpression exp) {
+		public int visit(IASTExpression exp) {				
 			//New expressions
-			if ( !(exp instanceof ICPPASTNewExpression) && !(exp instanceof IASTFunctionCallExpression))
+			if ( !(exp instanceof ICPPASTNewExpression) 
+					&& !(exp instanceof IASTFunctionCallExpression)
+					&& !(exp instanceof IASTIdExpression))
 				return PROCESS_CONTINUE;
 			
 			IASTName name = null;
@@ -642,20 +648,30 @@ public class ProjectAnalyser {
 				}
 			}
 			else if (exp instanceof ICPPASTNewExpression){
-				System.out.print("New expression\t");
+//				System.out.print("New expression\t");
 				ICPPASTNewExpression newExp = (ICPPASTNewExpression)exp;
 				IASTDeclSpecifier newExpSpecifier = newExp.getTypeId().getDeclSpecifier();
 				if (newExpSpecifier instanceof IASTNamedTypeSpecifier){				
 					name = ((IASTNamedTypeSpecifier) newExpSpecifier).getName();
 					node = exp;
-					System.out.println(exp.getParent().getParent().getRawSignature());
+//					System.out.println(exp.getParent().getParent().getRawSignature());
 				}
 			}
+			//of the form TiXmlBase::TIXML_ERROR_DOCUMENT_EMPTY
+			else if (exp instanceof IASTIdExpression){
+				// get the function name: e.g., printf
+				IASTIdExpression idExp = (IASTIdExpression) exp;
+				// get the name
+				name = idExp.getName();
+				if (name instanceof ICPPASTQualifiedName)
+					name = ((ICPPASTQualifiedName) name).getLastName();
+				node = idExp;
+			}
+
 			
-//			if ( (name!=null) && (name.toString().equals("LoadFile") || name.toString().equals("SaveFile")) )
-			if ( (name!=null) && (name.toString().equals("LinkEndChild")) &&
-				 (name.getTranslationUnit().getOriginatingTranslationUnit().getFile().getLocation().toOSString().equals("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/FileZilla-3.11.0/src/interface/xmlfunctions.cpp")))
-				System.out.println("FOUND METHOD " +"\t"+ name.getParent().getParent().getRawSignature());
+//			if ( (name!=null) && (name.toString().equals("ErrorId")) &&
+//				 (name.getTranslationUnit().getOriginatingTranslationUnit().getFile().getLocation().toOSString().equals("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/FileZilla-3.11.0/src/interface/xmlfunctions.cpp")))
+//				System.out.println("FOUND METHOD " +"\t"+ name.getParent().getParent().getRawSignature());
 
 			if (name != null) {
 				// get the binding
@@ -859,7 +875,7 @@ public class ProjectAnalyser {
 			} catch (DOMException | NullPointerException | CoreException | InterruptedException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException  e){
-//				System.out.println("NULL\t" + binding +"\t"+ binding.getClass().getSimpleName());
+//				LOG.warn("NULL\t" + binding +"\t"+ binding.getClass().getSimpleName());
 //				System.err.println(binding +"\t"+ e.getMessage());
 			}
 			
