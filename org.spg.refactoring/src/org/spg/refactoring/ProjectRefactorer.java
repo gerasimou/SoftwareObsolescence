@@ -1,7 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2017 University of York.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Simos Gerasimou - initial API and implementation
+ ******************************************************************************/
 package org.spg.refactoring;
 
 import java.nio.file.NoSuchFileException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -24,15 +33,19 @@ import org.eclipse.cdt.core.dom.ast.IASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTNode.CopyStyle;
 import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTReturnStatement;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTStandardFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.IBasicType;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
+import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTConstructorChainInitializer;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTElaboratedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
@@ -50,6 +63,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPEnumeration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPNodeFactory;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPParameter;
 import org.eclipse.cdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexName;
@@ -96,8 +110,9 @@ public class ProjectRefactorer {
  	 * @throws Exception
  	 */
  	protected void createRefactoredProject(ICProject project, IIndex index, BindingsSet bindingsSet, 
- 											Map<IASTName, String> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap,
- 											HashMap<ITranslationUnit, IASTTranslationUnit> projectASTCache, Collection<ITranslationUnit> tusUsingLib) throws Exception{
+ 											Map<String, IASTName> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap,
+ 											HashMap<ITranslationUnit, IASTTranslationUnit> projectASTCache, Collection<ITranslationUnit> tusUsingLib,
+ 											Collection<IASTPreprocessorMacroDefinition> macrosList) throws Exception{
  		this.projectIndex = index;
  		this.cproject	  = project;	
  		
@@ -105,7 +120,7 @@ public class ProjectRefactorer {
 		//create header file
  		System.out.println("\nCreating library header file: " + RefactoringProject.NEW_LIBRARYhpp);
 		MessageUtility.writeToConsole("Console", "Creating library header file: " + RefactoringProject.NEW_LIBRARYhpp);
-		createHeader(bindingsSet, includeDirectivesMap, classMembersMap);
+		createHeader(bindingsSet, includeDirectivesMap, classMembersMap, macrosList);
 
 		//create source file
  		System.out.println("\nCreating library source file: " + RefactoringProject.NEW_LIBRARYcpp);
@@ -123,7 +138,8 @@ public class ProjectRefactorer {
  	 * Create the header for this library
  	 * @param classMembersMap
  	 */
-	private void createHeader (BindingsSet bindingsSet, Map<IASTName, String> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap) {
+	private void createHeader (BindingsSet bindingsSet, Map<String, IASTName> includeDirectivesMap, Map<ICPPClassType, List<ICPPMember>> classMembersMap,
+							   Collection<IASTPreprocessorMacroDefinition> macrosList) {
 		try {
 			//
 			IFile file = CdtUtilities.createNewFile(cproject, RefactoringProject.NEW_DIR, RefactoringProject.NEW_LIBRARYhpp);
@@ -146,8 +162,8 @@ public class ProjectRefactorer {
 			rewriter.insertBefore(headerAST, null, defStm, null);
 			
 			//2) add include directives
-			for (IASTName name : includeDirectivesMap.keySet()){
-				String includeDirective = includeDirectivesMap.get(name);
+			for (String includeDirective : includeDirectivesMap.keySet()){
+//				String includeDirective = includeDirectivesMap.get(name);
 				IASTName includeDir = nodeFactory.newName("#include <" + includeDirective +">");
 				rewriter.insertBefore(headerAST, null, includeDir, null);
 			}
@@ -155,19 +171,25 @@ public class ProjectRefactorer {
 			//3) add namespace definition
 			ICPPASTNamespaceDefinition nsDef = nodeFactory.newNamespaceDefinition(nodeFactory.newName(RefactoringProject.NEW_NAMESPACE));
 			
-			//4) create forward declarations
+			//4) add macro definitions
+			for (IASTPreprocessorMacroDefinition macroDef : macrosList){
+				IASTName macro = nodeFactory.newName(macroDef.getRawSignature());
+				rewriter.insertBefore(headerAST, null, macro, null);
+			}
+			
+			//5) create forward declarations
 			refactorForwardDeclarations(nsDef, nodeFactory, classMembersMap.keySet());
 			
 			//5) Refactor enumerations
 			refactorEnumerations(bindingsSet, nsDef);
 			
-			//6) Refactor classes and methods
+			//7) Refactor classes and methods
 			refactorClasses(nodeFactory, classMembersMap, nsDef);
 			
-			//7) add namespace to ast
+			//8) add namespace to ast
 			rewriter.insertBefore(headerAST, null, nsDef, null);
 			
-			//8) add endif preprocessor statement
+			//9) add endif preprocessor statement
 			IASTName endIfStm 	= nodeFactory.newName("#endif //" + RefactoringProject.NEW_NAMESPACE +"_INCLUDED");
 			rewriter.insertBefore(headerAST, null, endIfStm, null);
 
@@ -422,7 +444,7 @@ public class ProjectRefactorer {
 																														
 											declSpecifier	= declaration.getDeclSpecifier();
 										}
-										//else if it is a definition
+										//else if it is a definition, i.e., it's an inline function in header file
 										else if (node instanceof IASTFunctionDefinition){
 											IASTFunctionDefinition definition = (IASTFunctionDefinition) node;
 											
@@ -430,7 +452,8 @@ public class ProjectRefactorer {
 																							   definition.getDeclarator().copy(CopyStyle.withLocations),
 																							   nodeFactory.newCompoundStatement());
 											
-											declSpecifier	= definition.getDeclSpecifier();										
+											declSpecifier	= definition.getDeclSpecifier();
+											
 										} 
 										
 										
@@ -444,63 +467,17 @@ public class ProjectRefactorer {
 
 										
 										//C++ manage initialiser lists: any constructor (superclass) initialisers should be added here
+										//e.g., XMLDocument::XMLDocument( bool processEntities, Whitespace whitespace ) : XMLNode( 0 )
 										if (member instanceof ICPPConstructor){
 											ICPPConstructor constructor =  (ICPPConstructor)member;
-											
-											ICPPBase bases[] = constructor.getClassOwner().getBases();
-											for (ICPPBase base : bases){
-												ICPPClassType baseClazz = (ICPPClassType)base.getBaseClass();
-												
-												//the superclass should be in the map
-												if (classMembersMap.containsKey(baseClazz)) {
-													int numberOfConstructorParams = -1; 
-													for (ICPPConstructor baseClassConstructor: baseClazz.getConstructors()){
-														numberOfConstructorParams = baseClassConstructor.getParameters().length;
-														if  (baseClassConstructor.isImplicit())
-															break;
-													}
-													//populate list of constructor params
-													IASTLiteralExpression litExpressions[] = new IASTLiteralExpression[numberOfConstructorParams];
-													Arrays.fill(litExpressions, nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr"));
-													
-													newFunctionDef.addMemberInitializer(nodeFactory.newConstructorChainInitializer(nodeFactory.newName(baseClazz.getName()), 
-																																   nodeFactory.newConstructorInitializer(litExpressions)));
-												}
-												else 
-													throw new IllegalArgumentException("Class " + baseClazz + "not found!");
-											}											
+											ICPPASTConstructorChainInitializer initialiser = manageConstructorInitialisers(nodeFactory, classMembersMap, constructor);
+											if (initialiser != null)
+												newFunctionDef.addMemberInitializer(initialiser);											
 										}
-
 										
+
 										//manage return function specifiers
-										IASTReturnStatement returnStatement	= nodeFactory.newReturnStatement(null);
-										//if the return type is simple specifier except void --> add a null return statement
-										if ( (declSpecifier instanceof IASTSimpleDeclSpecifier) && 
-											 (((IASTSimpleDeclSpecifier)declSpecifier).getType() > IASTSimpleDeclSpecifier.t_void) ){
-											returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr"));
-										}
-										//if the return type is a qualified name (e.g., class, enumeration etc) --> 
-										//   if it is a class --> add a null return statement
-										//   if it is an enumerator --> select a random enum item
-										else if (declSpecifier instanceof ICPPASTNamedTypeSpecifier){
-											IASTName declName 		= ((ICPPASTNamedTypeSpecifier) declSpecifier).getName();
-											IBinding declBinding	= declName.resolveBinding();
-				
-											if (declBinding instanceof ICPPEnumeration){
-												IIndexName[] enumDefs = projectIndex.findNames(declBinding, IIndex.FIND_DEFINITIONS);
-												if (enumDefs.length > 0){ // its size should be 1
-													IIndexName enumDef    = enumDefs[0];
-													IASTEnumerationSpecifier enumNode 	  = (IASTEnumerationSpecifier) refactoring.findNodeFromIndex(enumDef, false, IASTEnumerationSpecifier.class);
-													if (enumNode.getEnumerators().length !=1)
-														returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_false, enumNode.getEnumerators()[0].getName().toString()));
-													else 
-														throw new IllegalArgumentException("Enumerator " + declBinding + "not found!");	
-												}
-											}
-											else
-												returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL"));
-												
-										}
+										IASTReturnStatement returnStatement	 = manageReturnStatement(nodeFactory, declSpecifier);
 										IASTCompoundStatement compoundStatement = (IASTCompoundStatement) newFunctionDef.getBody();
 										compoundStatement.addStatement(returnStatement);
 										
@@ -512,24 +489,28 @@ public class ProjectRefactorer {
 										}
 										
 										
+										//clean the new function definition: remove any storage specifiers in function implementation, e.g., static void TiXmlBase::SetCondenseWhiteSpace(bool condense) {
+										newFunctionDef.getDeclSpecifier().setStorageClass(IASTDeclSpecifier.sc_unspecified);
+
+										
 										//clean the new function definition: remove any parameter initialisers, e.g., bool XMLVisitor::VisitEnter(const XMLElement&, const XMLAttribute* = X){}
 										IASTStandardFunctionDeclarator funDeclarator = (IASTStandardFunctionDeclarator) newFunctionDef.getDeclarator();
 										for (IASTParameterDeclaration paramDeclaration : funDeclarator.getParameters()){
 											paramDeclaration.getDeclarator().setInitializer(null);// (nodeFactory.newEqualsInitializer(nodeFactory.newIdExpression(nodeFactory.newName(""))));
 										}
 
-										
+
 										//add the new definition to the namespace
 										nsDef.addDeclaration(newFunctionDef);										
 										break;
 									}
 								}
 							}
-						}
+						}//if (methodDeclsDefs.length > 0){
 
-					}
-				}
-			}			
+					}//if (member instanceof ICPPMethod)
+				}//for ICPPMember member
+			}//for ICPPClassType owningclass			
 		} 
 		catch (InterruptedException e) {
 			e.printStackTrace();
@@ -539,7 +520,86 @@ public class ProjectRefactorer {
  		}
 	}
 	
+	
+	private ICPPASTConstructorChainInitializer manageConstructorInitialisers(ICPPNodeFactory nodeFactory, 
+																 Map<ICPPClassType, List<ICPPMember>> classMembersMap, 
+		 						   								 ICPPConstructor constructor) throws CoreException{		
+		ICPPBase bases[] = constructor.getClassOwner().getBases();
+		for (ICPPBase base : bases){
+			ICPPClassType baseClazz = (ICPPClassType)base.getBaseClass();
+			
+			//the superclass should be in the map
+			if (classMembersMap.containsKey(baseClazz)) {
+				ICPPParameter[] constructorParams = null;
+				//TODO: How to select the most appropriate superclass constructor? 
+				//      At the moment, select the first non-private && non-default copy or no-argument constructor
+				for (ICPPConstructor baseClassConstructor: baseClazz.getConstructors()){
+					if (baseClassConstructor.getVisibility() != ICPPConstructor.v_private){
+						IIndexName[] constructorDeclsDefs = projectIndex.findNames(baseClassConstructor, IIndex.FIND_DECLARATIONS_DEFINITIONS);
+						if (constructorDeclsDefs.length > 0){//i.e., it's not one of the default copy or no-argument constructors
+							constructorParams		  = baseClassConstructor.getParameters();
+							break;
+						}
+					}
+				}
+				//populate list of constructor params
+				if (constructorParams != null) {
+					//init lit expressions array
+					IASTLiteralExpression litExpressions[] = new IASTLiteralExpression[constructorParams.length];
+					//populate array with custom variables
+					for (int i=0; i < constructorParams.length; i++){
+						ICPPParameter param 	= constructorParams[i];
+						IType 		  paramType	= param.getType();
+						if (paramType instanceof IBasicType)
+							litExpressions[i] = nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL");
+						else
+							litExpressions[i] = nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr");
+					}
+//					Arrays.fill(litExpressions, nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "nullptr"));
+					ICPPASTConstructorChainInitializer constructorChainInitialiser = nodeFactory.newConstructorChainInitializer(nodeFactory.newName(baseClazz.getName()), 
+							   																	   nodeFactory.newConstructorInitializer(litExpressions));
+					return constructorChainInitialiser;
+				}
+			}
+			else 
+				throw new IllegalArgumentException("Class " + baseClazz + "not found!");
+		}
+		return null;	
+	}
 
+	
+	private IASTReturnStatement manageReturnStatement(ICPPNodeFactory nodeFactory, IASTDeclSpecifier declSpecifier) throws CoreException{
+		IASTReturnStatement returnStatement	= nodeFactory.newReturnStatement(null);
+		//if the return type is simple specifier except void --> add a null return statement
+		if ( (declSpecifier instanceof IASTSimpleDeclSpecifier) && 
+			 (((IASTSimpleDeclSpecifier)declSpecifier).getType() > IASTSimpleDeclSpecifier.t_void) ){
+			returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL"));
+		}
+		//if the return type is a qualified name (e.g., class, enumeration etc) --> 
+		//   if it is a class --> add a null return statement
+		//   if it is an enumerator --> select a random enum item
+		else if (declSpecifier instanceof ICPPASTNamedTypeSpecifier){
+			IASTName declName 		= ((ICPPASTNamedTypeSpecifier) declSpecifier).getName();
+			IBinding declBinding	= declName.resolveBinding();
+
+			if (declBinding instanceof ICPPEnumeration){
+				IIndexName[] enumDefs = projectIndex.findNames(declBinding, IIndex.FIND_DEFINITIONS);
+				if (enumDefs.length > 0){ // its size should be 1
+					IIndexName enumDef    = enumDefs[0];
+					IASTEnumerationSpecifier enumNode 	  = (IASTEnumerationSpecifier) refactoring.findNodeFromIndex(enumDef, false, IASTEnumerationSpecifier.class);
+					if (enumNode.getEnumerators().length !=1)
+						returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_false, enumNode.getEnumerators()[0].getName().toString()));
+					else 
+						throw new IllegalArgumentException("Enumerator " + declBinding + "not found!");	
+				}
+			}
+			else
+				returnStatement.setReturnValue(nodeFactory.newLiteralExpression(IASTLiteralExpression.lk_nullptr, "NULL"));
+				
+		}
+		return returnStatement;
+	}
+	
 
 	/**
 	 * Refactor include directives in files (.h & .cpp) that use the old library to start using the new library
@@ -628,7 +688,8 @@ public class ProjectRefactorer {
 	}
 	
 	
-	protected void refactorFullyQualifiedNames (Collection<ITranslationUnit> tusUsingLib, HashMap<ITranslationUnit, IASTTranslationUnit> projectASTCache) throws CoreException {
+	
+	private void refactorFullyQualifiedNames (Collection<ITranslationUnit> tusUsingLib, HashMap<ITranslationUnit, IASTTranslationUnit> projectASTCache) throws CoreException {
 		for (ITranslationUnit tu : tusUsingLib){
 			
 			do {
