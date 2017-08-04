@@ -45,6 +45,7 @@ import org.eclipse.cdt.core.dom.ast.ICompositeType;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.IFunction;
 import org.eclipse.cdt.core.dom.ast.IMacroBinding;
+import org.eclipse.cdt.core.dom.ast.IPointerType;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.ITypedef;
@@ -53,6 +54,7 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDefinition;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTName;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNamedTypeSpecifier;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTNewExpression;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTParameterDeclaration;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPBase;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
@@ -298,9 +300,7 @@ public class ProjectAnalyser {
 									macrosList.add(macroDef);
 								}
 							}
-//							System.out.println(macro);
 						}
-//						System.out.println(literalExpression); 
 					}
 					else if (initialiserClause instanceof IASTIdExpression){
 						IASTIdExpression idExpression = (IASTIdExpression)initialiserClause;
@@ -593,48 +593,69 @@ public class ProjectAnalyser {
 
 		
 		/**
-		 * This is to capture: 
-		 * (1) functions that belong to a class: e.g., {@code xmlDoc.LoadFile(filename)} 
-		 * (2) function that <b>do not</b> belong to a class: e.g., {@code printf("%s", filename)}
+		 * This is to capture:
+		 * (1) new expressions: e.g., * cmd = new CListCommand(dirToVisit.parent, ...) 
+		 * (2) functions that belong to a class: e.g., {@code xmlDoc.LoadFile(filename)} 
+		 * (3) function that <b>do not</b> belong to a class: e.g., {@code printf("%s", filename)}
 		 */
 		@Override
 		public int visit(IASTExpression exp) {
-			if (!(exp instanceof IASTFunctionCallExpression))
+			//New expressions
+			if ( !(exp instanceof ICPPASTNewExpression) && !(exp instanceof IASTFunctionCallExpression))
 				return PROCESS_CONTINUE;
-			IASTFunctionCallExpression funcCallExp = (IASTFunctionCallExpression) exp;
-			IASTExpression funcExpression = funcCallExp.getFunctionNameExpression();
-
+			
 			IASTName name = null;
 			IASTNode node = null; 
 			IASTName ownerName   = null;
-			
-			// Functions that belong to a class: e.g.,
-			// xmlDoc.LoadFile(filename);
-			if (funcExpression instanceof IASTFieldReference) {
-				// get the field reference for this: e.g., xmlDoc.LoadFile
-				IASTFieldReference fieldRef = (IASTFieldReference) funcExpression;
-				// get the name
-				name = fieldRef.getFieldName();
-				node = fieldRef;
-				try{
-					IASTExpression owner = fieldRef.getFieldOwner();
-					if (owner instanceof IASTFieldReference)
-						ownerName = ((IASTFieldReference) owner).getFieldName();
-					else if (owner instanceof IASTIdExpression)
-						ownerName = ((IASTIdExpression)owner).getName();
-				}catch (ClassCastException e){
-					e.printStackTrace();
+
+			if (exp instanceof IASTFunctionCallExpression){
+				IASTFunctionCallExpression funcCallExp = (IASTFunctionCallExpression) exp;
+				IASTExpression funcExpression = funcCallExp.getFunctionNameExpression();
+	
+				
+				// Functions that belong to a class: e.g.,
+				// xmlDoc.LoadFile(filename);
+				if (funcExpression instanceof IASTFieldReference) {
+					// get the field reference for this: e.g., xmlDoc.LoadFile
+					IASTFieldReference fieldRef = (IASTFieldReference) funcExpression;
+					// get the name
+					name = fieldRef.getFieldName();
+					node = fieldRef;
+					try{
+						IASTExpression owner = fieldRef.getFieldOwner();
+						if (owner instanceof IASTFieldReference)
+							ownerName = ((IASTFieldReference) owner).getFieldName();
+						else if (owner instanceof IASTIdExpression)
+							ownerName = ((IASTIdExpression)owner).getName();
+					}catch (ClassCastException e){
+						e.printStackTrace();
+					}
+				}
+				// Functions that *do not* belong to a class: 
+				//e.g., printf("%s", filename);
+				else if (funcExpression instanceof IASTIdExpression) {
+					// get the function name: e.g., printf
+					IASTIdExpression idExp = (IASTIdExpression) funcExpression;
+					// get the name
+					name = idExp.getName();
+					node = idExp;
 				}
 			}
-			// Functions that *do not* belong to a class: 
-			//e.g., printf("%s", filename);
-			else if (funcExpression instanceof IASTIdExpression) {
-				// get the function name: e.g., printf
-				IASTIdExpression idExp = (IASTIdExpression) funcExpression;
-				// get the name
-				name = idExp.getName();
-				node = idExp;
+			else if (exp instanceof ICPPASTNewExpression){
+				System.out.print("New expression\t");
+				ICPPASTNewExpression newExp = (ICPPASTNewExpression)exp;
+				IASTDeclSpecifier newExpSpecifier = newExp.getTypeId().getDeclSpecifier();
+				if (newExpSpecifier instanceof IASTNamedTypeSpecifier){				
+					name = ((IASTNamedTypeSpecifier) newExpSpecifier).getName();
+					node = exp;
+					System.out.println(exp.getParent().getParent().getRawSignature());
+				}
 			}
+			
+//			if ( (name!=null) && (name.toString().equals("LoadFile") || name.toString().equals("SaveFile")) )
+			if ( (name!=null) && (name.toString().equals("LinkEndChild")) &&
+				 (name.getTranslationUnit().getOriginatingTranslationUnit().getFile().getLocation().toOSString().equals("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/FileZilla-3.11.0/src/interface/xmlfunctions.cpp")))
+				System.out.println("FOUND METHOD " +"\t"+ name.getParent().getParent().getRawSignature());
 
 			if (name != null) {
 				// get the binding
@@ -643,6 +664,8 @@ public class ProjectAnalyser {
 				if (ownerBinding instanceof IVariable){
 					IVariable variable = (IVariable)ownerBinding;
 					IType type 		   = variable.getType();
+					if (type instanceof IPointerType)
+						while ( (type = ((IPointerType) type).getType()) instanceof IPointerType);
 					if (type instanceof ICompositeType)
 						ownerBinding = (ICompositeType)type;
 					else 
