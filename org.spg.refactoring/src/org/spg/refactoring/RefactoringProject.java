@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 University of York.
+ * Copyright (c) 2017 University of York.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,7 @@ import java.util.Set;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
@@ -35,9 +36,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spg.refactoring.ProjectAnalyser.BindingsSet;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
+
+import exceptions.RefactoringException;
 
 public class RefactoringProject {
 
@@ -63,12 +68,17 @@ public class RefactoringProject {
 	
 	/** Pairs of ITranslationUnit, IASTTranslationUnit for the obsolete library**/
 	HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache;
+	
+	/** Logger instance*/
+	Logger LOG = LoggerFactory.getLogger (RefactoringProject.class);
+
 		
 
-	LibraryAnalyser libraryAnalyser = new LibraryAnalyser();
-	ProjectAnalyser projectAnalyser = new ProjectAnalyser(this);
-	ProjectRefactorer refactorer 	= new ProjectRefactorer(this);
+	private LibraryAnalyser libraryAnalyser = new LibraryAnalyser();
+	private ProjectAnalyser projectAnalyser = new ProjectAnalyser(this);
+	private ProjectRefactorer refactorer 	= new ProjectRefactorer(this);
 
+	
 	
 	
 	/** Class constructor */
@@ -91,14 +101,17 @@ public class RefactoringProject {
 	/**
 	 * The main refactoring method
 	 */
- 	@SuppressWarnings("restriction")
 	public boolean refactor(IProject project) {
 		try {
 			//1) copy project
 			IProject newProject		= CdtUtilities.copyProject(project, RefactoringProject.NEW_PROJECT);
-			if (newProject == null)
-				throw new Exception("There was something wrong with copying project " + currentCProject.getProject().getName());
+			if (newProject == null){
+				String msg = "There was something wrong with copying project " + project.getName();
+				LOG.error(msg, new RefactoringException(msg));
+			}
+			LOG.info("Project " + newProject.getName() +" copied successfully");
 
+			
 			//2) modify user selected files to match the structure of the copied project
 			modifySelectionsToNewProject(project, newProject);
 			
@@ -106,19 +119,18 @@ public class RefactoringProject {
 			this.currentCProject	= CdtUtilities.getICProject(newProject);
 			this.newCProject 		= CdtUtilities.getICProject(newProject);
 			CCorePlugin.getIndexManager().reindex(currentCProject);
-			CCorePlugin.getIndexManager().joinIndexer(IIndexManager.FOREVER, new NullProgressMonitor()); // wait for the indexing job to complete.
+			CCorePlugin.getIndexManager().joinIndexer(IIndexManager.FOREVER, new NullProgressMonitor()); // wait for indexing to complete.
 			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject);			
 			
 			//4) find all translation units
-			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
 			parseProject();
 
-			System.out.println("\nLib:\t" 	+ libASTCache.size());
+			LOG.info("\nLib:\t" 	+ libASTCache.size());
 			for (ITranslationUnit tu : libASTCache.keySet())
-				System.out.println(tu.getFile().getFullPath());
+				LOG.info(tu.getFile().getFullPath().toOSString());
 			System.out.println("\nProject:\t" + projectASTCache.size());
 			for (ITranslationUnit tu : projectASTCache.keySet())
-				System.out.println(tu.getFile().getFullPath());
+				LOG.info(tu.getFile().getFullPath().toOSString());
 			
 			//5) analyse library
 			libraryAnalyser.analyseLibrary(projectIndex, libASTCache);
@@ -129,16 +141,16 @@ public class RefactoringProject {
 			
 			/** Get refactoring information*/
 			BindingsSet bindingsSet  							 = projectAnalyser.getBindings();
-			Map<IASTName, String> includeDirectivesMap 			 = projectAnalyser.getIncludeDirectives();
+			Map<String, IASTName> includeDirectivesMap 			 = projectAnalyser.getIncludeDirectives();
 			Map<ICPPClassType, List<ICPPMember>> classMembersMap = projectAnalyser.getClassMembersMap();
 			Collection<ITranslationUnit> tusUsingLib			 = projectAnalyser.getTUsUsingLib();
-				
-//			doRefactor(tusUsingLib);
-			
+			Collection<IASTPreprocessorMacroDefinition> macrosList	 = projectAnalyser.getMacrosList();
+						
 			//7) refactor
-			refactorer.createRefactoredProject(newCProject, projectIndex, bindingsSet, includeDirectivesMap, classMembersMap, projectASTCache, tusUsingLib);
+			refactorer.createRefactoredProject(	newCProject, projectIndex, bindingsSet, includeDirectivesMap, 
+												classMembersMap, projectASTCache, tusUsingLib, macrosList);
 			
-			System.out.println("DONE");
+			LOG.info("DONE");
 			
 			return true;
 		} catch (Exception e) {
@@ -163,7 +175,6 @@ public class RefactoringProject {
 			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject); 
 			
 			//1) find all translation units
-			MessageUtility.writeToConsole("Console", "Generating ASTs for selected project.");
 			parseProject();
 
 			//2) analyse project
@@ -171,9 +182,8 @@ public class RefactoringProject {
 			projectAnalyser = new ProjectAnalyser(this);
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
 			
-//			for (ITranslationUnit tuEntry : projectAnalyser.tusUsingLibMap.keySet()){
 			for (Map.Entry<ITranslationUnit, Integer> entry : projectAnalyser. tusUsingLibMap.entrySet()){
-				System.out.println(entry.getKey() +"\t"+ entry.getKey().getLocation() +"\t"+ entry.getValue());
+				LOG.info(entry.getKey() +"\t"+ entry.getKey().getLocation() +"\t"+ entry.getValue());
 			}
 			
 			return true;
@@ -227,7 +237,7 @@ public class RefactoringProject {
 	 * @param newProject
 	 */
  	private void modifySelectionsToNewProject(IProject project, IProject newProject){
-		System.out.println("\nModifying selections to new project");
+ 		LOG.info("Modifying selections to new project");
 		
 		Set<String> headersSet = new HashSet<String>();
 		String projectPath 		= project.getLocation().toOSString();
@@ -239,7 +249,7 @@ public class RefactoringProject {
 			}
 		}
 		LIB_HEADERS = headersSet;
-		System.out.println("Headers:\t" + LIB_HEADERS);
+		LOG.info("Headers:\t" + LIB_HEADERS);
 		
 		Set<String> excludedFilesSet = new HashSet<String>();
 		for (String excFile : EXCLUDED_FILES){
@@ -249,27 +259,27 @@ public class RefactoringProject {
 			}
 		}
 		EXCLUDED_FILES = excludedFilesSet;
-		System.out.println("Excluded files:\t" + EXCLUDED_FILES);
+		LOG.info("Excluded files:\t" + EXCLUDED_FILES);
  	}
  	
  	
  	/**
  	 * Parse project and for each translation unit generate its AST
+ 	 * and store it in the appropriate collection
  	 * @throws CoreException
  	 */
  	private void parseProject() throws CoreException{
 		MessageUtility.writeToConsole("Console", "Generating ASTs for project "+ currentCProject.getElementName());
-		System.out.println("\nGenerating ASTs for project " + currentCProject.getElementName());
+		LOG.info("Generating ASTs for project " + currentCProject.getElementName());
 
 		List<ITranslationUnit> tuList = CdtUtilities.getProjectTranslationUnits(currentCProject,EXCLUDED_FILES);
 
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : tuList) {
 			// get AST for that translation unit
-			System.out.println(tu.getElementName());
+			LOG.info(tu.getElementName());
 			IASTTranslationUnit ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
 			// cache the tu & ast pair
-//			System.out.println(tu.get			getFileLocation().getFileName();
 			if (LIB_HEADERS.contains(tu.getFile().getLocation().toString()))
 				libASTCache.put(tu, ast);
 			else
@@ -299,7 +309,7 @@ public class RefactoringProject {
 			else if (libASTCache.containsKey(tu)){
 				ast = libASTCache.get(tu);
 			}
-			else{//then it's a native library (e.g., stdio.h); do we need in the AST?
+			else{//then it's a native library (e.g., stdio.h); do we need it in the AST?
 				if (locked)
 					return null;
 				ast = tu.getAST(projectIndex, ITranslationUnit.AST_SKIP_INDEXED_HEADERS);
@@ -342,6 +352,7 @@ public class RefactoringProject {
 	public Collection<String> getTUsUsingLibAsString (){
 		return projectAnalyser.getTUsUsingLibAsString();
 	}
+	
 	
 	public Map<String, String> getTUsUsingMapAsString (){
 		return projectAnalyser.getTUsUsingMapAsString();

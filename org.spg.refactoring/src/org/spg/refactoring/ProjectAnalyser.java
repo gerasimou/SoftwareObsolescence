@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2017 University of York.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Simos Gerasimou - initial API and implementation
+ ******************************************************************************/
 package org.spg.refactoring;
 
 import java.util.ArrayList;
@@ -13,20 +23,28 @@ import org.eclipse.cdt.core.dom.ast.ASTVisitor;
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IASTDeclSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTEqualsInitializer;
 import org.eclipse.cdt.core.dom.ast.IASTExpression;
 import org.eclipse.cdt.core.dom.ast.IASTFieldReference;
 import org.eclipse.cdt.core.dom.ast.IASTFunctionCallExpression;
 import org.eclipse.cdt.core.dom.ast.IASTIdExpression;
+import org.eclipse.cdt.core.dom.ast.IASTInitializer;
+import org.eclipse.cdt.core.dom.ast.IASTInitializerClause;
+import org.eclipse.cdt.core.dom.ast.IASTLiteralExpression;
+import org.eclipse.cdt.core.dom.ast.IASTMacroExpansionLocation;
 import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNamedTypeSpecifier;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTNodeLocation;
 import org.eclipse.cdt.core.dom.ast.IASTParameterDeclaration;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.IBinding;
 import org.eclipse.cdt.core.dom.ast.ICompositeType;
 import org.eclipse.cdt.core.dom.ast.IEnumeration;
 import org.eclipse.cdt.core.dom.ast.IFunction;
+import org.eclipse.cdt.core.dom.ast.IMacroBinding;
 import org.eclipse.cdt.core.dom.ast.IProblemBinding;
 import org.eclipse.cdt.core.dom.ast.IType;
 import org.eclipse.cdt.core.dom.ast.ITypedef;
@@ -49,8 +67,11 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPClassType;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPUnknownBinding;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.epsilon.common.util.ListSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spg.refactoring.utilities.Digraph;
 import org.spg.refactoring.utilities.MessageUtility;
+import org.spg.refactoring.utilities.Utility;
 
 
 @SuppressWarnings("restriction")
@@ -60,7 +81,10 @@ public class ProjectAnalyser {
 	protected IIndex projectIndex = null;
 
 	/** Pairs of elements-potential name from standard C++ library that should be included using #include directives*/
-	protected LinkedHashMap<IASTName, String> includeDirectivesMap; 
+	protected LinkedHashMap<String, IASTName> includeDirectivesMap; 
+	
+	/** List of macros that should be included, e.g., #define FIVE 5*/
+	protected List<IASTPreprocessorMacroDefinition> macrosList;
 	
 	/** Map that between classes and members (functions, methods etc) */
 	protected Map<ICPPClassType, List<ICPPMember>> classMembersMap;
@@ -74,21 +98,20 @@ public class ProjectAnalyser {
 	protected BindingsSet bindingsSet  = new BindingsSet();
 	//FIXME: not correct, do not use this list
 	protected List<IASTNode> nodesList = new ArrayList<IASTNode>();
-
-//	CDTSet<IASTName> namesSet2 	  = new CDTSet<IASTName>(IASTName.class);
-//	CDTSet<IBinding> bindingsSet2 = new CDTSet<IBinding>(IBinding.class);
-//	CDTSet<IASTNode> nodesList2   = new CDTSet<IASTNode>(IASTNode.class);
 	
 	/** Refactoring element*/
 	private RefactoringProject refactoring;
 	
-	
+	/** Logger instance*/
+	Logger LOG = LoggerFactory.getLogger (ProjectAnalyser.class);
+
 	
 	public ProjectAnalyser(RefactoringProject refProject) {
 		this.refactoring 		  = refProject;
-		this.includeDirectivesMap = new LinkedHashMap<IASTName, String>();
+		this.includeDirectivesMap = new LinkedHashMap<String, IASTName>();
 //		this.tusUsingLibList 	  = new ArrayList<ITranslationUnit>();
 		this.tusUsingLibMap		  = new HashMap<ITranslationUnit, Integer>();
+		this.macrosList			  = new ArrayList<IASTPreprocessorMacroDefinition>();
 	}
 
 	
@@ -107,7 +130,7 @@ public class ProjectAnalyser {
  		
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
-						
+			LOG.info("Analysing: " + tu);
 			NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
 			astCache.get(tu).accept(fcVisitor);
 			
@@ -127,7 +150,7 @@ public class ProjectAnalyser {
 			}
 		}
 					
-		System.out.println("\nAffected files:\t" + Arrays.toString(tusUsingLibMap.keySet().toArray()));
+		LOG.info("Affected files:\t" + Arrays.toString(tusUsingLibMap.keySet().toArray()));
 		
 		//check for library uses within the same library
 		MessageUtility.writeToConsole("Console", "Checking class inheritance and method signature.");
@@ -222,10 +245,16 @@ public class ProjectAnalyser {
  	}
  	
  	
+ 	/**
+ 	 * Check signature of a method, including its return type and parameter declarations
+ 	 * @param methodBinding
+ 	 * @throws CoreException
+ 	 * @throws DOMException
+ 	 * @throws InterruptedException
+ 	 */
  	private void checkMethodSignature(ICPPMethod methodBinding) throws CoreException, DOMException, InterruptedException{
 		IIndexName[] methodDecls = projectIndex.findNames(methodBinding, IIndex.FIND_DECLARATIONS);
 		if (methodDecls.length > 0){						
-//			ICPPParameter[] params = methodBinding.getParameters(); 
 			IType returnType = methodBinding.getType().getReturnType();
 			IType paramTypes[] = methodBinding.getType().getParameterTypes();
 			
@@ -247,7 +276,39 @@ public class ProjectAnalyser {
 			ICPPASTParameterDeclaration paramDecls[] = methodDecl.getParameters();
 			for (ICPPASTParameterDeclaration paramDecl :paramDecls ){
 				IASTDeclSpecifier paramDeclSpecifier = paramDecl.getDeclSpecifier();
-				checkDeclSpecifier(paramDeclSpecifier);
+				checkDeclSpecifier(paramDeclSpecifier);	
+				
+				//check initialiser for this parameter
+				IASTInitializer initialiser = paramDecl.getDeclarator().getInitializer();
+				if (initialiser!=null && initialiser instanceof IASTEqualsInitializer){
+					IASTInitializerClause initialiserClause = ((IASTEqualsInitializer)initialiser).getInitializerClause();
+					String msg = "Initialiser:\t"+ methodDecl.getRawSignature() +"\n\t"+ initialiserClause +"\t"+ initialiserClause.getClass().getSimpleName() +"\n";
+					if (initialiserClause instanceof IASTLiteralExpression){
+						IASTLiteralExpression literalExpression = ((IASTLiteralExpression)initialiserClause);
+						IASTNodeLocation location = ((IASTNodeLocation[])literalExpression.getNodeLocations())[0];
+						if (location instanceof IASTMacroExpansionLocation){
+							IASTName macro = ((IASTMacroExpansionLocation)location).getExpansion().getMacroReference();
+							IBinding binding = macro.resolveBinding();
+							if (binding instanceof IMacroBinding){
+								IMacroBinding macroBinding = (IMacroBinding)binding;
+								IIndexName[] macroDecls = projectIndex.findNames(macroBinding, IIndex.FIND_DEFINITIONS);
+								if (macroDecls.length>0){
+									IASTPreprocessorMacroDefinition macroDef = (IASTPreprocessorMacroDefinition) refactoring.findNodeFromIndex(macroDecls[0], false, IASTPreprocessorMacroDefinition.class);
+//									System.out.println(macroDef.getRawSignature());
+									macrosList.add(macroDef);
+								}
+							}
+//							System.out.println(macro);
+						}
+//						System.out.println(literalExpression); 
+					}
+					else if (initialiserClause instanceof IASTIdExpression){
+						IASTIdExpression idExpression = (IASTIdExpression)initialiserClause;
+						System.out.println(idExpression);
+					}
+					System.out.print(msg);
+					Utility.exportToFile("/Users/sgerasimou/Documents/Git/ModernSoftware/org.spg.refactoring/initialiser.txt", msg, true);
+				}
 			}
 		}
  	}
@@ -277,8 +338,8 @@ public class ProjectAnalyser {
 				IASTNode node= checkBindingGeneral(declSpecifierBinding, IIndex.FIND_DEFINITIONS, false, false);
 				
 				if (node!=null){
-					System.out.println(node +"\t"+ node.getContainingFilename() +"\t"+ node.getTranslationUnit().getFilePath());
-					includeDirectivesMap.put(declSpecifierName, node.getContainingFilename());
+//					System.out.println(node +"\t"+ node.getContainingFilename() +"\t"+ node.getTranslationUnit().getFilePath());
+					includeDirectivesMap.put(node.getContainingFilename(), declSpecifierName);
 				}
 				return;
 			}
@@ -497,6 +558,7 @@ public class ProjectAnalyser {
 	}
 	
  	
+	
 	private class NameFinderASTVisitor extends ASTVisitor {
 		/** Set keeping all important IASTNames, but doesn't accept duplicates **/
 		private NamesSet namesSet;
@@ -596,6 +658,7 @@ public class ProjectAnalyser {
 			return PROCESS_CONTINUE;
 		}
 
+		
 		/**
 		 * This is to capture parameters in function definitions: e.g.,
 		 * {@code void testParamDecl (XMLDocument doc, const char *filename)}
@@ -724,16 +787,6 @@ public class ProjectAnalyser {
 							}
 						}
 					}
-					//if the function exists, find its definition
-					//TODO: find definition --> no virtual, const etc
-//					if (exists){
-//						IIndexName[] defs = projectIndex.findNames(binding, IIndex.FIND_DEFINITIONS);
-//						for (IIndexName def : defs){
-//							String path = def.getFileLocation().getFileName();
-////							IASTFunctionDefinition funDef = (IASTFunctionDefinition) refactoring.findNodeFromIndex(def, true, IASTFunctionDefinition.class);
-////							System.out.println(path +"\t"+ def.isDefinition());// +"\n"+ funDef.getRawSignature());
-//						}
-//					}
 					
 					projectIndex.releaseReadLock();
 					return exists;
@@ -890,7 +943,7 @@ public class ProjectAnalyser {
 	}
 
 	
-	protected LinkedHashMap<IASTName, String> getIncludeDirectives(){
+	protected LinkedHashMap<String, IASTName> getIncludeDirectives(){
 		return this.includeDirectivesMap;
 	}
 	
@@ -921,4 +974,9 @@ public class ProjectAnalyser {
 		}
 		return tusLibSet;
 	}	
+	
+	
+	protected Collection<IASTPreprocessorMacroDefinition> getMacrosList(){
+		return this.macrosList;
+	}
 }

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2017 University of York.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Simos Gerasimou - initial API and implementation
+ ******************************************************************************/
 package org.spg.refactoring;
 
 import java.util.ArrayList;
@@ -25,7 +35,11 @@ import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICElementVisitor;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.runtime.CoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spg.refactoring.utilities.MessageUtility;
+
+//TODO: We can use this class to analyse the APIs and extract function definitions for similarity checking 
 
 public class LibraryAnalyser {
 
@@ -35,6 +49,10 @@ public class LibraryAnalyser {
 	/** Set with the top elements in an obsolete library: 
 	 * e.g., namespace, class, structs, unions, global variables, methods not in classes etc*/
 	private Set<ICElement> libCElements;
+	
+	/** Logger instance*/
+	Logger LOG = LoggerFactory.getLogger (LibraryAnalyser.class);
+
 	
 	public LibraryAnalyser() {
 		this.libCElements		= new HashSet<ICElement>();
@@ -60,7 +78,7 @@ public class LibraryAnalyser {
 	
 	private void generateCElementsSet(Collection<ITranslationUnit> tuSet) throws CoreException{
 		MessageUtility.writeToConsole("Console", "Generating CElements sets for selected project");
-		System.out.println("\nGenerating CElements sets for selected project");
+		LOG.info("Generating CElements sets for selected project");
 
 		//check if the headers have namespace
 		for (ITranslationUnit tu : tuSet){
@@ -82,12 +100,12 @@ public class LibraryAnalyser {
 				    		|| element.getElementType() == ICElement.C_TEMPLATE_UNION
 				    		|| element.getElementType() == ICElement.C_TEMPLATE_FUNCTION
 							){								
-							System.out.println(element.getElementName() +"\t"+ element.getClass().getSimpleName() +"\t"+ element.getElementType());
+							LOG.info(element.getElementName() +"\t"+ element.getClass().getSimpleName() +"\t"+ element.getElementType());
 							libCElements.add(element);
-							return false;
+							return true;
 						} 
 						else if (element.getElementType() == ICElement.C_NAMESPACE){
-							System.out.println(element.getElementName() +"\t"+ element.getClass().getSimpleName() +"\t"+ element.getElementType());
+							LOG.info(element.getElementName() +"\t"+ element.getClass().getSimpleName() +"\t"+ element.getElementType());
 							RefactoringProject.LIB_NAMESPACES.add(element.getElementName());
 							libCElements.add(element);
 							return false;
@@ -100,6 +118,7 @@ public class LibraryAnalyser {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private void extractLibSuperClasses(HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache){
 		//check if the headers have namespace
 		for (ITranslationUnit tu : libASTCache.keySet()){
@@ -136,6 +155,8 @@ public class LibraryAnalyser {
 		}	
 	}
 	
+	
+	@SuppressWarnings("unused")
 	private void generateASTElementsSet(HashMap<ITranslationUnit, IASTTranslationUnit> libASTCache){
 		//check if the headers have namespace
 		for (ITranslationUnit tu : libASTCache.keySet()){
@@ -152,7 +173,7 @@ public class LibraryAnalyser {
 	
 	private class NameFinderASTVisitor extends ASTVisitor {
 		/** List keeping all important IASTNames**/
-		List<Class> nodesList = new ArrayList<Class>();
+		List<Class<?>> nodesList = new ArrayList<Class<?>>();
 
 		protected NameFinderASTVisitor(){
 			shouldVisitNamespaces				= true;
@@ -193,9 +214,6 @@ public class LibraryAnalyser {
 			}
 			return PROCESS_CONTINUE;
 		}
-
-
-
 	}
 
 }
