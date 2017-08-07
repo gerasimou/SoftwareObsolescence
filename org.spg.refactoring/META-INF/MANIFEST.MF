@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Refactoring
 Bundle-SymbolicName: org.spg.refactoring;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.3
 Bundle-Activator: org.spg.refactoring.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -13,14 +13,38 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.text,
  org.eclipse.epsilon.eol.engine,
  org.eclipse.ui.console,
- org.eclipse.cdt.managedbuilder.core,
  com.google.gson,
  org.eclipse.epsilon.common.dt,
  org.eclipse.cdt.ui,
- org.slf4j.api,
- org.slf4j.ext,
- ch.qos.logback.classic,
- ch.qos.logback.core
+ org.eclipse.cdt.managedbuilder.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: org.spg.refactoring
+Export-Package: exceptions,
+ logger;uses:="ch.qos.logback.core",
+ org.spg.refactoring;
+  uses:="org.eclipse.cdt.core.dom.ast,
+   org.eclipse.cdt.core.model,
+   org.eclipse.cdt.core.index,
+   org.eclipse.epsilon.common.util,
+   org.eclipse.ui.plugin,
+   org.osgi.framework,
+   org.eclipse.core.runtime,
+   org.eclipse.cdt.internal.core.model,
+   org.eclipse.jface.resource,
+   org.eclipse.core.resources",
+ org.spg.refactoring.handlers;uses:="org.eclipse.core.commands,org.spg.refactoring.handlers.dialogs",
+ org.spg.refactoring.handlers.dialogs;uses:="org.eclipse.swt.widgets,org.eclipse.jface.dialogs,org.eclipse.epsilon.common.util",
+ org.spg.refactoring.handlers.utilities;uses:="org.eclipse.core.resources",
+ org.spg.refactoring.utilities;
+  uses:="org.eclipse.ui.console,
+   org.eclipse.cdt.core.model,
+   org.eclipse.cdt.core.index,
+   org.eclipse.swt.widgets,
+   org.eclipse.core.resources,
+   org.eclipse.epsilon.common.util"
+Bundle-ClassPath: lib/logback-classic-1.2.3-sources.jar,
+ lib/logback-classic-1.2.3.jar,
+ lib/logback-core-1.2.3-sources.jar,
+ lib/logback-core-1.2.3.jar,
+ lib/slf4j-api-1.7.25.jar,
+ .
