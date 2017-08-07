@@ -48,7 +48,7 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	/**JSCity details */
 	final String slash				= File.separator;
 	final String thisClass			= ProjectVisualiserHandler.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-	final String path 	 			= thisClass + ".." + slash + "JSCity" + slash + "js" + slash; 
+	final String path 	 			= thisClass + "JSCity" + slash + "js" + slash; 
 //			"/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
 	final String jsonPath	 		= path + "backend" + slash; 
 //			"/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";

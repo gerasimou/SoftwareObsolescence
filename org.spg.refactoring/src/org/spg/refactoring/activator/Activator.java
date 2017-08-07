@@ -1,15 +1,12 @@
-package org.spg.refactoring;
+package org.spg.refactoring.activator;
 
 import java.io.IOException;
-import java.net.URL;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.slf4j.LoggerFactory;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -72,13 +69,14 @@ public class Activator extends AbstractUIPlugin {
 	}
 	
 	private void configureLogbackInBundle(Bundle bundle) throws JoranException, IOException {
-	    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+	    LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory(); 
+//	    		org.slf4j.impl. LoggerFactory.getILoggerFactory();
         JoranConfigurator jc = new JoranConfigurator();
         jc.setContext(context);
         context.reset();
 
         // this assumes that the logback.xml file is in the root of the bundle.
-        URL logbackConfigFileUrl = FileLocator.find(bundle, new Path("logback.xml"),null);
-        jc.doConfigure(logbackConfigFileUrl.openStream());
+//        URL logbackConfigFileUrl = FileLocator.find(bundle, new Path("logback.xml"),null);
+        jc.doConfigure(Activator.class.getResourceAsStream("logback.xml"));// logbackConfigFileUrl.openStream());
     }
 }
