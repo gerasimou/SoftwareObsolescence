@@ -46,8 +46,12 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	int serverPid;
 	
 	/**JSCity details */
-	final String path 	 			= "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
-	final String jsonPath	 		= "/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";
+	final String slash				= File.separator;
+	final String thisClass			= ProjectVisualiserHandler.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+	final String path 	 			= thisClass + ".." + slash + "JSCity" + slash + "js" + slash; 
+//			"/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
+	final String jsonPath	 		= path + "backend" + slash; 
+//			"/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";
 	final String server 	 		= "server.js";
 	final String MySQL				= "/usr/local/bin/mysql.server";
 	final String NODE				= "/usr/local/bin/node";
@@ -64,7 +68,6 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	}
 
 	
-	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
@@ -78,7 +81,6 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 			if (cproject != null){
 
 				//show library dialog
-//				libraryDialog.setDialogPath(project.getLocation().toOSString());				
 				libraryDialog.create(project.getName(), project.getLocation().toOSString());
 				int reply = libraryDialog.open();
 				if (reply != TitleAreaDialog.OK)
@@ -107,7 +109,6 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 				
 				
 				ProjectVisualiser vis = new ProjectVisualiser();
-//				String jsonFile = vis.run(project, jsonPath, tusUsing);
 				String jsonFile = vis.run(project, jsonPath, tusUsingMap);
 				
 				//TODO
@@ -153,6 +154,7 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 
 	}
 	
+	
 	private void runGeneratorScript(String jsonFile){
 		try {
 			File dir = new File(jsonPath);
@@ -191,7 +193,7 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 			if (isServerAlive())
 				return;
 			
-			String[] nodeCommand = {"/usr/local/bin/node", path + server };
+			String[] nodeCommand = {NODE, path + server };
 			ProcessBuilder pb = new ProcessBuilder(nodeCommand);
 			pb.redirectOutput(Redirect.INHERIT);
 			pb.redirectError(Redirect.INHERIT);
