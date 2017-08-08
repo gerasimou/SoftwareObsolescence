@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.spg.refactoring;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import org.eclipse.cdt.core.dom.ast.IASTName;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.ICompositeType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPClassType;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPMember;
 import org.eclipse.cdt.core.index.IIndex;
@@ -38,9 +40,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spg.refactoring.AnalysisData.Datum;
 import org.spg.refactoring.ProjectAnalyser.BindingsSet;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
+import org.spg.refactoring.utilities.Utility;
 
 import exceptions.RefactoringException;
 
@@ -168,7 +172,7 @@ public class RefactoringProject {
 	}
  	
  	
-	public boolean analyseOnly (IProject project){
+	public boolean analyseOnly (IProject project, File analysisDir){
 		try {
 			//get existing cProject
 			this.currentCProject	= CdtUtilities.getICProject(project);
@@ -181,6 +185,16 @@ public class RefactoringProject {
 			libraryAnalyser.analyseLibrary(projectIndex, libASTCache);
 			projectAnalyser = new ProjectAnalyser(this);
 			projectAnalyser.analyseExistingProject(projectIndex, projectASTCache);
+			
+			/** Get refactoring information*/
+//			BindingsSet bindingsSet  							 	= projectAnalyser.getBindings();
+//			Map<String, IASTName> includeDirectivesMap 			 	= projectAnalyser.getIncludeDirectives();
+			Map<ICPPClassType, List<ICPPMember>> classMembersMap 	= projectAnalyser.getClassMembersMap();
+			Collection<ITranslationUnit> tusUsingLib			 	= projectAnalyser.getTUsUsingLib();
+//			Collection<IASTPreprocessorMacroDefinition> macrosList	= projectAnalyser.getMacrosList();
+			AnalysisData analysisData								= projectAnalyser.getAnalysisData();
+			
+			exportAnalysisResults(analysisDir, tusUsingLib, classMembersMap, analysisData);
 			
 			for (Map.Entry<ITranslationUnit, Integer> entry : projectAnalyser. tusUsingLibMap.entrySet()){
 				LOG.info(entry.getKey() +"\t"+ entry.getKey().getLocation() +"\t"+ entry.getValue());
@@ -353,8 +367,38 @@ public class RefactoringProject {
 	}
 	
 	
-	public Map<String, String> getTUsUsingMapAsString (){
-		return projectAnalyser.getTUsUsingMapAsString();
+	private void exportAnalysisResults(File analysisDir, Collection<ITranslationUnit> tusUsingLib, 
+									   Map<ICPPClassType, List<ICPPMember>> classMembersMap, AnalysisData analysisData){
+		//export files using the old library
+		String fileFullPath = analysisDir.getAbsolutePath() + File.separator + "FilesUsingOldLib.txt";
+		StringBuilder str = new StringBuilder();
+		for (ITranslationUnit tu : tusUsingLib){
+			str.append(tu.getFile().getLocationURI().getPath().toString() +"\n");
+		}
+		Utility.exportToFile(fileFullPath, str.toString(), false);
+		
+		 
+		//export detailed data of files/classes/functions using the old lib
+		fileFullPath = analysisDir.getAbsolutePath() + File.separator + "UsingOldLibDetails.txt";
+		str.setLength(0);
+		for (AnalysisData.Datum datum: analysisData.getDataList()){
+			str.append(datum.toString());
+			str.append(System.lineSeparator());
+		}
+		Utility.exportToFile(fileFullPath, str.toString(), false);
+		
+		//export class-member mapping
+		fileFullPath = analysisDir.getAbsolutePath() + File.separator + "ClassMemberMapping.txt";
+		str.setLength(0);
+		for (ICompositeType composite : classMembersMap.keySet()){
+			str.append(composite.getName() +":\t");
+			str.append(composite.getClass().getName() +":\t");
+			if (classMembersMap.get(composite)!=null)
+				str.append(System.lineSeparator() +"\t"+ Arrays.toString(classMembersMap.get(composite).toArray()));
+			str.append(System.lineSeparator());
+		}
+		Utility.exportToFile(fileFullPath, str.toString(), false);
+
 	}
 
 }

@@ -70,7 +70,7 @@ public class ProjectAnalyserHandler extends AbstractHandler {
 				String[] excludedFiles		= properties.getProperty(ObsoleteLibraryDialog.EXCLUDED_FILES).split(",");
 
 				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
-				refactoring.analyseOnly(project);
+				refactoring.analyseOnly(project, analysisDir);
 
 				
 				MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 

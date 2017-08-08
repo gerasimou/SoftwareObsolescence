@@ -109,7 +109,7 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 				
 				//analyse project
 				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
-				refactoring.analyseOnly(project);
+				refactoring.analyseOnly(project, analysisDir);
 		
 				//get TUs using legacy library
 				Map<String,String> tusUsingMap = refactoring.getTUsUsingMapAsString();

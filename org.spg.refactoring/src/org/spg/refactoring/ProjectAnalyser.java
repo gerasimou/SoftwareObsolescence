@@ -99,6 +99,7 @@ public class ProjectAnalyser {
 	protected NamesSet 	namesSet; 	
 	protected BindingsSet bindingsSet; 
 	//FIXME: not correct, do not use this list
+	protected AnalysisData analysisData; 
 	protected List<IASTNode> nodesList = new ArrayList<IASTNode>();
 	
 	/** Refactoring element*/
@@ -119,6 +120,7 @@ public class ProjectAnalyser {
 		this.macrosList			  = new ArrayList<IASTPreprocessorMacroDefinition>();
 		this.namesSet			  = new NamesSet();
 		this.bindingsSet  		  = new BindingsSet();
+		this.analysisData 		  = new AnalysisData();
 	}
 
 	
@@ -134,6 +136,8 @@ public class ProjectAnalyser {
  			bindingsSet.clear();
  		if(classMembersMap!=null)
  			classMembersMap.clear();
+ 		if (analysisData!=null)
+ 			analysisData.clear();
  		
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
@@ -884,6 +888,9 @@ public class ProjectAnalyser {
 		
 		
 		private void appendToLists(IASTName name, IBinding binding, IASTNode node){
+			
+//			System.out.println(node.getFileLocation().getFileName() +" (l:"+ node.getFileLocation().getStartingLineNumber() +")\t"+ node.getPropertyInParent() +"\t"+ node.getRawSignature());
+			analysisData.add(node, binding);
 			boolean added =  this.bindingsSet.add(binding);
 			this.namesList.add(name);
 			if (added){
@@ -1008,5 +1015,10 @@ public class ProjectAnalyser {
 	
 	protected Collection<IASTPreprocessorMacroDefinition> getMacrosList(){
 		return this.macrosList;
+	}
+	
+	
+	protected AnalysisData getAnalysisData(){
+		return this.analysisData;
 	}
 }
