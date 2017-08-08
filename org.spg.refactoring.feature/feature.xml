@@ -2,7 +2,7 @@
 <feature
       id="org.spg.refactoring.feature"
       label="Refactoring"
-      version="1.0.6"
+      version="1.0.7"
       provider-name="SPG">
 
    <description url="http://www.example.com/description">
@@ -25,19 +25,18 @@
       <import plugin="org.eclipse.cdt.core"/>
       <import plugin="org.eclipse.ltk.core.refactoring"/>
       <import plugin="org.eclipse.text"/>
-      <import plugin="org.eclipse.epsilon.eol.engine"/>
       <import plugin="org.eclipse.ui.console"/>
       <import plugin="com.google.gson"/>
-      <import plugin="org.eclipse.epsilon.common.dt"/>
       <import plugin="org.eclipse.cdt.ui"/>
       <import plugin="org.eclipse.cdt.managedbuilder.core"/>
+      <import plugin="org.eclipse.epsilon.common"/>
    </requires>
 
    <plugin
          id="org.spg.refactoring"
          download-size="0"
          install-size="0"
-         version="1.0.6"
+         version="1.0.7"
          unpack="false"/>
 
 </feature>
