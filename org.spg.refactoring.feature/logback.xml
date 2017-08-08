@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<timestamp key="BYDAY" datePattern="dd-MM-yyyy'_'HHmmss"/>
+  	<property name="HOME" value="/Users/sgerasimou/Documents/Git/ModernSoftware/org.spg.refactoring"/>
+  	<!-- <property name="HOME" class="MyPropertyDefiner"/>  Not working-->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+    
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${HOME}/${BYDAY}.log</file>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss} [%thread] %-5level %logger{40} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.spg.refactoring.logger" level="debug" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>
