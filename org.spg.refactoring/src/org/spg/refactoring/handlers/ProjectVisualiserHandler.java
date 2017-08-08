@@ -38,6 +38,8 @@ import org.spg.refactoring.utilities.MessageUtility;
  * @see org.eclipse.core.commands.AbstractHandler
  */
 public class ProjectVisualiserHandler extends AbstractHandler {
+	/** Shell handler*/
+	private Shell shell = null;
 	
 	/** Process for server.js*/
 	Process serverProcess;
@@ -70,7 +72,7 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 
 		IProject project = null;
 		try{
@@ -91,32 +93,37 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 				if (!OK)
 					return null;
 				
+				//create directory for analysis results
+				File analysisDir = new File(project.getLocationURI().getPath().toString() + File.separator + "ProjectAnalysis");
+				if (!analysisDir.exists()){
+					boolean result = analysisDir.mkdir();
+					if (!result)
+						MessageUtility.showMessage(shell, MessageDialog.ERROR, "Creating project analysis directory", 
+								"There was something wrong with creating directory ProjectAnalysis. Please investigate!");
+				}
+				
 				//get library dialogue properties
 				StringProperties properties = libraryDialog.getProperties();
 				String[] libHeaders       	= properties.getProperty(ObsoleteLibraryDialog.LIB_HEADERS).split(",");
 				String[] excludedFiles		= properties.getProperty(ObsoleteLibraryDialog.EXCLUDED_FILES).split(",");
-
+				
+				//analyse project
 				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
 				refactoring.analyseOnly(project);
 		
-		
-//		MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
-//									"Showing City",
-//									"Showing JSCity.");
-				
-//				Collection<String> tusUsing = refactoring.getTUsUsingLibAsString();
+				//get TUs using legacy library
 				Map<String,String> tusUsingMap = refactoring.getTUsUsingMapAsString();
 				
-				
+				//run visualiser
 				ProjectVisualiser vis = new ProjectVisualiser();
-				String jsonFile = vis.run(project, jsonPath, tusUsingMap);
+				String JSONfileFullPath = vis.run(project, analysisDir.getAbsolutePath(), tusUsingMap);
 				
-				//TODO
-				if (jsonFile!=null){
+				//If a JSON file is generated, start mysql and add the ciy to the database
+				if (JSONfileFullPath!=null){
 					
 					startMySQLDatabase();
 					
-					runGeneratorScript(jsonFile);
+					runGeneratorScript(JSONfileFullPath);
 
 					startJSCityServer();
 					
@@ -138,6 +145,9 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	}
 	
 	
+	/**
+	 * Start mysql database
+	 */
 	private void startMySQLDatabase(){
 		try {
 			//check if mySQL is already running
@@ -155,17 +165,17 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	}
 	
 	
-	private void runGeneratorScript(String jsonFile){
+	private void runGeneratorScript(String JSONfileFullPath){
 		try {
 			File dir = new File(jsonPath);
 			if (!dir.exists())
 				throw new FileNotFoundException(String.format("Directory %s not found", dir));
 			
-			File file = new File(jsonPath + jsonFile);
+			File file = new File(JSONfileFullPath);
 			if (!file.exists())
 				throw new FileNotFoundException(String.format("File %s not found", file));
 			
-			String[] nodeCommand = {NODE, jsonPath + GENERATOR_SCRIPT, "-f", jsonPath + jsonFile};
+			String[] nodeCommand = {NODE, jsonPath + GENERATOR_SCRIPT, "-f", JSONfileFullPath};
 			ProcessBuilder pb = new ProcessBuilder(nodeCommand);
 			pb.redirectOutput(Redirect.INHERIT);
 			pb.redirectError(Redirect.INHERIT);
@@ -218,6 +228,12 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	}
 	
 	
+	/**
+	 * Check if JSCity server is alive
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private boolean isServerAlive() throws IOException, InterruptedException{
 		String comStr	 	=  "ps aux | grep " + server +" | grep -v grep | awk '{print $2}'";//get only pids
 		String[] command   	= { "/bin/bash", "-c", comStr };
@@ -240,6 +256,12 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	}
 	
 	
+	/**
+	 * Check if Mysql server is alive
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private boolean isMySQLAlive() throws IOException, InterruptedException{
 		String comStr	 	=  "ps aux | grep mysql | grep -v grep | awk '{print $11}'";//get only pids
 		String[] command   	= { "/bin/bash", "-c", comStr };

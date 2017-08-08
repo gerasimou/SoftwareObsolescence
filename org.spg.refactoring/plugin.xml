@@ -58,7 +58,7 @@
       </handler>
       <handler
             class="org.spg.refactoring.handlers.ProjectVisualiserHandler"
-            commandId="org.spg.refactoring.commands.ShowCityCommand">
+            commandId="org.spg.refactoring.commands.showCityCommand">
       </handler>
       <handler
             class="org.spg.refactoring.handlers.ProjectAnalyserHandler"
@@ -127,7 +127,7 @@
                </visibleWhen>
             </command>
             <command
-                  commandId="org.spg.refactoring.commands.ShowCityCommand"
+                  commandId="org.spg.refactoring.commands.showCityCommand"
                   label="Show City"
                   mnemonic="S"
                   style="push">

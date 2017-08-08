@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.spg.refactoring;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +64,7 @@ public class ProjectVisualiser {
 	
 	
 //	public String run (IProject project, String jsonPath, Collection<String> tusUsing){
-		public String run (IProject project, String jsonPath, Map<String,String> tusUsingMap){
+		public String run (IProject project, String analysisDirFullPath, Map<String,String> tusUsingMap){
 		try {
 			
 //			generateCityElements(project, tusUsing);
@@ -73,10 +74,11 @@ public class ProjectVisualiser {
 			
 			String filename = project.getName()+".json";
 			
-			Utility.exportToFile(jsonPath+filename, json, false);
+			//save file in project's directory
+			String JSONfileFullPath = analysisDirFullPath + File.separator + filename;
+			Utility.exportToFile(JSONfileFullPath, json, false);
 			
-			return filename;
-			
+			return JSONfileFullPath;
 		}
 		catch (CoreException e) {
 			e.printStackTrace();
