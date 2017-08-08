@@ -92,13 +92,12 @@ public class ProjectAnalyser {
 	/** Map that between classes and members (functions, methods etc) */
 	protected Map<ICPPClassType, List<ICPPMember>> classMembersMap;
 
-	/** List keeping the translation units using the old library*/
-//	List<ITranslationUnit> tusUsingLibList;
+	/** Map keeping the translation units using the old library and the number of usages*/
 	protected Map<ITranslationUnit, Integer> tusUsingLibMap;
 
 	/** Keep refactoring information*/
-	protected NamesSet 	namesSet 	 = new NamesSet();
-	protected BindingsSet bindingsSet  = new BindingsSet();
+	protected NamesSet 	namesSet; 	
+	protected BindingsSet bindingsSet; 
 	//FIXME: not correct, do not use this list
 	protected List<IASTNode> nodesList = new ArrayList<IASTNode>();
 	
@@ -106,15 +105,20 @@ public class ProjectAnalyser {
 	private RefactoringProject refactoring;
 	
 	/** Logger instance*/
-	Logger LOG = LoggerFactory.getLogger (ProjectAnalyser.class);
+	private Logger LOG = LoggerFactory.getLogger (ProjectAnalyser.class);
 
 	
+	/**
+	 * Class constructor: create a new analysis object
+	 * @param refProject
+	 */
 	public ProjectAnalyser(RefactoringProject refProject) {
 		this.refactoring 		  = refProject;
 		this.includeDirectivesMap = new LinkedHashMap<String, IASTName>();
-//		this.tusUsingLibList 	  = new ArrayList<ITranslationUnit>();
 		this.tusUsingLibMap		  = new HashMap<ITranslationUnit, Integer>();
 		this.macrosList			  = new ArrayList<IASTPreprocessorMacroDefinition>();
+		this.namesSet			  = new NamesSet();
+		this.bindingsSet  		  = new BindingsSet();
 	}
 
 	
@@ -134,9 +138,6 @@ public class ProjectAnalyser {
 		// for each translation unit get its AST
 		for (ITranslationUnit tu : astCache.keySet()) {
 			LOG.info("Analysing: " + tu);
-//			String path = tu.getFile().getLocation().toOSString();
-//			if (path.equals("/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/FileZilla-3.11.0/src/interface/xmlfunctions.cpp"))
-//				System.out.println("FOUND");
 			NameFinderASTVisitor fcVisitor = new NameFinderASTVisitor();
 			astCache.get(tu).accept(fcVisitor);
 			
@@ -149,7 +150,6 @@ public class ProjectAnalyser {
 				namesSet.addAll(fcVisitor.namesSet);
 				bindingsSet.addAll(fcVisitor.bindingsSet);
 				nodesList.addAll(fcVisitor.nodesList);
-//				tusUsingLibList.add(tu);
 				tusUsingLibMap.put(tu, fcVisitor.bindingsSet.size());
 				System.out.println(tu +"\t"+ fcVisitor.bindingsSet.size() +"\t"+ fcVisitor.namesSet.size()  +"\t"+ 
 											 fcVisitor.nodesList.size()   +"\t"+ fcVisitor.namesList.size() +"\t"+ Arrays.toString(fcVisitor.bindingsSet.toArray()));
@@ -180,8 +180,8 @@ public class ProjectAnalyser {
 			str.append(composite.getName() +":\t");
 			str.append(composite.getClass().getName() +":\t");
 			if (map.get(composite)!=null)
-				str.append(Arrays.toString(map.get(composite).toArray()));				
-			System.out.println(str.toString());
+				str.append(Arrays.toString(map.get(composite).toArray()));
+			LOG.info(str.toString());
 		}
  	}
 
@@ -310,8 +310,8 @@ public class ProjectAnalyser {
 						IASTIdExpression idExpression = (IASTIdExpression)initialiserClause;
 						System.out.println(idExpression);
 					}
-					System.out.print(msg);
-					Utility.exportToFile("/Users/sgerasimou/Documents/Git/ModernSoftware/org.spg.refactoring/initialiser.txt", msg, true);
+//					System.out.print(msg);
+//					Utility.exportToFile("/Users/sgerasimou/Documents/Git/ModernSoftware/org.spg.refactoring/initialiser.txt", msg, true);
 				}
 			}
 		}
@@ -352,7 +352,7 @@ public class ProjectAnalyser {
  
 
 	/**
-	 * Given the binding set, generate a hash map that comprises the 
+	 * Given the binding set, generate a hash map that comprises the class and its methods
 	 * @return
 	 */
 	private LinkedHashMap<ICPPClassType, List<ICPPMember>> createClassMembersMapping(){
@@ -412,8 +412,8 @@ public class ProjectAnalyser {
 			}
 		}
  		
-		System.out.println(Arrays.toString(classMembersMap.keySet().toArray()));
-		printClassMembersMap(classMembersMap);
+//		System.out.println(Arrays.toString(classMembersMap.keySet().toArray()));
+//		printClassMembersMap(classMembersMap);
 		
 		//once the mapping is done, do a dependency/inheritance topological sorting of the classes
 		//do determine their insertion order in the header file
@@ -460,14 +460,14 @@ public class ProjectAnalyser {
 			sortedClassMembersMap.put(binding, membersList);
 		}
 		
-		printClassMembersMap(sortedClassMembersMap);
+//		printClassMembersMap(sortedClassMembersMap);
 
 		return sortedClassMembersMap;
 	}
 	
 	
 	/**
-	 * Check by name if a classType exists in the mape
+	 * Check by name if a classType exists in the map
 	 * Temporary solution/workaround because checkDeclSpecifier(...) introduces CPPClassType elements
 	 * in the map, which has only class elements of PDOMCPPClassType  
 	 * @param owningClass
@@ -690,7 +690,7 @@ public class ProjectAnalyser {
 				// check whether this binding is part of the legacy library
 //				checkBinding(name, binding, node);
 				boolean inLibrary = checkBinding(ownerBinding, binding);
-				if (inLibrary)
+				if (inLibrary) 
 					appendToLists(name, binding, node);
 				
 			}
@@ -772,7 +772,7 @@ public class ProjectAnalyser {
 								ICPPClassType clazz = (ICPPClassType)baseClassType;
 								for (ICPPMethod clazzMethod : clazz.getAllDeclaredMethods()){
 									if (checkOverloadedMethodsSignature(methodBinding, clazzMethod)){
-										System.out.println("Original Method found\t" + simpleDecl.getRawSignature() +"\t"+ simpleDecl.getTranslationUnit().getOriginatingTranslationUnit());
+//										System.out.println("Original Method found\t" + simpleDecl.getRawSignature() +"\t"+ simpleDecl.getTranslationUnit().getOriginatingTranslationUnit());
 										appendToLists(funDeclName, clazzMethod, simpleDecl);
 									}
 								}
@@ -1004,15 +1004,6 @@ public class ProjectAnalyser {
 		}
 		return tusLibMap;
 	}
-
-	
-	protected Collection<String> getTUsUsingLibAsString (){
-		Collection<String> tusLibSet = new ListSet<String>();
-		for (ITranslationUnit tu : tusUsingLibMap.keySet()){
-			tusLibSet.add(tu.getElementName());
-		}
-		return tusLibSet;
-	}	
 	
 	
 	protected Collection<IASTPreprocessorMacroDefinition> getMacrosList(){

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Refactoring
 Bundle-SymbolicName: org.spg.refactoring;singleton:=true
-Bundle-Version: 1.0.5
+Bundle-Version: 1.0.6
 Bundle-Activator: org.spg.refactoring.activator.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -11,12 +11,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.cdt.core,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.text,
- org.eclipse.epsilon.eol.engine,
  org.eclipse.ui.console,
  com.google.gson,
- org.eclipse.epsilon.common.dt,
  org.eclipse.cdt.ui,
- org.eclipse.cdt.managedbuilder.core
+ org.eclipse.cdt.managedbuilder.core,
+ org.eclipse.epsilon.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: exceptions,

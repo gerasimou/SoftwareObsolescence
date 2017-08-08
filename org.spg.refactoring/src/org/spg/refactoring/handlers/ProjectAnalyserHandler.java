@@ -1,5 +1,7 @@
 package org.spg.refactoring.handlers;
 
+import java.io.File;
+
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -52,6 +54,15 @@ public class ProjectAnalyserHandler extends AbstractHandler {
 						"Project analysis will begin now, OK?");		
 				if (!OK)
 					return null;
+				
+				//create directory for analysis results
+				File analysisDir = new File(project.getLocationURI().getPath().toString() + File.separator + "ProjectAnalysis");
+				if (!analysisDir.exists()){
+					boolean result = analysisDir.mkdir();
+					if (!result)
+						MessageUtility.showMessage(shell, MessageDialog.ERROR, "Creating project analysis directory", 
+								"There was something wrong with creating directory ProjectAnalysis. Please investigate!");
+				}
 				
 				//get library dialogue properties
 				StringProperties properties = libraryDialog.getProperties();

@@ -140,11 +140,11 @@ public class RefactoringProject {
 						
 			
 			/** Get refactoring information*/
-			BindingsSet bindingsSet  							 = projectAnalyser.getBindings();
-			Map<String, IASTName> includeDirectivesMap 			 = projectAnalyser.getIncludeDirectives();
-			Map<ICPPClassType, List<ICPPMember>> classMembersMap = projectAnalyser.getClassMembersMap();
-			Collection<ITranslationUnit> tusUsingLib			 = projectAnalyser.getTUsUsingLib();
-			Collection<IASTPreprocessorMacroDefinition> macrosList	 = projectAnalyser.getMacrosList();
+			BindingsSet bindingsSet  							 	= projectAnalyser.getBindings();
+			Map<String, IASTName> includeDirectivesMap 			 	= projectAnalyser.getIncludeDirectives();
+			Map<ICPPClassType, List<ICPPMember>> classMembersMap 	= projectAnalyser.getClassMembersMap();
+			Collection<ITranslationUnit> tusUsingLib			 	= projectAnalyser.getTUsUsingLib();
+			Collection<IASTPreprocessorMacroDefinition> macrosList	= projectAnalyser.getMacrosList();
 						
 			//7) refactor
 			refactorer.createRefactoredProject(	newCProject, projectIndex, bindingsSet, includeDirectivesMap, 
@@ -228,7 +228,6 @@ public class RefactoringProject {
 			e.printStackTrace();
 		}
  	}
- 	
  	
 	
 	/**
@@ -347,10 +346,10 @@ public class RefactoringProject {
 		}
 		return false;
 	}
+		
 	
-	
-	public Collection<String> getTUsUsingLibAsString (){
-		return projectAnalyser.getTUsUsingLibAsString();
+	public Map<String, String> getTUsUsingMapAsString (){
+		return projectAnalyser.getTUsUsingMapAsString();
 	}
 	
 	

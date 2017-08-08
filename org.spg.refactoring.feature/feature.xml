@@ -2,7 +2,7 @@
 <feature
       id="org.spg.refactoring.feature"
       label="Refactoring"
-      version="1.0.5"
+      version="1.0.6"
       provider-name="SPG">
 
    <description url="http://www.example.com/description">
@@ -37,7 +37,7 @@
          id="org.spg.refactoring"
          download-size="0"
          install-size="0"
-         version="1.0.5"
+         version="1.0.6"
          unpack="false"/>
 
 </feature>
