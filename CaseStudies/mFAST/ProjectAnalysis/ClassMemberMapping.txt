@@ -1,0 +1,10 @@
+XMLNode:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLNode(tinyxml2::XMLDocument *), XMLNode(const tinyxml2::XMLNode &), FirstChildElement(const char *), NextSiblingElement(const char *), NextSibling()]
+XMLDocument:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLDocument(bool, enum tinyxml2::Whitespace), XMLDocument(const tinyxml2::XMLDocument &), Parse(const char *, unsigned long int), Accept(tinyxml2::XMLVisitor *)]
+XMLElement:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLElement(tinyxml2::XMLDocument *), XMLElement(const tinyxml2::XMLElement &), Name(), FindAttribute(const char *), FirstAttribute(), Attribute(const char *, const char *)]
+XMLVisitor:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLVisitor(), XMLVisitor(const tinyxml2::XMLVisitor &), VisitEnter(const tinyxml2::XMLElement &, const tinyxml2::XMLAttribute *), VisitExit(const tinyxml2::XMLElement &)]
+XMLAttribute:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLAttribute(), XMLAttribute(const tinyxml2::XMLAttribute &), Value(), Name(), Next()]

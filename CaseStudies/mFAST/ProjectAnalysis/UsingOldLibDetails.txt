@@ -1,0 +1,782 @@
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.h (l:21-21)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	const XMLElement &element_;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.h (l:22-22)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	const XMLElement *content_element_;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.h (l:26-26)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.h (l:29-29)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.h (l:34-34)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:60-60)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement *element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:64-64)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *field_op_element = find_field_op_element(*element);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:71-71)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:108-108)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:115-115)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *child = element.FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:115-115)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:116-116)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->NextSiblingElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:117-117)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:124-124)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &field_op_element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:132-132)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	field_op_element.Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.cpp (l:134-136)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	BOOST_THROW_EXCEPTION(
+        fast_static_error("S1") << reason_info(
+            std::string("Invalid field operator ") + field_op_element.Name()))
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.h (l:43-43)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement *element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.h (l:48-48)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *field_op_element = find_field_op_element(*element);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.h (l:59-59)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement *element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.h (l:64-64)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	static const XMLElement *find_field_op_element(const XMLElement &element);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.h (l:64-64)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_op.h (l:124-124)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &field_op_element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:31-31)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:32-32)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:35-35)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:40-40)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	const XMLElement *only_child(const XMLElement &element);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:40-40)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:46-46)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	const XMLElement *only_child_templateRef(const XMLElement &element);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:46-46)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:50-50)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:51-51)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:53-53)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:56-56)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:60-60)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:63-63)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:66-66)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:69-69)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:72-72)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:76-76)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:79-79)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:82-82)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:85-85)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:88-88)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:90-90)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:92-92)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:97-98)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	virtual bool VisitEnter(const XMLElement &element,
+                          const XMLAttribute *attr) override;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:97-97)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:98-98)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLAttribute *attr
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:99-99)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	virtual bool VisitExit(const XMLElement &element) override;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.h (l:99-99)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:10-10)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:13-13)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLAttribute *attr = element.FindAttribute(attr_name);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:13-13)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FindAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:17-17)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:20-20)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:23-23)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:32-32)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:36-36)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:41-41)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:47-47)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:54-54)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:60-60)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:66-66)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:73-73)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:79-79)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:86-86)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:93-93)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:99-99)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:105-105)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:111-111)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:118-118)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:123-123)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:128-128)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:151-151)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:152-152)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLAttribute *
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:153-153)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:208-208)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:210-210)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:228-228)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:264-264)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:265-265)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *first_elem = element.FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:265-265)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:266-266)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	first_elem->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:267-267)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	first_elem->NextSiblingElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:269-269)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	first_elem->NextSibling
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:277-277)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:278-278)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *first_elem = only_child(element);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/FastXMLVisitor.cpp (l:279-279)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	first_elem->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:103-103)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:104-104)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLAttribute *
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:105-105)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:119-119)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *elem = element.FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:119-119)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:141-141)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:142-142)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:192-192)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	XMLDocument document;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:193-193)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	document.Parse
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.cpp (l:195-195)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	document.Accept
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:33-33)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement *element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:37-37)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:38-38)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLAttribute *attr = element->FirstAttribute();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:38-38)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element->FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:40-40)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:40-40)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:41-41)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Next
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:45-45)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *elem = element->FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:45-45)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element->FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:48-48)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	elem->NextSiblingElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:64-64)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:65-65)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:69-69)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:71-71)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	content_element_->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:75-75)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	content_element_->FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:81-81)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	content_element_->FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:134-134)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:135-135)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:140-140)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:141-141)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:186-186)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *mantissa_element = element_.FirstChildElement("mantissa");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:186-186)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element_.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:187-187)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *exponent_element = element_.FirstChildElement("exponent");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:187-187)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element_.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:242-242)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLAttribute *length_attributes = nullptr;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:243-243)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *length_element = element_.FirstChildElement("length");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:243-243)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element_.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:246-246)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	length_element->FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:263-263)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLAttribute *length_attributes = nullptr;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:264-264)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *length_element = element_.FirstChildElement("length");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:264-264)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element_.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:267-267)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	length_element->FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:372-372)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *child = content_element_->FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:372-372)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	content_element_->FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:377-377)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->NextSiblingElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:386-386)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *child = content_element_->FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:386-386)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	content_element_->FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:387-387)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:388-388)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->NextSibling
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:389-389)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->Attribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:435-436)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *length_element =
+      content_element_->FirstChildElement("length");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:436-436)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	content_element_->FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:440-440)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	length_element->FirstAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:496-496)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLAttribute *reset_attr = element_.FindAttribute("scp:reset");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:496-496)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element_.FindAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:498-498)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element_.FindAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:501-501)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	reset_attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:502-502)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	reset_attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:552-552)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *element = &this->element_;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:573-574)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *xml_element =
+        content_element_->FirstChildElement("element");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:574-574)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	content_element_->FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:576-576)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	xml_element->NextSiblingElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:577-577)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	xml_element->Attribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder.cpp (l:584-584)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	xml_element->Attribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.h (l:19-20)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	virtual bool VisitEnter(const XMLElement &element,
+                          const XMLAttribute *attr) override;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.h (l:19-19)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.h (l:20-20)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLAttribute *attr
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.h (l:21-21)
+	IASTCompositeTypeSpecifier.MEMBER_DECLARATION - Nested IASTDeclaration for IASTCompositeTypeSpecifier
+	virtual bool VisitExit(const XMLElement &element) override;
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/templates_builder.h (l:21-21)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder_base.h (l:27-27)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder_base.h (l:28-28)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *typeRefElem = element.FirstChildElement("typeRef");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder_base.h (l:28-28)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder_base.h (l:35-35)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder_base.h (l:36-36)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLElement *typeRefElem = element.FirstChildElement("typeRef");
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/field_builder_base.h (l:36-36)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:156-156)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const tinyxml2::XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:159-159)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const tinyxml2::XMLAttribute *attr = element.FindAttribute(attr_name);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:159-159)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FindAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:163-163)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:166-166)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const tinyxml2::XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:251-251)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const tinyxml2::XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:271-271)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const tinyxml2::XMLElement *child = element.FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:271-271)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:273-273)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:274-274)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const tinyxml2::XMLElement *grandchild = child->FirstChildElement();
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:274-274)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->FirstChildElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:277-277)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	grandchild->NextSiblingElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.cpp (l:282-282)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	child->NextSiblingElement
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.h (l:36-36)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const tinyxml2::XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/view_info_builder.h (l:42-42)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const tinyxml2::XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/xml_util.h (l:14-14)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLElement &element
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/xml_util.h (l:17-17)
+	IASTDeclarationStatement.DECLARATION - Declaration for DeclarationStatement
+	const XMLAttribute *attr = element.FindAttribute(attr_name);
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/xml_util.h (l:17-17)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	element.FindAttribute
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/xml_util.h (l:21-21)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:36-36)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLAttribute *attr
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:49-49)
+	IASTStandardFunctionDeclarator.FUNCTION_PARAMETER - IASTParameterDeclaration for IASTStandardFunctionDeclarator
+	const XMLAttribute *attr
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:51-51)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Name
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:54-54)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:56-56)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:58-58)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:60-60)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:62-62)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:64-64)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:66-66)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:68-68)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Value
+
+/Users/sgerasimou/Documents/Programming/_runtime/runtimeEpsilon2/mFAST/src/mfast/xml_parser/fast_xml_attributes.h (l:69-69)
+	IASTFunctionCallExpression.FUNCTION_NAME [IASTExpression]
+	attr->Next
+
