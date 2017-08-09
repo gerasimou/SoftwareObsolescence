@@ -56,7 +56,6 @@ namespace testTinyXML2
 				return XML_ERROR_FILE_READ_ERROR;
 			}
 
-
 	//		//print only the direct descendant
 	//		cout << "\n\nPrinting direct descendants in " << filename <<endl;
 	//		cout << "---------------------------------------" << endl;

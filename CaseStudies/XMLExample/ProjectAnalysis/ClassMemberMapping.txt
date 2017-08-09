@@ -1,0 +1,12 @@
+XMLNode:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLNode(tinyxml2::XMLDocument *), XMLNode(const tinyxml2::XMLNode &), FirstChild(), FirstChildElement(const char *), NextSiblingElement(const char *)]
+XMLDocument:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLDocument(bool, enum tinyxml2::Whitespace), XMLDocument(const tinyxml2::XMLDocument &), LoadFile(const char *), Print(tinyxml2::XMLPrinter *)]
+XMLElement:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLElement(tinyxml2::XMLDocument *), XMLElement(const tinyxml2::XMLElement &), Attribute(const char *, const char *)]
+XMLAttribute:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLAttribute(), XMLAttribute(const tinyxml2::XMLAttribute &), Name()]
+XMLVisitor:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLVisitor(), XMLVisitor(const tinyxml2::XMLVisitor &), VisitEnter(const tinyxml2::XMLElement &, const tinyxml2::XMLAttribute *)]
+XMLPrinter:	org.eclipse.cdt.internal.core.pdom.dom.cpp.PDOMCPPClassType:	
+	[XMLPrinter(const tinyxml2::XMLPrinter &), XMLPrinter(__sFILE *, bool, int), CStr()]
