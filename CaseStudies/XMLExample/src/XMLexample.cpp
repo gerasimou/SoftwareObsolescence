@@ -20,12 +20,18 @@ int main() {
 	cout << "------------------------" << endl;
 
 	Rectangle rect(5,4);
-	double area =  rect.area();
 
-	double radius; // Declare 3 floating-point variables
+	double width, height; // Declare 3 floating-point variables
 
-    cout << "Enter the radius: ";  // Prompting message
-	cin >> radius;                 // Read input into variable radius
+    cout << "Enter width: ";  		// Prompting message
+	cin >> width;                 // Read input into variable radius
+	rect.width = width;
+
+	cout << "Enter height: ";  		// Prompting message
+	cin >> height;                 // Read input into variable radius
+	rect.height = height;
+
+	cout << "Rectangle's area is :" << rect.area() << endl;
 
 
    //now test xml library

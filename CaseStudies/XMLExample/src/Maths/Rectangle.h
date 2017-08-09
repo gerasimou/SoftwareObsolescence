@@ -9,7 +9,7 @@
 #define MATHS_RECTANGLE_H_
 namespace elements{
 class Rectangle {
-private:
+public:
 	int width, height;
 
 public:

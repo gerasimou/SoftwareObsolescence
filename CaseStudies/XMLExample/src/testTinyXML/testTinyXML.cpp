@@ -16,14 +16,6 @@ namespace testTinyXML2
 
 		using namespace tinyxml2;
 
-		class MyVisitor: public XMLVisitor{
-		virtual bool VisitEnter(const XMLElement &element,
-								const XMLAttribute *attr) override;
-
-		bool testMe(){
-			XMLDocument doc;}
-		};
-
 
 		int testTinyXML(){
 			string filename;
@@ -79,22 +71,9 @@ namespace testTinyXML2
 				personElement = personElement->NextSiblingElement("person");
 			}
 
-			XMLAttribute *attr;
-			attr->Name();
-
 			return 0;
 
 		}
-
-
-
-		XMLError testParamDecl (XMLError error, const char *filename){
-			XMLDocument doc;
-			doc.LoadFile(filename);
-
-			return error;
-		}
-
 	}
 }
 
