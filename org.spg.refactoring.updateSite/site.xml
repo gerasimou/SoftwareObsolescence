@@ -3,7 +3,7 @@
    <description name="Software modernisation" url="https://github.com/gerasimou/SoftwareObsolescence">
       An Eclipse plug-in for semi-automated software migration to address the problem of software obsolescence.
    </description>
-   <feature url="features/org.spg.refactoring.feature_1.0.7.jar" id="org.spg.refactoring.feature" version="1.0.7">
+   <feature url="features/org.spg.refactoring.feature_1.0.8.jar" id="org.spg.refactoring.feature" version="1.0.8">
       <category name="Refactoring-SPG"/>
    </feature>
    <category-def name="Refactoring-SPG" label="Refactoring"/>
