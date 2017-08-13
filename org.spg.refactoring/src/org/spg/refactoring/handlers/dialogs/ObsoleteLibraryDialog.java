@@ -12,7 +12,6 @@
 package org.spg.refactoring.handlers.dialogs;
 
 
-import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -26,6 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
 
 
 public class ObsoleteLibraryDialog extends TitleAreaDialog{

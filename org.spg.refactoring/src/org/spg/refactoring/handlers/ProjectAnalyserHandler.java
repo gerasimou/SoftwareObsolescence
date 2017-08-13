@@ -8,7 +8,6 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -18,6 +17,7 @@ import org.spg.refactoring.handlers.dialogs.ObsoleteLibraryDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
+import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
 
 public class ProjectAnalyserHandler extends AbstractHandler {
 	/** Shell handler*/

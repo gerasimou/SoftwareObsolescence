@@ -69,12 +69,11 @@ import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPClassType;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.ICPPUnknownBinding;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.epsilon.common.util.ListSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spg.refactoring.utilities.Digraph;
 import org.spg.refactoring.utilities.MessageUtility;
-import org.spg.refactoring.utilities.Utility;
+import org.spg.refactoring.utilities.fromEpsilon.ListSet;
 
 
 @SuppressWarnings("restriction")
