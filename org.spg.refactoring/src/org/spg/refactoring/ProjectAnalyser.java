@@ -919,7 +919,7 @@ public class ProjectAnalyser {
 			} else {
 				return storage.add(e.getLastName());
 			}
-		}
+		}		
 	}
 	
 	

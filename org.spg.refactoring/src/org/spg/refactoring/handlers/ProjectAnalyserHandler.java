@@ -13,7 +13,7 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.spg.refactoring.RefactoringProject;
-import org.spg.refactoring.handlers.dialogs.ObsoleteLibraryDialog;
+import org.spg.refactoring.handlers.dialogs.ProjectAnalyserDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -24,10 +24,10 @@ public class ProjectAnalyserHandler extends AbstractHandler {
 	private Shell shell = null;
 
 	/** Library dialog*/
-	ObsoleteLibraryDialog libraryDialog;
+	ProjectAnalyserDialog libraryDialog;
 	
 	public ProjectAnalyserHandler() {
-		libraryDialog = new ObsoleteLibraryDialog();
+		libraryDialog = new ProjectAnalyserDialog();
 	}
 
 
@@ -66,8 +66,8 @@ public class ProjectAnalyserHandler extends AbstractHandler {
 				
 				//get library dialogue properties
 				StringProperties properties = libraryDialog.getProperties();
-				String[] libHeaders       	= properties.getProperty(ObsoleteLibraryDialog.LIB_HEADERS).split(",");
-				String[] excludedFiles		= properties.getProperty(ObsoleteLibraryDialog.EXCLUDED_FILES).split(",");
+				String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
+				String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
 
 				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
 				refactoring.analyseOnly(project, analysisDir);

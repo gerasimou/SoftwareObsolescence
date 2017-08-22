@@ -30,8 +30,7 @@ public class FilesSelectionDialog{
     	fileDialog.setFilterPath(fileFilterPath);
 //    	System.out.println(fileDialog.getFilterPath());
     	fileDialog.setFilterExtensions(filterExtensions);
-    	fileDialog.setFilterNames(filterNames);
-    	
+    	fileDialog.setFilterNames(filterNames);    	
         processDialog();
     }
     

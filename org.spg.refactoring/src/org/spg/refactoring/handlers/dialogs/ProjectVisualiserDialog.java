@@ -1,17 +1,8 @@
-/*******************************************************************************
- * Copyright (c) 2016 The University of York.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     Simos Gerasimou - initial API and implementation
- ******************************************************************************/
-
 package org.spg.refactoring.handlers.dialogs;
 
+import java.io.File;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -25,34 +16,37 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.spg.refactoring.utilities.MessageUtility;
 import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
 
-
-public class ObsoleteLibraryDialog extends TitleAreaDialog{
+public class ProjectVisualiserDialog extends TitleAreaDialog {
 
 	private StringProperties properties;	
-	
-//	private Label oldNamespaceLabel;
-//	private Label oldHeaderLabel;
-//
-//	private Text oldNamespaceText;
-//	private Text oldHeaderText;
-	
+
 	private Label headerLabel;
 	private Label exclusionLabel;
+	private Label mysqlLabel;
+	private Label nodeLabel;
 	
 	private Text headerText;
 	private Text exclusionText;
+	private Text mysqlText;
+	private Text nodeText;
 	
 	public final static String LIB_HEADERS 	  = "old_header";
 	public final static String EXCLUDED_FILES = "old_namespace";	
+	public final static String MYSQL		  = "mysql";
+	public final static String NODE			  = "node";
 	
 	private String[] libHeaders;
 	private String[] excludedFiles;
+	private String mysql;
+	private String node;
 	
 	private String path;
+
 	
-	public ObsoleteLibraryDialog() {
+	public ProjectVisualiserDialog() {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 	}
 	
@@ -63,23 +57,16 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		Composite superControl = (Composite) super.createDialogArea(parent);
 		
 		
-		this.setTitle("Obsolete library configuration");
-		this.setMessage("Please provide the details for the obsolete library");
-//		this.getShell().setText("New library details");
+		this.setTitle("Visualisation configuration");
+		this.setMessage("Please provide the details for visualisation");
 		
 		Composite control = new Composite(superControl, SWT.FILL);
 		control.setLayout(new GridLayout(1,true));
 		control.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		createGroups(parent);
-		
-//		PlatformUI.getWorkbench().getHelpSystem().setHelp(control, "org.eclipse.epsilon.help.emc_dialogs");
-		
+				
 		loadProperties();
-
-		//preconfigured details
-//		headerText.setText("tinyxml2.h");
-//		exclusionText.setText("tinyxml2.cpp");
 		
 		control.layout();
 		control.pack();
@@ -91,39 +78,9 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	protected void createGroups(Composite parent) {
 		createSelectionGroup(parent);
 		createExclusionGroup(parent);
+		createCityGroup(parent);
 	}
-	
-	
-//	protected void createExistingProjectGroup(Composite parent) {
-//		final Composite groupContent = createGroupContainer(parent, "Existing project details", 3);
-//		
-//		oldNamespaceLabel = new Label(groupContent, SWT.NONE);
-//		oldNamespaceLabel.setText("Namespace");
-//
-//		oldNamespaceText = new Text(groupContent, SWT.BORDER);
-//		oldNamespaceText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-//		new Label(groupContent, SWT.NONE);
-//		
-//		oldHeaderLabel = new Label(groupContent, SWT.NONE);
-//		oldHeaderLabel.setText("Library files (header)");
-//
-//		oldHeaderText = new Text(groupContent, SWT.BORDER);
-//		oldHeaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-//		
-//		final Button browseFile = new Button(groupContent, SWT.NONE); 
-//		browseFile.setText("Browse Workspace..."); 
-//		browseFile.addListener(SWT.Selection, new Listener() {
-//			@Override
-//			public void handleEvent(Event event) {
-//				String file = BrowseWorkspaceUtil.browseFilePath(getShell(), 
-//						"Library files in the workspace", "Select a header file", "", null);
-//				if (file != null){
-//					oldHeaderText.setText(file);
-//				}
-//			}
-//		});
-//	}
-	
+
 	
 	protected void createSelectionGroup(Composite parent) {
 		final Composite groupContent = createGroupContainer(parent, "Library details", 3);
@@ -149,8 +106,8 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 			}
 		});
 	}
-	
-	
+
+
 	protected void createExclusionGroup(Composite parent) {
 		final Composite groupContent = createGroupContainer(parent, "Files that  should not be parsed", 3);
 		
@@ -176,6 +133,76 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		});
 	}
 	
+	
+	protected void createCityGroup(Composite parent) {
+		final Composite groupContent = createGroupContainer(parent, "JSCity details", 3);
+		
+		mysqlLabel = new Label(groupContent, SWT.NONE);
+		mysqlLabel.setText("MySQL path");
+
+		mysqlText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		mysqlText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		mysqlText.setEditable(false);
+
+		final Button selectBtn = new Button(groupContent, SWT.NONE); 
+		selectBtn.setText("Select..."); 
+		selectBtn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String[] extensions	= new String[] {"*.*"};
+				String[] names 		= new String[] {"All files"};
+				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
+				String[] selectedFiles = fileSelection.getSelectedFiles();
+				if (selectedFiles.length > 1)
+					MessageUtility.showMessage(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
+											  MessageDialog.ERROR, "Selecting MySQL application", 
+											  "Multiple applications for MySQL were selected. Please select only the appropriate MySQL application");
+				else if (!new File(selectedFiles[0]).canExecute())
+						MessageUtility.showMessage(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
+								  MessageDialog.ERROR, "Selecting MySQL application", 
+								  "The selected MySQL application is not executable.Please select the appropriate MySQL application");
+						
+				else{
+					mysql = selectedFiles[0];
+					mysqlText.setText(mysql);
+				}
+			}
+		});
+
+		nodeLabel = new Label(groupContent, SWT.NONE);
+		nodeLabel.setText("Node path");
+
+		nodeText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		nodeText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		nodeText.setEditable(false);
+
+		final Button selectNodeBtn = new Button(groupContent, SWT.NONE); 
+		selectNodeBtn.setText("Select..."); 
+		selectNodeBtn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String[] extensions	= new String[] {"*.*"};
+				String[] names 		= new String[] {"All files"};
+				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
+
+				String[] selectedFiles = fileSelection.getSelectedFiles();
+				if (selectedFiles.length > 1)
+					MessageUtility.showMessage(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
+											  MessageDialog.ERROR, "Selecting node application", 
+							  				 "Multiple applications for Node were selected. Please select only the appropriate Node application");
+				else if (!new File(selectedFiles[0]).canExecute())
+					MessageUtility.showMessage(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
+							  MessageDialog.ERROR, "Selecting Node application",  
+							  "The selected Node application is not executable.Please select the appropriate Node application");					
+				else{
+					node = selectedFiles[0]; 
+					nodeText.setText(node);
+				}
+			}
+		});
+	
+	}
+	
 		
 	protected static Composite createGroupContainer(Composite parent, String text, int columns) {
 		final Group group = new Group(parent, SWT.FILL);
@@ -190,8 +217,8 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 		
 		return groupContent;
 	}
-	
-	
+
+
 	public void create (String projectName, String projectPath){
 		this.path = projectPath;
 
@@ -201,14 +228,23 @@ public class ObsoleteLibraryDialog extends TitleAreaDialog{
 	
 	protected void loadProperties() {
 		if (properties == null) return;
+		//Null is captured if StringProperties class
 		headerText.setText(properties.getProperty(LIB_HEADERS));
 		exclusionText.setText(properties.getProperty(EXCLUDED_FILES));
+		mysqlText.setText(properties.getProperty(MYSQL));
+		nodeText.setText(properties.getProperty(NODE));
 	}
 	
 	protected void storeProperties() {
 		properties = new StringProperties();
-		properties.put(LIB_HEADERS, 	String.join(",", libHeaders));
-		properties.put(EXCLUDED_FILES, 	String.join(",", excludedFiles));
+		if (libHeaders != null)
+			properties.put(LIB_HEADERS, 	String.join(",", libHeaders));
+		if (excludedFiles != null)
+			properties.put(EXCLUDED_FILES, 	String.join(",", excludedFiles));
+		if (mysql != null)
+			properties.put(MYSQL, 			String.join(",", mysql));
+		if (node != null)
+			properties.put(NODE, 			String.join(",", node));			
 	}
 
 	

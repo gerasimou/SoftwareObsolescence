@@ -26,7 +26,8 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
 import org.spg.refactoring.ProjectVisualiser;
 import org.spg.refactoring.RefactoringProject;
-import org.spg.refactoring.handlers.dialogs.ObsoleteLibraryDialog;
+import org.spg.refactoring.handlers.dialogs.ProjectAnalyserDialog;
+import org.spg.refactoring.handlers.dialogs.ProjectVisualiserDialog;
 import org.spg.refactoring.handlers.utilities.SelectionUtility;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
@@ -42,31 +43,32 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	private Shell shell = null;
 	
 	/** Process for server.js*/
-	Process serverProcess;
+	private Process serverProcess;
 	
 	/** Server pid*/
-	int serverPid;
+	private int serverPid;
 	
 	/**JSCity details */
 	final String slash				= File.separator;
-	final String thisClass			= ProjectVisualiserHandler.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-	final String path 	 			= thisClass + "JSCity" + slash + "js" + slash; 
+	private final String thisClass			= ProjectVisualiserHandler.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+	private final String path 	 			= thisClass + "JSCity" + slash + "js" + slash; 
 //			"/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
-	final String jsonPath	 		= path + "backend" + slash; 
+	private final String jsonPath	 		= path + "backend" + slash; 
 //			"/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/backend/";
-	final String server 	 		= "server.js";
-	final String MySQL				= "/usr/local/bin/mysql.server";
-	final String NODE				= "/usr/local/bin/node";
-	final String GENERATOR_SCRIPT	= "generatorPromises9.js";
+	private final String server 	 		= "server.js";
+	private String MySQL; //= "/usr/local/bin/mysql.server";
+	private String NODE;  //= "/usr/local/bin/node";
+	private final String GENERATOR_SCRIPT	= "generatorPromises9.js";
 
-	/** Library dialog*/
-	ObsoleteLibraryDialog libraryDialog;
+	/** Visualiser dialog*/
+	ProjectVisualiserDialog visualiserDialog;
+	
 	
 	public ProjectVisualiserHandler() {
 		serverProcess = null;
 		serverPid	  = -1;
 		
-		libraryDialog = new ObsoleteLibraryDialog();
+		visualiserDialog = new ProjectVisualiserDialog();
 	}
 
 	
@@ -83,8 +85,8 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 			if (cproject != null){
 
 				//show library dialog
-				libraryDialog.create(project.getName(), project.getLocation().toOSString());
-				int reply = libraryDialog.open();
+				visualiserDialog.create(project.getName(), project.getLocation().toOSString());
+				int reply = visualiserDialog.open();
 				if (reply != TitleAreaDialog.OK)
 					return null;		
 
@@ -102,10 +104,12 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 								"There was something wrong with creating directory ProjectAnalysis. Please investigate!");
 				}
 				
-				//get library dialogue properties
-				StringProperties properties = libraryDialog.getProperties();
-				String[] libHeaders       	= properties.getProperty(ObsoleteLibraryDialog.LIB_HEADERS).split(",");
-				String[] excludedFiles		= properties.getProperty(ObsoleteLibraryDialog.EXCLUDED_FILES).split(",");
+				//get visualiser dialogue properties
+				StringProperties properties = visualiserDialog.getProperties();
+				String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
+				String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
+				MySQL						= properties.getProperty(ProjectVisualiserDialog.MYSQL);
+				NODE						= properties.getProperty(ProjectVisualiserDialog.NODE);
 				
 				//analyse project
 				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
