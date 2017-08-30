@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <bundle id="org.spg.refactoring" version="1.0.7">
-      <category name="Refactoring"/>
+   <bundle id="org.spg.refactoring" version="1.0.10">
+      <category name="Modernisation"/>
    </bundle>
-   <category-def name="Refactoring" label="Refactoring-SPG"/>
+   <category-def name="Modernisation" label="Modernisation-SPG"/>
 </site>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.spg.refactoring.feature"
-      label="Refactoring"
-      version="1.0.8"
+      label="API Modernisation"
+      version="1.0.10"
       provider-name="SPG">
 
    <description url="http://www.example.com/description">
@@ -29,14 +29,13 @@
       <import plugin="com.google.gson"/>
       <import plugin="org.eclipse.cdt.ui"/>
       <import plugin="org.eclipse.cdt.managedbuilder.core"/>
-      <import plugin="org.eclipse.epsilon.common"/>
    </requires>
 
    <plugin
          id="org.spg.refactoring"
          download-size="0"
          install-size="0"
-         version="1.0.8"
+         version="1.0.10"
          unpack="false"/>
 
 </feature>

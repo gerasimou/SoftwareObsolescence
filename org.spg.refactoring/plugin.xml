@@ -128,7 +128,7 @@
             </command>            
             <command
                   commandId="org.spg.refactoring.commands.refactorCommand"
-                  label="Refactor Project"
+                  label="Modernise Project"
                   mnemonic="R"
                   style="push">
                <visibleWhen
@@ -148,6 +148,7 @@
                   </with>
                </visibleWhen>
             </command>
+<!--
             <separator
                   name="org.spg.refactoring.separator2"
                   visible="true">
@@ -221,7 +222,7 @@
                   commandId="org.spg.refactoring.commands.loggerCommand"
                   label="Log "
                   style="push">
-            </command>
+            </command>-->
          </menu>
       </menuContribution>
    </extension>
