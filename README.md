@@ -37,6 +37,7 @@ To install the latest version of the API Modernisation plugin:
 
 <br/>
 #### Visualisation Depedency
+
 The plugin employs a variant of [code city metaphor](https://wettel.github.io/codecity.html) to visualise the dependency level of a software system on the legacy API (library). To achieve this, the plugin uses the open-source application [JSCity](https://github.com/aserg-ufmg/JSCity). To start using JSCity install its dependencies (NodeJS and MySQL) and configure the application following the steps below:
 * Install [NodeJS](https://nodejs.org/en) for the target operating system
 <br>On Linux execute ```sudo apt-get install nodejs```
