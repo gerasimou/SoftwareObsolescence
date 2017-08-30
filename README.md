@@ -45,8 +45,7 @@ The plugin employs a variant of [code city metaphor](https://wettel.github.io/co
 <br>On Linux execute ```mysql -u root -p```
 * Run the script schema.sql located in org.spg.refactoring > JSCity > sql
 <br>On Linux execute ```source org.spg.refactoring/JSCity/sql/schema.sql```
-
-You can now use the API Modernisation plugin
+<br/><br/>You can now use the API Modernisation plugin
 ---
 <br/><br/>
 
