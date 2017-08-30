@@ -3,7 +3,6 @@
 An Eclipse plugin for semi-automated software modernisation  to address the problem of software obsolescence in APIs.
 
 ### Prerequisites
----
 1. Eclipse IDE for C/C++
    * Download the application from [Eclipse download site](https://www.eclipse.org/downloads/eclipse-packages/)
 <br/><br/>
@@ -23,18 +22,17 @@ An Eclipse plugin for semi-automated software modernisation  to address the prob
   * Select the elements in Git Integration for Eclipse category
   * Click Next twice, then click "I accept the terms of the license agreement", and finally click Finish. Wait until  EGit is installed.
   * Restart Eclipse
+---
 <br/><br/>
 
-
 ### Install API Modernisation Plugin
----
 To install the latest version of the API Modernisation plugin:
 * Open Eclipse and go to _Help > Install New Software_; a new window will open.
 * Paste the following address in the “Work with” field [http://www-users.cs.york.ac.uk/simos/Modernisation/Plugin](http://www-users.cs.york.ac.uk/~simos/Modernisation/Plugin)
 * Select the API Modernisation element under Modernisation category
 * Click Next twice, then click "I accept the terms of the license agreement", and finally click Finish. Wait until the API Modernisation plugin is installed.
 * Restart Eclipse
-<br/>
+<br/><br/>
 
 #### Visualisation Depedency
 
@@ -49,10 +47,11 @@ The plugin employs a variant of [code city metaphor](https://wettel.github.io/co
 <br>On Linux execute ```source org.spg.refactoring/JSCity/sql/schema.sql```
 
 You can now use the API Modernisation plugin
+---
 <br/><br/>
 
+
 ### Extending API Modernisation Plugin
----
 To extend the API Modernisation plugin:
 * File > Import > Projects from Git > Next > Clone URI > Next
 * Add the following in URI field [https://github.com/gerasimou/SoftwareObsolescence.git](https://github.com/gerasimou/SoftwareObsolescence.git) and click next
