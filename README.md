@@ -34,7 +34,7 @@ To install the latest version of the API Modernisation plugin:
 * Select the API Modernisation element under Modernisation category
 * Click Next twice, then click "I accept the terms of the license agreement", and finally click Finish. Wait until the API Modernisation plugin is installed.
 * Restart Eclipse
-<br/><br/>
+<br/>
 
 #### Visualisation Depedency
 
@@ -49,6 +49,7 @@ The plugin employs a variant of [code city metaphor](https://wettel.github.io/co
 <br>On Linux execute ```source org.spg.refactoring/JSCity/sql/schema.sql```
 
 You can now use the API Modernisation plugin
+<br/><br/>
 
 ### Extending API Modernisation Plugin
 ---
