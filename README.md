@@ -23,7 +23,7 @@ An Eclipse plugin for semi-automated software modernisation  to address the prob
   * Click Next twice, then click "I accept the terms of the license agreement", and finally click Finish. Wait until  EGit is installed.
   * Restart Eclipse
 ---
-<br/><br/>
+<br/>
 
 ### Install API Modernisation Plugin
 To install the latest version of the API Modernisation plugin:
@@ -47,7 +47,7 @@ The plugin employs a variant of [code city metaphor](https://wettel.github.io/co
 <br>On Linux execute ```source org.spg.refactoring/JSCity/sql/schema.sql```
 <br/><br/>You can now use the API Modernisation plugin
 ---
-<br/><br/>
+<br/>
 
 
 ### Extending API Modernisation Plugin
@@ -58,4 +58,4 @@ To extend the API Modernisation plugin:
 * Select _Import existing Eclipse projects_, then select the plugin project _org.spg.refactoring_ and click finish
 
 ***
-Should you have any comments, suggestions or questions, please email us at simos.gerasimou-at-york.ac.uk
+<br/>Should you have any comments, suggestions or questions, please email us at simos.gerasimou-at-york.ac.uk
