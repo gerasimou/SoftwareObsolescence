@@ -35,6 +35,19 @@ To install the latest version of the API Modernisation plugin:
 * Click Next twice, then click "I accept the terms of the license agreement", and finally click Finish. Wait until the API Modernisation plugin is installed.
 * Restart Eclipse
 
+<br/>
+##### Visualisation Depedency
+The plugin employs a variant of [code city metaphor](https://wettel.github.io/codecity.html) to visualise the dependency level of a software system on the legacy API (library). To achieve this, the plugin uses the open-source application [JSCity](https://github.com/aserg-ufmg/JSCity). To start using JSCity install its dependencies (NodeJS and MySQL) and configure the application following the steps below:
+* Install [NodeJS](https://nodejs.org/en) for the target operating system
+<br>On Linux execute ```sudo apt-get install nodejs```
+* Instal [MySQL](https://www.mysql.com)
+<br>On Linux execute ```sudo apt-get install mysqlserver```
+* Through a terminal connect to mysql
+<br>On Linux execute ```mysql -u root -p```
+* Run the script schema.sql located in org.spg.refactoring > JSCity > sql
+<br>On Linux execute ```source org.spg.refactoring/JSCity/sql/schema.sql```
+
+You can now use the API Modernisation plugin
 
 ### Extending API Modernisation Plugin
 ---
@@ -43,3 +56,6 @@ To extend the API Modernisation plugin:
 * Add the following in URI field [https://github.com/gerasimou/SoftwareObsolescence.git](https://github.com/gerasimou/SoftwareObsolescence.git) and click next
 * Select the local directory to download the github repo and click next
 * Select _Import existing Eclipse projects_, then select the plugin project _org.spg.refactoring_ and click finish
+
+***
+Should you have any comments, suggestions or questions, please email us at simos.gerasimou-at-york.ac.uk
