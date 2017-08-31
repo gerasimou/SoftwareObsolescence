@@ -2,6 +2,19 @@
 
 An Eclipse plugin for semi-automated software modernisation  to address the problem of software obsolescence in APIs.
 
+<br/>
+### Repository Structure
+
+* **[Case Studies](https://github.com/gerasimou/SoftwareObsolescence/tree/master/CaseStudies)**: Sample software systems for trying out the API Modernisation plugin
+
+* **[org.spg.refactoring](https://github.com/gerasimou/SoftwareObsolescence/tree/master/org.spg.refactoring)**: API modernisation Eclipse plugin  project  
+
+* **[org.spg.refactoring.feature](https://github.com/gerasimou/SoftwareObsolescence/tree/master/org.spg.refactoring.feature)**: API modernisation Eclipse feature project  
+
+* **[org.spg.refactoring.updateSite](https://github.com/gerasimou/SoftwareObsolescence/tree/master/org.spg.refactoring.updateSite)**: API modernisation Eclipse update site project  
+---
+<br/>
+
 ### Prerequisites
 1. Eclipse IDE for C/C++
    * Download the application from [Eclipse download site](https://www.eclipse.org/downloads/eclipse-packages/)
@@ -51,7 +64,8 @@ The plugin employs a variant of [code city metaphor](https://wettel.github.io/co
 
 
 ### Extending API Modernisation Plugin
-To extend the API Modernisation plugin:
+To extend the API Modernisation plugin, clone this repository and import the plugin project on Eclipse C/C++ IDE:
+* Open Eclipse C/C++ IDE
 * File > Import > Projects from Git > Next > Clone URI > Next
 * Add the following in URI field [https://github.com/gerasimou/SoftwareObsolescence.git](https://github.com/gerasimou/SoftwareObsolescence.git) and click next
 * Select the local directory to download the github repo and click next
