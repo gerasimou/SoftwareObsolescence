@@ -1,8 +1,8 @@
 # Managing Software Obsolescence in APIs
 
 An Eclipse plugin for semi-automated software modernisation  to address the problem of software obsolescence in APIs.
-
 <br/>
+
 ### Repository Structure
 
 * **[Case Studies](https://github.com/gerasimou/SoftwareObsolescence/tree/master/CaseStudies)**: Sample software systems for trying out the API Modernisation plugin
