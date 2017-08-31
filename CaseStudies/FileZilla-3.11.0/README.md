@@ -9,7 +9,7 @@ Source code: [https://svn.filezilla-project.org/svn/FileZilla3/tags/3.11.0/](htt
 
 ### Instructions
 
-* Clone  repository
+* Clone  repository (skip this step if you have already cloned the repo)
 <br/>Using terminal type ```git clone https://github.com/gerasimou/SoftwareObsolescence.git```
 
 * Launch Eclipse C/C++ IDE

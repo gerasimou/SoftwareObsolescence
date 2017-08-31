@@ -5,7 +5,7 @@ A simple application using TinyXML for loading, reading and manipulating XML doc
 
 ### Instructions
 
-* Clone  repository
+* Clone  repository (skip this step if you have already cloned the repo)
 <br/>Using terminal type ```git clone https://github.com/gerasimou/SoftwareObsolescence.git```
 
 * Launch Eclipse C/C++ IDE
