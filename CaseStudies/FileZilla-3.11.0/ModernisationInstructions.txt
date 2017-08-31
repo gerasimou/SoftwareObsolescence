@@ -1,3 +1,14 @@
+Compiling modernised FileZilla
+==========================
+
+Assumptions:
+============
+1) The abstraction layer (adapter) is called myNewLib. If a different name has been given, make the appropriate changes to the instructions below.
+
+----------------------------------
+
+Instructions
+============
 1) create configure.sh with the content
 			#delete previous settings
 			find . \( -name "config" -o -name "autom4te.cache" \) -type d -delete
@@ -5,10 +16,10 @@
 
 			#reconfigure
 			autoreconf -i -m configure.ac
-			
+
 
 2) update install.sh
-	l29: change the following command 
+	l29: change the following command
 			- ../configure --with-tinyxml=builtin
 		 	+ ../configure --with-mynewlib=builtin --config-cache
 
@@ -23,7 +34,7 @@
 			        AC_MSG_ERROR([--with-mynewlib has to be set to either system (the default), builtin or auto])
 			      fi
 			    ])
-			
+
 			  if test "x$with_mynewlib" = "xsystem"; then
 			    AC_MSG_NOTICE([Using system mynewlib])
 			    AC_DEFINE(HAVE_LIBMYNEWLIB, 1, [Define to 1 if your system has the `mynewlib' library (-lmynewlib).])
@@ -32,11 +43,11 @@
 			    AC_MSG_NOTICE([Using builtin mynewlib])
 			    MYNEWLIB_LIBS="../myNewLib/libmynewlib.a"
 			  fi
-			
+
 			  AC_SUBST(MYNEWLIB_LIBS)
 			])
-  
-  
+
+
 4) update configure.ac
 	l459: change the following command
 			- FZ_CHECK_TINYXML()
@@ -45,36 +56,36 @@
 	l645: change the following command
 			- AM_CONDITIONAL(HAVE_LIBTINYXML, [test "x$with_tinyxml" = "xsystem"])
 			+ AM_CONDITIONAL(HAVE_LIBMYNEWLIB, [test "x$with_mynewlib" = "xsystem"])
-			
+
 	l649: change the following command
 			- src/tinyxml/Makefile
 			+ src/myNewLib/Makefile
 
-			
+
 5) update src/Makefile.am
 	l5-8: change the following commands
 			- if HAVE_LIBTINYXML
 			- else
 			-  MAYBE_TINYXML = tinyxml
 			- endif
-			
+
 			+  MAYBE_MYNEWLIB = myNewLib
-			
+
 	l20: change the following command
 			- SUBDIRS = include engine $(MAYBE_TINYXML) $(MAYBE_DBUS) interface putty $(MAYBE_FZSHELLEXT) .
 			+ SUBDIRS = include engine $(MAYBE_MYNEWLIB) $(MAYBE_DBUS) interface putty $(MAYBE_FZSHELLEXT) .
-			
+
 
 	l21: change the following command
 			- DIST_SUBDIRS = include engine tinyxml dbus interface putty fzshellext/64 .
 			+ DIST_SUBDIRS = include engine myNewLib dbus interface putty fzshellext/64 .
-			
-			
+
+
 6) update src/interface/Makefile.am
 	l250: change the following
 			- filezilla_LDFLAGS += $(TINYXML_LIBS)
 			+ filezilla_LDFLAGS += $(MYNEWLIB_LIBS)
-			
+
 	l278-281: change the following commands
 			- if HAVE_LIBTINYXML
 			- else
@@ -85,8 +96,8 @@
 			+ else
 			+	filezilla_DEPENDENCIES += $(MYNEWLIB_LIBS)
 			+	endif
-			
-			
+
+
 7) create src/myNewLib/Makefile.am file with the content
 			noinst_LIBRARIES = libmynewlib.a
 
