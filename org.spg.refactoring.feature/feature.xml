@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.spg.refactoring.feature"
+      id="org.spg.modernisation.feature"
       label="API Modernisation"
       version="1.0.10"
       provider-name="SPG">
@@ -32,7 +32,7 @@
    </requires>
 
    <plugin
-         id="org.spg.refactoring"
+         id="org.spg.modernisation"
          download-size="0"
          install-size="0"
          version="1.0.10"
