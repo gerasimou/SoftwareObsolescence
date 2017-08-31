@@ -15,11 +15,15 @@ Source code: [https://svn.filezilla-project.org/svn/FileZilla3/tags/3.11.0/](htt
 * Launch Eclipse C/C++ IDE
 
 * Import Eclipse project
-<br/> File > Import > Existing Project into Workspace > Next, and then browse to the location where mFAST is located
+<br/> File > Import > Existing Project into Workspace > Next, and then browse to the location where FileZilla-3.11.0 is located
+
+* After generating the abstraction layer (adapter), follow the instructions provided in [ModernisationInstructions.txt](https://github.com/gerasimou/SoftwareObsolescence/blob/master/CaseStudies/FileZilla-3.11.0/ModernisationInstructions.txt) to compile the modernised FileZilla.
 
 ---
 <br/>
-For information on installing the Eclipse API Modernisation plugin, please read the instructions on the [main repository page](https://github.com/gerasimou/SoftwareObsolescence#managing-software-obsolescence-in-apis).
+
+To instal the Eclipse API Modernisation plugin, please read the instructions on the
+[main repository page](https://github.com/gerasimou/SoftwareObsolescence#managing-software-obsolescence-in-apis).
 
 ***
 <br/>Should you have any comments, suggestions or questions, please email us at simos.gerasimou-at-york.ac.uk
