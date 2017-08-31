@@ -38,7 +38,7 @@ An Eclipse plugin for semi-automated software modernisation  to address the prob
 ---
 <br/>
 
-### Install API Modernisation Plugin
+### Installing API Modernisation Plugin
 To install the latest version of the API Modernisation plugin:
 * Open Eclipse and go to _Help > Install New Software_; a new window will open.
 * Paste the following address in the “Work with” field [http://www-users.cs.york.ac.uk/simos/Modernisation/Plugin](http://www-users.cs.york.ac.uk/~simos/Modernisation/Plugin)
