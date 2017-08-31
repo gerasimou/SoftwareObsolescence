@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: API Modernisation
-Bundle-SymbolicName: org.spg.refactoring;singleton:=true
+Bundle-SymbolicName: org.spg.modernisation;singleton:=true
 Bundle-Version: 1.0.10
 Bundle-Activator: org.spg.refactoring.activator.Activator
 Require-Bundle: org.eclipse.ui,
