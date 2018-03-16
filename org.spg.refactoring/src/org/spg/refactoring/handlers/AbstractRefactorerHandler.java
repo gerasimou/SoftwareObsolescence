@@ -70,7 +70,7 @@ public abstract class AbstractRefactorerHandler extends AbstractHandler {
 				}
 				
 				
-				executeRefactoringTask(project, analysisDir);				
+				executeRefactoringTask(project, analysisDir, dialog.getProperties());				
 			}
 			else 
 				throw new NullPointerException("Project " + project.getName() + " is not C/C++");
@@ -86,6 +86,6 @@ public abstract class AbstractRefactorerHandler extends AbstractHandler {
 	}
 	
 	
-	protected abstract void executeRefactoringTask(IProject project, File analysisDir) throws Exception;
+	protected abstract void executeRefactoringTask(IProject project, File analysisDir, StringProperties properties) throws Exception;
 
 }

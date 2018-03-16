@@ -29,9 +29,8 @@ public class ProjectRefactorHandler extends AbstractRefactorerHandler {
 
 
 	@Override
-	protected void executeRefactoringTask(IProject project, File analysisDir) throws Exception {
+	protected void executeRefactoringTask(IProject project, File analysisDir, StringProperties properties) throws Exception {
 		//get library dialogue properties
-		StringProperties properties = dialog.getProperties();
 		String[] libHeaders       	= properties.getProperty(RefactoringProjectDialog.LIB_HEADERS).split(",");
 		String[] excludedFiles		= properties.getProperty(RefactoringProjectDialog.EXCLUDED_FILES).split(",");
 		String newProject			= properties.getProperty(RefactoringProjectDialog.NEW_PROJECT);

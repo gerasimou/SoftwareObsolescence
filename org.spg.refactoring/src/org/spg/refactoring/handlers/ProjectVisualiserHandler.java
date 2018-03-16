@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
@@ -56,9 +58,8 @@ public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
 	}
 
 	
-	protected void executeRefactoringTask(IProject project, File analysisDir) throws Exception{
-		//get visualiser dialogue properties
-		StringProperties properties = dialog.getProperties();
+	protected void executeRefactoringTask(IProject project, File analysisDir, StringProperties properties) throws PartInitException, MalformedURLException{
+		//get library dialogue properties
 		String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
 		String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
 		MySQL						= properties.getProperty(ProjectVisualiserDialog.MYSQL);
