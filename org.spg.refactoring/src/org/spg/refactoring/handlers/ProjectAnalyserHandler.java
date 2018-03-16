@@ -2,92 +2,39 @@ package org.spg.refactoring.handlers;
 
 import java.io.File;
 
-import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.handlers.dialogs.ProjectAnalyserDialog;
-import org.spg.refactoring.handlers.utilities.SelectionUtility;
-import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.MessageUtility;
 import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
 
-public class ProjectAnalyserHandler extends AbstractHandler {
-	/** Shell handler*/
-	private Shell shell = null;
-
-	/** Library dialog*/
-	ProjectAnalyserDialog libraryDialog;
+public class ProjectAnalyserHandler extends AbstractRefactorerHandler {
+	/** Dialog Messages*/
+	
 	
 	public ProjectAnalyserHandler() {
-		libraryDialog = new ProjectAnalyserDialog();
+		super();
+		dialog 			= new ProjectAnalyserDialog();
+		this.title 		= "Analysing project";
+		this.message	= "Project analysis will begin now, OK?";
 	}
 
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+	protected void executeRefactoringTask(IProject project, File analysisDir){
+		//get library dialogue properties
+		StringProperties properties = dialog.getProperties();
+		String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
+		String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
+
+		RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
+		refactoring.analyseOnly(project, analysisDir);	
 		
-		IProject project = null;
-		try{
-			project = SelectionUtility.getSelectedProject();
-			//check if the project is a C project
-			ICProject cproject = CdtUtilities.getICProject(project);
+		MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
+				   "Analysis completed", 
+				   	String.format("Analysing project %s completed successfully.", project.getName()));
 
-			if (cproject != null){
-
-				//show library dialog
-//				libraryDialog.setDialogPath(project.getLocation().toOSString());				
-				libraryDialog.create(project.getName(), project.getLocation().toOSString());
-				int reply = libraryDialog.open();
-				if (reply != TitleAreaDialog.OK)
-					return null;		
-
-				boolean OK = MessageUtility.showMessage(shell, MessageDialog.CONFIRM, "Analysing project", 
-						"Project analysis will begin now, OK?");		
-				if (!OK)
-					return null;
-				
-				//create directory for analysis results
-				File analysisDir = new File(project.getLocationURI().getPath().toString() + File.separator + "ProjectAnalysis");
-				if (!analysisDir.exists()){
-					boolean result = analysisDir.mkdir();
-					if (!result)
-						MessageUtility.showMessage(shell, MessageDialog.ERROR, "Creating project analysis directory", 
-								"There was something wrong with creating directory ProjectAnalysis. Please investigate!");
-				}
-				
-				//get library dialogue properties
-				StringProperties properties = libraryDialog.getProperties();
-				String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
-				String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
-
-				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
-				refactoring.analyseOnly(project, analysisDir);
-
-				
-				MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
-						   "Analysis completed", 
-						   	String.format("Analysing project %s completed successfully.", project.getName()));
-			}
-			else 
-				throw new NullPointerException("Project " + project.getName() + " is not C/C++");
-		} 
-		catch (NullPointerException | CoreException e) {
-			MessageUtility.writeToConsole("Console", e.getMessage());
-			MessageUtility.showMessage(shell, MessageDialog.ERROR, 
-						   "Analysis error", 
-						   	String.format("Something went wrong with analysing project %s. Please check the log.", project.getName()));
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 }

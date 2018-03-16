@@ -7,30 +7,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
-import org.spg.refactoring.ProjectVisualiser;
+import org.spg.refactoring.ProjectVisualiserMDE;
 import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.handlers.dialogs.ProjectAnalyserDialog;
 import org.spg.refactoring.handlers.dialogs.ProjectVisualiserDialog;
-import org.spg.refactoring.handlers.utilities.SelectionUtility;
-import org.spg.refactoring.utilities.CdtUtilities;
-import org.spg.refactoring.utilities.MessageUtility;
 import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
 
 /**
@@ -38,10 +25,7 @@ import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
-public class ProjectVisualiserHandler extends AbstractHandler {
-	/** Shell handler*/
-	private Shell shell = null;
-	
+public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
 	/** Process for server.js*/
 	private Process serverProcess;
 	
@@ -60,93 +44,58 @@ public class ProjectVisualiserHandler extends AbstractHandler {
 	private String NODE;  //= "/usr/local/bin/node";
 	private final String GENERATOR_SCRIPT	= "generatorPromises9.js";
 
-	/** Visualiser dialog*/
-	ProjectVisualiserDialog visualiserDialog;
-	
+
 	
 	public ProjectVisualiserHandler() {
-		serverProcess = null;
-		serverPid	  = -1;
-		
-		visualiserDialog = new ProjectVisualiserDialog();
+		super();
+		dialog 			= new ProjectVisualiserDialog();
+		this.title 		= "Showing City";
+		this.message	= "Project analysis will begin now, OK?";
+		serverProcess 	= null;
+		serverPid	  	= -1;		
 	}
 
 	
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-
-		IProject project = null;
-		try{
-			project = SelectionUtility.getSelectedProject();
-			//check if the project is a C project
-			ICProject cproject = CdtUtilities.getICProject(project);
-
-			if (cproject != null){
-
-				//show library dialog
-				visualiserDialog.create(project.getName(), project.getLocation().toOSString());
-				int reply = visualiserDialog.open();
-				if (reply != TitleAreaDialog.OK)
-					return null;		
-
-				boolean OK = MessageUtility.showMessage(shell, MessageDialog.CONFIRM, "Showing City", 
-														"Project analysis will begin now, OK?");		
-				if (!OK)
-					return null;
-				
-				//create directory for analysis results
-				File analysisDir = new File(project.getLocationURI().getPath().toString() + File.separator + "ProjectAnalysis");
-				if (!analysisDir.exists()){
-					boolean result = analysisDir.mkdir();
-					if (!result)
-						MessageUtility.showMessage(shell, MessageDialog.ERROR, "Creating project analysis directory", 
-								"There was something wrong with creating directory ProjectAnalysis. Please investigate!");
-				}
-				
-				//get visualiser dialogue properties
-				StringProperties properties = visualiserDialog.getProperties();
-				String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
-				String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
-				MySQL						= properties.getProperty(ProjectVisualiserDialog.MYSQL);
-				NODE						= properties.getProperty(ProjectVisualiserDialog.NODE);
-				
-				//analyse project
-				RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
-				refactoring.analyseOnly(project, analysisDir);
+	protected void executeRefactoringTask(IProject project, File analysisDir) throws Exception{
+		//get visualiser dialogue properties
+		StringProperties properties = dialog.getProperties();
+		String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
+		String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
+		MySQL						= properties.getProperty(ProjectVisualiserDialog.MYSQL);
+		NODE						= properties.getProperty(ProjectVisualiserDialog.NODE);
 		
-				//get TUs using legacy library
-				Map<String,String> tusUsingMap = refactoring.getTUsUsingMapAsString();
-				
-				//run visualiser
-				ProjectVisualiser vis = new ProjectVisualiser();
-				String JSONfileFullPath = vis.run(project, analysisDir.getAbsolutePath(), tusUsingMap);
-				
-				//If a JSON file is generated, start mysql and add the ciy to the database
-				if (JSONfileFullPath!=null){
-					
-					startMySQLDatabase();
-					
-					runGeneratorScript(JSONfileFullPath);
+		//analyse project
+		RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
+		refactoring.analyseOnly(project, analysisDir);
 
-					startJSCityServer();
-					
-					//show browser
-					int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
-					IWebBrowser browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
-					browser.openURL(new URL("http://localhost:8888/"));
-				}
-			}	
-		} 
-		catch (NullPointerException | CoreException | MalformedURLException e) {
-			MessageUtility.writeToConsole("Console", e.getMessage());
-			MessageUtility.showMessage(shell, MessageDialog.ERROR, 
-									   "Unexpected Project Nature", 
-									   	String.format("Expected a C/C++ Project but got a %s instead.\nProcessing Terminated.", project.getName()));
-			e.printStackTrace();
+		//get TUs using legacy library
+		Map<String,String> tusUsingMap = refactoring.getTUsUsingMapAsString();
+		
+		//run visualiser
+//		ProjectVisualiser vis = new ProjectVisualiser();
+//		String JSONfileFullPath = vis.run(project, analysisDir.getAbsolutePath(), tusUsingMap);
+
+		//run MDE-based visualiser
+		ProjectVisualiserMDE vis = new ProjectVisualiserMDE();
+		String JSONfileFullPath = vis.run(project, analysisDir.getAbsolutePath(), tusUsingMap);
+
+		
+		//If a JSON file is generated, start mysql and add the ciy to the database
+		if (JSONfileFullPath!=null){
+			
+			startMySQLDatabase();
+			
+			runGeneratorScript(JSONfileFullPath);
+
+			startJSCityServer();
+			
+			//show browser
+			int style = IWorkbenchBrowserSupport.AS_EDITOR | IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.STATUS;
+			IWebBrowser browser = WorkbenchBrowserSupport.getInstance().createBrowser(style, "MyBrowserID", "MyBrowserName", "MyBrowser Tooltip");
+			browser.openURL(new URL("http://localhost:8888/"));	
 		}
-		return null;
 	}
+
 	
 	
 	/**
