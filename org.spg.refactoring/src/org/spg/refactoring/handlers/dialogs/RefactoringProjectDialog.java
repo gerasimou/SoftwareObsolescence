@@ -12,34 +12,19 @@
 package org.spg.refactoring.handlers.dialogs;
 
 
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
 
 
-public class RefactoringProjectDialog extends TitleAreaDialog{
+public class RefactoringProjectDialog extends AbstractRefactorerDialog{
 
-	private StringProperties properties;	
-	
-	private Label headerLabel;
-	private Label exclusionLabel;
 	private Label newProjectLabel;
 	private Label newLibraryLabel;
 	private Label newNamespaceLabel;
 
-	private Text headerText;
-	private Text exclusionText;
 	private Text newProjectText;
 	private Text newLibraryText;
 	private Text newNamespaceText;
@@ -47,104 +32,19 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 	public final static String NEW_PROJECT   = "new_project";
 	public final static String NEW_LIBRARY   = "new_library";
 	public final static String NEW_NAMESPACE = "new_namespace";	
-	public final static String LIB_HEADERS 	  = "lib_headers";
-	public final static String EXCLUDED_FILES = "excluded_files";	
 
-	private String[] libHeaders;
-	private String[] excludedFiles;
-	
-	private String path;
 	
 	
 	public RefactoringProjectDialog() {
-		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		super();
+		title 	= "Project refactoring configuration";
+		message = "Please provide the necessary information for refactoring the project"; 
+
 	}
-	
-	
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		
-		Composite superControl = (Composite) super.createDialogArea(parent);
-		
-		
-		this.setTitle("Project refactoring configuration");
-		this.setMessage("Please provide the necessary information for refactoring the project");
-//		this.getShell().setText("New library details");
-		
-		Composite control = new Composite(superControl, SWT.FILL);
-		control.setLayout(new GridLayout(1,true));
-		control.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		superControl.setSize(100,50);
-		control.setSize(100, 50);
-		
-		createGroups(parent);
-				
-		loadProperties();
-		
-		control.layout();
-		control.pack();
-		
-		return control;
-	}
-	
 	
 	protected void createGroups(Composite parent) {
-//		createExistingProjectGroup(parent);
-		createSelectionGroup(parent);
-		createExclusionGroup(parent);
+		super.createGroups(parent);
 		createNewProjectGroup(parent);
-	}
-	
-	
-	protected void createSelectionGroup(Composite parent) {
-		final Composite groupContent = createGroupContainer(parent, "Obsolete library details", 3);
-		
-		headerLabel = new Label(groupContent, SWT.NONE);
-		headerLabel.setText("Header files");
-
-		headerText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		headerText.setLayoutData(new GridData(GridData.FILL_BOTH));
-		headerText.setEditable(false);
-		headerText.setSize(100, 50);
-
-		final Button selectBtn = new Button(groupContent, SWT.NONE); 
-		selectBtn.setText("Select..."); 
-		selectBtn.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				String[] extensions	= new String[] {"*.h"};
-				String[] names 		= new String[] {"Header"};
-				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
-				libHeaders = fileSelection.getSelectedFiles();
-				if (libHeaders!= null && libHeaders.length > 0)
-					headerText.setText(String.join(",\n",libHeaders));
-			}
-		});
-	}
-	
-	protected void createExclusionGroup(Composite parent) {
-		final Composite groupContent = createGroupContainer(parent, "Files that  should not be parsed", 3);
-		
-		exclusionLabel = new Label(groupContent, SWT.NONE);
-		exclusionLabel.setText("Excluded files");
-
-		exclusionText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		exclusionText.setLayoutData(new GridData(GridData.FILL_BOTH));
-		exclusionText.setEditable(false);
-
-		final Button selectBtn = new Button(groupContent, SWT.NONE); 
-		selectBtn.setText("Select..."); 
-		selectBtn.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				String[] extensions	= new String[] {"*.cpp", "*.*"};
-				String[] names 		= new String[] {"cpp", "All files"};
-				FilesSelectionDialog fileSelection = new FilesSelectionDialog(path, extensions, names);
-				excludedFiles = fileSelection.getSelectedFiles();
-				if (excludedFiles!= null && excludedFiles.length > 0)
-					exclusionText.setText(String.join(",\n",excludedFiles));
-			}
-		});
 	}
 	
 	protected void createNewProjectGroup(Composite parent) {
@@ -173,25 +73,8 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 	}
 	
 	
-	protected static Composite createGroupContainer(Composite parent, String text, int columns) {
-		final Group group = new Group(parent, SWT.FILL);
-		
-		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		group.setText(text);
-		group.setLayout(new GridLayout(1,false));
-		
-		final Composite groupContent = new Composite(group, SWT.FILL);
-		groupContent.setLayout(new GridLayout(columns, false));
-		groupContent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		return groupContent;
-	}
-	
-	
 	public void create (String projectName, String projectPath){
-		this.path = projectPath;
-
-		super.create();
+		super.create(projectName, projectPath);
 		
 		//preconfigured details
 		newProjectText.setText(projectName + "Refactored");
@@ -202,41 +85,19 @@ public class RefactoringProjectDialog extends TitleAreaDialog{
 	
 	protected void loadProperties() {
 		if (properties == null) return;
+		super.loadProperties();
 		newProjectText.setText(properties.getProperty(NEW_PROJECT));
 		newLibraryText.setText(properties.getProperty(NEW_LIBRARY));
 		newNamespaceText.setText(properties.getProperty(NEW_NAMESPACE));
-		headerText.setText(properties.getProperty(LIB_HEADERS));
-		exclusionText.setText(properties.getProperty(EXCLUDED_FILES));
 	}
 	
 	protected void storeProperties() {
-		properties = new StringProperties();
-		if (libHeaders != null)
-			properties.put(LIB_HEADERS, 	String.join(",", libHeaders));
-		if (excludedFiles != null)
-			properties.put(EXCLUDED_FILES, 	String.join(",", excludedFiles));
+		super.storeProperties();
 		if (!newProjectText.getText().isEmpty())
 			properties.put(NEW_PROJECT, newProjectText.getText().replaceAll("\\s",""));
 		if (!newLibraryText.getText().isEmpty())
 			properties.put(NEW_LIBRARY, newLibraryText.getText().replaceAll("\\s",""));
 		if (!newNamespaceText.getText().isEmpty())
 			properties.put(NEW_NAMESPACE, newNamespaceText.getText().replaceAll("\\s",""));
-	}
-
-	
-	@Override
-	protected void okPressed() {
-		storeProperties();
-		super.okPressed();
-	}
-	
-	@Override
-	protected void setShellStyle(int newShellStyle) {
-		   super.setShellStyle(newShellStyle | SWT.RESIZE);
-	}
-	
-	public StringProperties getProperties(){
-		return properties;
-	}
-	
+	}	
 }
