@@ -1,4 +1,4 @@
-package org.spg.refactoring.handlers;
+package org.spg.refactoring.handlers.otherHandlers;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -9,6 +9,8 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spg.refactoring.utilities.MessageUtility;
+
+import logger.MyPropertyDefiner;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -29,7 +31,7 @@ public class LoggerHandler extends AbstractHandler {
 
 		LOG.debug("Debug log");
 		LOG.info("info");
-		LOG.error("error");
+		LOG.error(MyPropertyDefiner.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		
 		MessageUtility.showMessage(shell, MessageDialog.INFORMATION, 
 									"Refactoring",

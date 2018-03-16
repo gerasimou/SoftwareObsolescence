@@ -1,4 +1,4 @@
-package org.spg.refactoring.handlers;
+package org.spg.refactoring.handlers.otherHandlers;
 
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.commands.AbstractHandler;

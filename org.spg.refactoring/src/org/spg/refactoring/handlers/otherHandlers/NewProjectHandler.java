@@ -1,4 +1,4 @@
-package org.spg.refactoring.handlers;
+package org.spg.refactoring.handlers.otherHandlers;
 
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.commands.AbstractHandler;
@@ -21,9 +21,9 @@ import org.spg.refactoring.utilities.MessageUtility;
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
-public class CopyProjectHandler extends AbstractHandler {
+public class NewProjectHandler extends AbstractHandler {
 
-	public CopyProjectHandler() {
+	public NewProjectHandler() {
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class CopyProjectHandler extends AbstractHandler {
 				//check if the project is a C project
 				ICProject cproject = CdtUtilities.getICProject(project);
 				if (cproject != null){
-					CdtUtilities.copyProject(project, project.getName() + "_copy");
+					CdtUtilities.createNewProject(project.getName() + "_new");
 				}
 			}
 		} 
