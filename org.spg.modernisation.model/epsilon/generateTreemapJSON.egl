@@ -1,0 +1,45 @@
+[%
+var project = Source!Project.all;
+var packages = project.packages.first;
+%]
+{
+  [%="name: \""+ project.first.name +"\""%],
+  [%="rate: "+ 0.03 %],
+  [% project.first.findPackages();%]
+}
+
+[%operation Project findPackages(){%]
+  "children": 
+  [
+  [%for (p in self.packages){
+		p.extractPackageDetails();
+		p.findSubPackages();
+	}%]
+  ]
+[%}%]
+
+[%operation Package findSubPackages (){
+	if (self.subpackages.isEmpty()){
+		
+	}
+	else{
+		for (p in self.subpackages){
+			p.extractPackageDetails();
+			p.findSubPackages();
+		}
+	}
+}%]
+
+[%operation Package extractPackageDetails(){%]
+   {
+    [%="\"name\":" +'"'+ self.name + '"' %],
+    [%="\"rate\":" +'"'+ "0.1" +'"'%]
+   },
+[%}%]
+
+[%operation Package extractLeafPackageDetails(){%]
+   {
+    [%="\"name\":" +'"'+ self.name + '"' %],
+    [%="\"rate\":" +'"'+ "0.1" +'"'%]
+   },
+[%}%]

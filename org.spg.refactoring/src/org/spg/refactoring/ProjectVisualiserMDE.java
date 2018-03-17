@@ -32,7 +32,6 @@ import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.EmfUtilities;
 import org.spg.refactoring.utilities.Utility;
 
-import project.Clazz;
 import project.Element;
 import project.File;
 import project.Method;
@@ -291,7 +290,7 @@ public class ProjectVisualiserMDE {
 		String storeOnDisposal	= "false";
 		EmfModel model = EmfUtilities.loadEmfModel(metamodelURI, modelFile, modelName, readOnLoad, storeOnDisposal);
 		
-		String rootPath = "/Users/sgerasimou/Documents/Programming/workspaceEpsilonNeon/org.spg.modernisation.model/epsilon/"; 
+		String rootPath = "/Users/sgerasimou/Documents/Git/ModernSoftware/org.spg.modernisation.model/epsilon/"; 
 		//run EOL script
 		String eol = rootPath + "printProjectModel.eol";
 		EmfUtilities.runEOL(model, eol);

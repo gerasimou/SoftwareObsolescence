@@ -1,6 +1,12 @@
 [%
 var project = Source!Project.all;
 var packages = project.packages.first;
+
+//var objects : Sequence = Source.allContents();
+var packages 	 : Collection = Package.allInstances();
+var mainPackages : Collection = packages.select(p | p.eContainer.isTypeOf(Project));
+var subPackages  : Collection = packages.select(p | not p.eContainer.isTypeOf(Project));
+var files		 : Collection = File.allInstances();
 %]
 {
 "city":
@@ -8,62 +14,51 @@ var packages = project.packages.first;
   "name": "[%= project.first.name %]",
   "tooltip": "[%= project.first.name %]"
 },
-"districts":[
-[% project.first.findPackages();%]
+"districts":
+[
+[% for (p in mainPackages){
+		var last : Boolean; 
+		if (p == mainPackages.last() and subPackages.isEmpty())
+			last = true;
+		else
+			last = false;
+		p.extractPackageDetails(last);
+	}%]
+[% for (p in subPackages){
+		var last : Boolean; 
+		if (p == subPackages.last())
+			last = true;
+		else
+			last = false;
+		p.extractPackageDetails(last);
+	}%]
+	
 ],
 "buildings":[
-[% project.first.findFiles();%]
+[% for (f in files){
+		if (f == files.last())
+			f.extractFileDetails(true);
+		else
+			f.extractFileDetails(false);
+	}%]
+	
 ]
 }
-[%operation Project findPackages(){
-	for (p in self.packages){
-		p.extractPackageDetails();
-		p.findSubPackages();
-	}
-}%]
-
-[%operation Package findSubPackages (){
-	for (p in self.subpackages){
-		p.extractSubPackageDetails();
-		p.findSubPackages();
-	}
-}%]
-
-[%operation EObject findFiles (){%]
-	[%var packages : OrderedSet;	  
-	if (self.isTypeOf(Project)){
-		packages = self.packages;
-	}
-	else if (self.isTypeOf(Package)){
-		packages = self.subpackages;
-	}
-	for (p in packages){
-		for (f in p.files){
-			f.extractFileDetails();
-		}
-		p.findFiles();
-	}
-}%]
-
-[%operation Package extractPackageDetails(){%]
+[%operation Package extractPackageDetails(last : Boolean){%]
 {
 	[%="\"name\":" +'"'+ self.name + '"' %],
 	[%="\"tooltip\":" +'"'+ self.description +'"'%],
 	[%="\"color\":" +'"'+ self.colour +'"'%],
+	[%if (self.eContainer.isTypeOf(Project)){%]
 	[%="\"city\":" + "\"" + self.eContainer().name +"\""%]
-},
-[%}%]
-
-[%operation EObject extractSubPackageDetails(){%]
-{
-	[%="\"name\":" +'"'+ self.name + '"' %],
-	[%="\"tooltip\":" +'"'+ self.description +'"'%],
-	[%="\"color\":" +'"'+ self.colour +'"'%],
+	[%}else{%]
 	[%="\"district\":" + "\"" + self.eContainer().name +"\""%]
-},
+	[%}%]
+}[% if (not last) {%],
+[%}%]
 [%}%]
 
-[%operation EObject extractFileDetails(){%]
+[%operation EObject extractFileDetails(last : Boolean){%]
 {
 	[%="\"name\":" +'"'+ self.name + '"' %],
 	[%="\"tooltip\":" +'"'+ self.description +'"'%],
@@ -71,21 +66,6 @@ var packages = project.packages.first;
 	[%="\"height\":" +'"'+ self.height +'"'%],
 	[%="\"width\":" +'"'+ self.width +'"'%],
 	[%="\"district\":" + "\"" + self.eContainer().name +"\""%]
-},
+}[% if (not last) {%],
 [%}%]
-
-[%
-operation Package findSubPackagesOld (str : String) : String{
-	for (p in self.subpackages){%]
-		[%=p.name%]
-	[%}
-	return "";
-}
-
-operation Project findPackagesOld (str : String) : String{
-	for (p in self.packages){
-		str += p.name +" "; 
-	}
-	return str;
-}
-%]
+[%}%]

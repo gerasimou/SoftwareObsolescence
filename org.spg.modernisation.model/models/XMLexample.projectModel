@@ -1,24 +1,601 @@
 <?xml version="1.0" encoding="ASCII"?>
 <project:Project xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:project="http://org.spg.modernisation.model.project" name="XMLexample" description="XMLexample" colour="0xF9F7F4">
-  <packages name="src" description="default package" colour="0xF7AB29">
-    <files name="XMLexample.cpp" description="XMLexample.cpp, LoC : " colour="0x2A75B3"/>
-  </packages>
-  <packages name="Maths" description="Folder: Maths" colour="0xF7AB29">
-    <subpackages name="MathsInner">
-      <subpackages name="MathsInnerInner">
-        <files name="Maths.h" description="Maths header" colour="0xB22029"/>
-        <files name="Maths.cpp" description="Maths source" colour="0xB22029"/>
+  <packages name="default" description="default package" colour="0xF7AB29"/>
+  <packages name="src" description="src package" colour="0xF7AB29">
+    <subpackages name="Maths" description="Folder: /Maths" colour="0xA0522D">
+      <subpackages name="MathsInner" description="Folder: /MathsInner" colour="0xD2691E">
+        <subpackages name="MathsInnerInner" description="Folder: /MathsInnerInner" colour="0xDAA520">
+          <subpackages name="MathsInner" description="Folder: /MathsInner" colour="0xF4A460"/>
+        </subpackages>
       </subpackages>
+      <files name="Rectangle.cpp" description="Rectangle.cpp, LoC : " colour="0x2A75B3" height="0.0" width="2.0">
+        <methods name="Rectangle::Rectangle" description="Rectangle::Rectangle()" colour="0x27A5B3"/>
+        <methods name="Rectangle::Rectangle" description="Rectangle::Rectangle(int, int)" colour="0x27A5B3"/>
+        <methods name="Rectangle::area" description="Rectangle::area()" colour="0x27A5B3"/>
+        <methods name="Rectangle::~Rectangle" description="Rectangle::~Rectangle()" colour="0x27A5B3"/>
+      </files>
+      <files name="Rectangle.h" description="Rectangle.h, LoC : " colour="0x2A75B3" height="0.0" width="2.0">
+        <methods name="Rectangle" description="Rectangle()" colour="0x27A5B3"/>
+        <methods name="Rectangle" description="Rectangle(int, int)" colour="0x27A5B3"/>
+        <methods name="~Rectangle" description="~Rectangle()" colour="0x27A5B3"/>
+        <methods name="area" description="area()" colour="0x27A5B3"/>
+      </files>
     </subpackages>
-    <files name="Rectangle.cpp" description="Rectangle.cpp, LoC : " colour="0x2A75B3"/>
-    <files name="Rectangle.h" description="Rectangle.h, LoC : " colour="0x2A75B3"/>
-  </packages>
-  <packages name="TinyXML" description="Folder: TinyXML" colour="0xF7AB29">
-    <files name="tinyxml2.cpp" description="tinyxml2.cpp, LoC : " colour="0x2A75B3"/>
-    <files name="tinyxml2.h" description="tinyxml2.h, LoC : " colour="0x2A75B3"/>
-  </packages>
-  <packages name="testTinyXML" description="Folder: testTinyXML" colour="0xF7AB29">
-    <files name="testTinyXML.cpp" description="testTinyXML.cpp, LoC : " colour="0xB22029"/>
-    <files name="testTinyXML.h" description="testTinyXML.h, LoC : " colour="0xB22029"/>
+    <subpackages name="TinyXML" description="Folder: /TinyXML" colour="0xA0522D">
+      <files name="tinyxml2.cpp" description="tinyxml2.cpp, LoC : " colour="0x2A75B3" height="0.0" width="2.0">
+        <methods name="TIXML_SNPRINTF" description="TIXML_SNPRINTF(char*, size_t, const char*, ...)" colour="0x27A5B3"/>
+        <methods name="TIXML_VSNPRINTF" description="TIXML_VSNPRINTF(char*, size_t, const char*, va_list)" colour="0x27A5B3"/>
+        <methods name="TIXML_VSCPRINTF" description="TIXML_VSCPRINTF(const char*, va_list)" colour="0x27A5B3"/>
+        <methods name="TIXML_VSCPRINTF" description="TIXML_VSCPRINTF(const char*, va_list)" colour="0x27A5B3"/>
+        <methods name="StrPair::~StrPair" description="StrPair::~StrPair()" colour="0x27A5B3"/>
+        <methods name="StrPair::TransferTo" description="StrPair::TransferTo(StrPair*)" colour="0x27A5B3"/>
+        <methods name="StrPair::Reset" description="StrPair::Reset()" colour="0x27A5B3"/>
+        <methods name="StrPair::SetStr" description="StrPair::SetStr(const char*, int)" colour="0x27A5B3"/>
+        <methods name="StrPair::ParseText" description="StrPair::ParseText(char*, const char*, int)" colour="0x27A5B3"/>
+        <methods name="StrPair::ParseName" description="StrPair::ParseName(char*)" colour="0x27A5B3"/>
+        <methods name="StrPair::CollapseWhitespace" description="StrPair::CollapseWhitespace()" colour="0x27A5B3"/>
+        <methods name="StrPair::GetStr" description="StrPair::GetStr()" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ReadBOM" description="XMLUtil::ReadBOM(const char*, bool*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ConvertUTF32ToUTF8" description="XMLUtil::ConvertUTF32ToUTF8(unsigned long, char*, int*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::GetCharacterRef" description="XMLUtil::GetCharacterRef(const char*, char*, int*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToStr" description="XMLUtil::ToStr(int, char*, int)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToStr" description="XMLUtil::ToStr(unsigned, char*, int)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToStr" description="XMLUtil::ToStr(bool, char*, int)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToStr" description="XMLUtil::ToStr(float, char*, int)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToStr" description="XMLUtil::ToStr(double, char*, int)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToStr" description="XMLUtil::ToStr(int64_t, char*, int)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToInt" description="XMLUtil::ToInt(const char*, int*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToUnsigned" description="XMLUtil::ToUnsigned(const char*, unsigned*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToBool" description="XMLUtil::ToBool(const char*, bool*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToFloat" description="XMLUtil::ToFloat(const char*, float*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToDouble" description="XMLUtil::ToDouble(const char*, double*)" colour="0x27A5B3"/>
+        <methods name="XMLUtil::ToInt64" description="XMLUtil::ToInt64(const char*, int64_t*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::Identify" description="XMLDocument::Identify(char*, XMLNode**)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::Accept" description="XMLDocument::Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="XMLNode::XMLNode" description="XMLNode::XMLNode(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::~XMLNode" description="XMLNode::~XMLNode()" colour="0x27A5B3"/>
+        <methods name="XMLNode::Value" description="XMLNode::Value() const" colour="0x27A5B3"/>
+        <methods name="XMLNode::SetValue" description="XMLNode::SetValue(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLNode::DeleteChildren" description="XMLNode::DeleteChildren()" colour="0x27A5B3"/>
+        <methods name="XMLNode::Unlink" description="XMLNode::Unlink(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::DeleteChild" description="XMLNode::DeleteChild(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::InsertEndChild" description="XMLNode::InsertEndChild(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::InsertFirstChild" description="XMLNode::InsertFirstChild(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::InsertAfterChild" description="XMLNode::InsertAfterChild(XMLNode*, XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::FirstChildElement" description="XMLNode::FirstChildElement(const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLNode::LastChildElement" description="XMLNode::LastChildElement(const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLNode::NextSiblingElement" description="XMLNode::NextSiblingElement(const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLNode::PreviousSiblingElement" description="XMLNode::PreviousSiblingElement(const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLNode::ParseDeep" description="XMLNode::ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::DeleteNode" description="XMLNode::DeleteNode(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLNode::InsertChildPreamble" description="XMLNode::InsertChildPreamble(XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLNode::ToElementWithName" description="XMLNode::ToElementWithName(const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLText::ParseDeep" description="XMLText::ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLText::ShallowClone" description="XMLText::ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="XMLText::ShallowEqual" description="XMLText::ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLText::Accept" description="XMLText::Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="XMLComment::XMLComment" description="XMLComment::XMLComment(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="XMLComment::~XMLComment" description="XMLComment::~XMLComment()" colour="0x27A5B3"/>
+        <methods name="XMLComment::ParseDeep" description="XMLComment::ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLComment::ShallowClone" description="XMLComment::ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="XMLComment::ShallowEqual" description="XMLComment::ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLComment::Accept" description="XMLComment::Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration::XMLDeclaration" description="XMLDeclaration::XMLDeclaration(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration::~XMLDeclaration" description="XMLDeclaration::~XMLDeclaration()" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration::ParseDeep" description="XMLDeclaration::ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration::ShallowClone" description="XMLDeclaration::ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration::ShallowEqual" description="XMLDeclaration::ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration::Accept" description="XMLDeclaration::Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="XMLUnknown::XMLUnknown" description="XMLUnknown::XMLUnknown(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="XMLUnknown::~XMLUnknown" description="XMLUnknown::~XMLUnknown()" colour="0x27A5B3"/>
+        <methods name="XMLUnknown::ParseDeep" description="XMLUnknown::ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLUnknown::ShallowClone" description="XMLUnknown::ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="XMLUnknown::ShallowEqual" description="XMLUnknown::ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLUnknown::Accept" description="XMLUnknown::Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::Name" description="XMLAttribute::Name() const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::Value" description="XMLAttribute::Value() const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::ParseDeep" description="XMLAttribute::ParseDeep(char*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetName" description="XMLAttribute::SetName(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::QueryIntValue" description="XMLAttribute::QueryIntValue(int*) const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::QueryUnsignedValue" description="XMLAttribute::QueryUnsignedValue(unsigned int*) const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::QueryInt64Value" description="XMLAttribute::QueryInt64Value(int64_t*) const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::QueryBoolValue" description="XMLAttribute::QueryBoolValue(bool*) const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::QueryFloatValue" description="XMLAttribute::QueryFloatValue(float*) const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::QueryDoubleValue" description="XMLAttribute::QueryDoubleValue(double*) const" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetAttribute" description="XMLAttribute::SetAttribute(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetAttribute" description="XMLAttribute::SetAttribute(int)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetAttribute" description="XMLAttribute::SetAttribute(unsigned)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetAttribute" description="XMLAttribute::SetAttribute(int64_t)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetAttribute" description="XMLAttribute::SetAttribute(bool)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetAttribute" description="XMLAttribute::SetAttribute(double)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute::SetAttribute" description="XMLAttribute::SetAttribute(float)" colour="0x27A5B3"/>
+        <methods name="XMLElement::XMLElement" description="XMLElement::XMLElement(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="XMLElement::~XMLElement" description="XMLElement::~XMLElement()" colour="0x27A5B3"/>
+        <methods name="XMLElement::FindAttribute" description="XMLElement::FindAttribute(const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::Attribute" description="XMLElement::Attribute(const char*, const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::IntAttribute" description="XMLElement::IntAttribute(const char*, int) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::UnsignedAttribute" description="XMLElement::UnsignedAttribute(const char*, unsigned) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::Int64Attribute" description="XMLElement::Int64Attribute(const char*, int64_t) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::BoolAttribute" description="XMLElement::BoolAttribute(const char*, bool) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::DoubleAttribute" description="XMLElement::DoubleAttribute(const char*, double) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::FloatAttribute" description="XMLElement::FloatAttribute(const char*, float) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::GetText" description="XMLElement::GetText() const" colour="0x27A5B3"/>
+        <methods name="XMLElement::SetText" description="XMLElement::SetText(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLElement::SetText" description="XMLElement::SetText(int)" colour="0x27A5B3"/>
+        <methods name="XMLElement::SetText" description="XMLElement::SetText(unsigned)" colour="0x27A5B3"/>
+        <methods name="XMLElement::SetText" description="XMLElement::SetText(int64_t)" colour="0x27A5B3"/>
+        <methods name="XMLElement::SetText" description="XMLElement::SetText(bool)" colour="0x27A5B3"/>
+        <methods name="XMLElement::SetText" description="XMLElement::SetText(float)" colour="0x27A5B3"/>
+        <methods name="XMLElement::SetText" description="XMLElement::SetText(double)" colour="0x27A5B3"/>
+        <methods name="XMLElement::QueryIntText" description="XMLElement::QueryIntText(int*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::QueryUnsignedText" description="XMLElement::QueryUnsignedText(unsigned*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::QueryInt64Text" description="XMLElement::QueryInt64Text(int64_t*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::QueryBoolText" description="XMLElement::QueryBoolText(bool*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::QueryDoubleText" description="XMLElement::QueryDoubleText(double*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::QueryFloatText" description="XMLElement::QueryFloatText(float*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::IntText" description="XMLElement::IntText(int) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::UnsignedText" description="XMLElement::UnsignedText(unsigned) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::Int64Text" description="XMLElement::Int64Text(int64_t) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::BoolText" description="XMLElement::BoolText(bool) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::DoubleText" description="XMLElement::DoubleText(double) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::FloatText" description="XMLElement::FloatText(float) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::FindOrCreateAttribute" description="XMLElement::FindOrCreateAttribute(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLElement::DeleteAttribute" description="XMLElement::DeleteAttribute(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLElement::ParseAttributes" description="XMLElement::ParseAttributes(char*)" colour="0x27A5B3"/>
+        <methods name="XMLElement::DeleteAttribute" description="XMLElement::DeleteAttribute(XMLAttribute*)" colour="0x27A5B3"/>
+        <methods name="XMLElement::ParseDeep" description="XMLElement::ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLElement::ShallowClone" description="XMLElement::ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::ShallowEqual" description="XMLElement::ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLElement::Accept" description="XMLElement::Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="XMLDocument::XMLDocument" description="XMLDocument::XMLDocument(bool, Whitespace)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::~XMLDocument" description="XMLDocument::~XMLDocument()" colour="0x27A5B3"/>
+        <methods name="XMLDocument::Clear" description="XMLDocument::Clear()" colour="0x27A5B3"/>
+        <methods name="XMLDocument::NewElement" description="XMLDocument::NewElement(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::NewComment" description="XMLDocument::NewComment(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::NewText" description="XMLDocument::NewText(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::NewDeclaration" description="XMLDocument::NewDeclaration(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::NewUnknown" description="XMLDocument::NewUnknown(const char*)" colour="0x27A5B3"/>
+        <methods name="callfopen" description="callfopen(const char*, const char*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::DeleteNode" description="XMLDocument::DeleteNode(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::LoadFile" description="XMLDocument::LoadFile(const char*)" colour="0x27A5B3"/>
+        <methods name="Fits" description="Fits(unsigned long)" colour="0x27A5B3"/>
+        <methods name="Fits" description="Fits(unsigned long)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::LoadFile" description="XMLDocument::LoadFile(FILE*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::SaveFile" description="XMLDocument::SaveFile(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::SaveFile" description="XMLDocument::SaveFile(FILE*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::Parse" description="XMLDocument::Parse(const char*, size_t)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::Print" description="XMLDocument::Print(XMLPrinter*) const" colour="0x27A5B3"/>
+        <methods name="XMLDocument::SetError" description="XMLDocument::SetError(XMLError, const char*, const char*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument::ErrorName" description="XMLDocument::ErrorName() const" colour="0x27A5B3"/>
+        <methods name="XMLDocument::PrintError" description="XMLDocument::PrintError() const" colour="0x27A5B3"/>
+        <methods name="XMLDocument::Parse" description="XMLDocument::Parse()" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::XMLPrinter" description="XMLPrinter::XMLPrinter(FILE*, bool, int)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::Print" description="XMLPrinter::Print(const char*, ...)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PrintSpace" description="XMLPrinter::PrintSpace(int)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PrintString" description="XMLPrinter::PrintString(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushHeader" description="XMLPrinter::PushHeader(bool, bool)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::OpenElement" description="XMLPrinter::OpenElement(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushAttribute" description="XMLPrinter::PushAttribute(const char*, const char*)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushAttribute" description="XMLPrinter::PushAttribute(const char*, int)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushAttribute" description="XMLPrinter::PushAttribute(const char*, unsigned)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushAttribute" description="XMLPrinter::PushAttribute(const char*, int64_t)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushAttribute" description="XMLPrinter::PushAttribute(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushAttribute" description="XMLPrinter::PushAttribute(const char*, double)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::CloseElement" description="XMLPrinter::CloseElement(bool)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::SealElementIfJustOpened" description="XMLPrinter::SealElementIfJustOpened()" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushText" description="XMLPrinter::PushText(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushText" description="XMLPrinter::PushText(int64_t)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushText" description="XMLPrinter::PushText(int)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushText" description="XMLPrinter::PushText(unsigned)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushText" description="XMLPrinter::PushText(bool)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushText" description="XMLPrinter::PushText(float)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushText" description="XMLPrinter::PushText(double)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushComment" description="XMLPrinter::PushComment(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushDeclaration" description="XMLPrinter::PushDeclaration(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::PushUnknown" description="XMLPrinter::PushUnknown(const char*)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::VisitEnter" description="XMLPrinter::VisitEnter(const XMLDocument&amp;)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::VisitEnter" description="XMLPrinter::VisitEnter(const XMLElement&amp;, const XMLAttribute*)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::VisitExit" description="XMLPrinter::VisitExit(const XMLElement&amp;)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::Visit" description="XMLPrinter::Visit(const XMLText&amp;)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::Visit" description="XMLPrinter::Visit(const XMLComment&amp;)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::Visit" description="XMLPrinter::Visit(const XMLDeclaration&amp;)" colour="0x27A5B3"/>
+        <methods name="XMLPrinter::Visit" description="XMLPrinter::Visit(const XMLUnknown&amp;)" colour="0x27A5B3"/>
+      </files>
+      <files name="tinyxml2.h" description="tinyxml2.h, LoC : " colour="0x2A75B3" height="0.0" width="2.0">
+        <methods name="StrPair" description="StrPair()" colour="0x27A5B3"/>
+        <methods name="~StrPair" description="~StrPair()" colour="0x27A5B3"/>
+        <methods name="Set" description="Set(char*, char*, int)" colour="0x27A5B3"/>
+        <methods name="GetStr" description="GetStr()" colour="0x27A5B3"/>
+        <methods name="Empty" description="Empty() const" colour="0x27A5B3"/>
+        <methods name="SetInternedStr" description="SetInternedStr(const char*)" colour="0x27A5B3"/>
+        <methods name="SetStr" description="SetStr(const char*, int=0)" colour="0x27A5B3"/>
+        <methods name="ParseText" description="ParseText(char*, const char*, int)" colour="0x27A5B3"/>
+        <methods name="ParseName" description="ParseName(char*)" colour="0x27A5B3"/>
+        <methods name="TransferTo" description="TransferTo(StrPair*)" colour="0x27A5B3"/>
+        <methods name="Reset" description="Reset()" colour="0x27A5B3"/>
+        <methods name="CollapseWhitespace" description="CollapseWhitespace()" colour="0x27A5B3"/>
+        <methods name="StrPair" description="StrPair(const StrPair&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(StrPair&amp;)" colour="0x27A5B3"/>
+        <methods name="DynArray" description="DynArray()" colour="0x27A5B3"/>
+        <methods name="~DynArray" description="~DynArray()" colour="0x27A5B3"/>
+        <methods name="Clear" description="Clear()" colour="0x27A5B3"/>
+        <methods name="Push" description="Push(T)" colour="0x27A5B3"/>
+        <methods name="PushArr" description="PushArr(int)" colour="0x27A5B3"/>
+        <methods name="Pop" description="Pop()" colour="0x27A5B3"/>
+        <methods name="PopArr" description="PopArr(int)" colour="0x27A5B3"/>
+        <methods name="Empty" description="Empty() const" colour="0x27A5B3"/>
+        <methods name="operator []" description="operator [](int)" colour="0x27A5B3"/>
+        <methods name="operator []" description="operator [](int) const" colour="0x27A5B3"/>
+        <methods name="PeekTop" description="PeekTop() const" colour="0x27A5B3"/>
+        <methods name="Size" description="Size() const" colour="0x27A5B3"/>
+        <methods name="Capacity" description="Capacity() const" colour="0x27A5B3"/>
+        <methods name="Mem" description="Mem() const" colour="0x27A5B3"/>
+        <methods name="Mem" description="Mem()" colour="0x27A5B3"/>
+        <methods name="DynArray" description="DynArray(const DynArray&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const DynArray&amp;)" colour="0x27A5B3"/>
+        <methods name="EnsureCapacity" description="EnsureCapacity(int)" colour="0x27A5B3"/>
+        <methods name="MemPool" description="MemPool()" colour="0x27A5B3"/>
+        <methods name="~MemPool" description="~MemPool()" colour="0x27A5B3"/>
+        <methods name="ItemSize" description="ItemSize() const" colour="0x27A5B3"/>
+        <methods name="Alloc" description="Alloc()" colour="0x27A5B3"/>
+        <methods name="Free" description="Free(void*)" colour="0x27A5B3"/>
+        <methods name="SetTracked" description="SetTracked()" colour="0x27A5B3"/>
+        <methods name="Clear" description="Clear()" colour="0x27A5B3"/>
+        <methods name="MemPoolT" description="MemPoolT()" colour="0x27A5B3"/>
+        <methods name="~MemPoolT" description="~MemPoolT()" colour="0x27A5B3"/>
+        <methods name="Clear" description="Clear()" colour="0x27A5B3"/>
+        <methods name="ItemSize" description="ItemSize() const" colour="0x27A5B3"/>
+        <methods name="CurrentAllocs" description="CurrentAllocs() const" colour="0x27A5B3"/>
+        <methods name="Alloc" description="Alloc()" colour="0x27A5B3"/>
+        <methods name="Free" description="Free(void*)" colour="0x27A5B3"/>
+        <methods name="Trace" description="Trace(const char*)" colour="0x27A5B3"/>
+        <methods name="SetTracked" description="SetTracked()" colour="0x27A5B3"/>
+        <methods name="Untracked" description="Untracked() const" colour="0x27A5B3"/>
+        <methods name="MemPoolT" description="MemPoolT(const MemPoolT&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const MemPoolT&amp;)" colour="0x27A5B3"/>
+        <methods name="~XMLVisitor" description="~XMLVisitor()" colour="0x27A5B3"/>
+        <methods name="VisitEnter" description="VisitEnter(const XMLDocument&amp;)" colour="0x27A5B3"/>
+        <methods name="VisitExit" description="VisitExit(const XMLDocument&amp;)" colour="0x27A5B3"/>
+        <methods name="VisitEnter" description="VisitEnter(const XMLElement&amp;, const XMLAttribute*)" colour="0x27A5B3"/>
+        <methods name="VisitExit" description="VisitExit(const XMLElement&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLDeclaration&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLText&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLComment&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLUnknown&amp;)" colour="0x27A5B3"/>
+        <methods name="SkipWhiteSpace" description="SkipWhiteSpace(const char*)" colour="0x27A5B3"/>
+        <methods name="SkipWhiteSpace" description="SkipWhiteSpace(char*)" colour="0x27A5B3"/>
+        <methods name="IsWhiteSpace" description="IsWhiteSpace(char)" colour="0x27A5B3"/>
+        <methods name="IsNameStartChar" description="IsNameStartChar(unsigned char)" colour="0x27A5B3"/>
+        <methods name="IsNameChar" description="IsNameChar(unsigned char)" colour="0x27A5B3"/>
+        <methods name="StringEqual" description="StringEqual(const char*, const char*, int=2147483647)" colour="0x27A5B3"/>
+        <methods name="IsUTF8Continuation" description="IsUTF8Continuation(char)" colour="0x27A5B3"/>
+        <methods name="ReadBOM" description="ReadBOM(const char*, bool*)" colour="0x27A5B3"/>
+        <methods name="GetCharacterRef" description="GetCharacterRef(const char*, char*, int*)" colour="0x27A5B3"/>
+        <methods name="ConvertUTF32ToUTF8" description="ConvertUTF32ToUTF8(unsigned long, char*, int*)" colour="0x27A5B3"/>
+        <methods name="ToStr" description="ToStr(int, char*, int)" colour="0x27A5B3"/>
+        <methods name="ToStr" description="ToStr(unsigned, char*, int)" colour="0x27A5B3"/>
+        <methods name="ToStr" description="ToStr(bool, char*, int)" colour="0x27A5B3"/>
+        <methods name="ToStr" description="ToStr(float, char*, int)" colour="0x27A5B3"/>
+        <methods name="ToStr" description="ToStr(double, char*, int)" colour="0x27A5B3"/>
+        <methods name="ToStr" description="ToStr(int64_t, char*, int)" colour="0x27A5B3"/>
+        <methods name="ToInt" description="ToInt(const char*, int*)" colour="0x27A5B3"/>
+        <methods name="ToUnsigned" description="ToUnsigned(const char*, unsigned*)" colour="0x27A5B3"/>
+        <methods name="ToBool" description="ToBool(const char*, bool*)" colour="0x27A5B3"/>
+        <methods name="ToFloat" description="ToFloat(const char*, float*)" colour="0x27A5B3"/>
+        <methods name="ToDouble" description="ToDouble(const char*, double*)" colour="0x27A5B3"/>
+        <methods name="ToInt64" description="ToInt64(const char*, int64_t*)" colour="0x27A5B3"/>
+        <methods name="GetDocument" description="GetDocument() const" colour="0x27A5B3"/>
+        <methods name="GetDocument" description="GetDocument()" colour="0x27A5B3"/>
+        <methods name="ToElement" description="ToElement()" colour="0x27A5B3"/>
+        <methods name="ToText" description="ToText()" colour="0x27A5B3"/>
+        <methods name="ToComment" description="ToComment()" colour="0x27A5B3"/>
+        <methods name="ToDocument" description="ToDocument()" colour="0x27A5B3"/>
+        <methods name="ToDeclaration" description="ToDeclaration()" colour="0x27A5B3"/>
+        <methods name="ToUnknown" description="ToUnknown()" colour="0x27A5B3"/>
+        <methods name="ToElement" description="ToElement() const" colour="0x27A5B3"/>
+        <methods name="ToText" description="ToText() const" colour="0x27A5B3"/>
+        <methods name="ToComment" description="ToComment() const" colour="0x27A5B3"/>
+        <methods name="ToDocument" description="ToDocument() const" colour="0x27A5B3"/>
+        <methods name="ToDeclaration" description="ToDeclaration() const" colour="0x27A5B3"/>
+        <methods name="ToUnknown" description="ToUnknown() const" colour="0x27A5B3"/>
+        <methods name="Value" description="Value() const" colour="0x27A5B3"/>
+        <methods name="SetValue" description="SetValue(const char*, bool=false)" colour="0x27A5B3"/>
+        <methods name="Parent" description="Parent() const" colour="0x27A5B3"/>
+        <methods name="Parent" description="Parent()" colour="0x27A5B3"/>
+        <methods name="NoChildren" description="NoChildren() const" colour="0x27A5B3"/>
+        <methods name="FirstChild" description="FirstChild() const" colour="0x27A5B3"/>
+        <methods name="FirstChild" description="FirstChild()" colour="0x27A5B3"/>
+        <methods name="FirstChildElement" description="FirstChildElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="FirstChildElement" description="FirstChildElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="LastChild" description="LastChild() const" colour="0x27A5B3"/>
+        <methods name="LastChild" description="LastChild()" colour="0x27A5B3"/>
+        <methods name="LastChildElement" description="LastChildElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="LastChildElement" description="LastChildElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="PreviousSibling" description="PreviousSibling() const" colour="0x27A5B3"/>
+        <methods name="PreviousSibling" description="PreviousSibling()" colour="0x27A5B3"/>
+        <methods name="PreviousSiblingElement" description="PreviousSiblingElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="PreviousSiblingElement" description="PreviousSiblingElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="NextSibling" description="NextSibling() const" colour="0x27A5B3"/>
+        <methods name="NextSibling" description="NextSibling()" colour="0x27A5B3"/>
+        <methods name="NextSiblingElement" description="NextSiblingElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="NextSiblingElement" description="NextSiblingElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="InsertEndChild" description="InsertEndChild(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="LinkEndChild" description="LinkEndChild(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="InsertFirstChild" description="InsertFirstChild(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="InsertAfterChild" description="InsertAfterChild(XMLNode*, XMLNode*)" colour="0x27A5B3"/>
+        <methods name="DeleteChildren" description="DeleteChildren()" colour="0x27A5B3"/>
+        <methods name="DeleteChild" description="DeleteChild(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="ShallowClone" description="ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="ShallowEqual" description="ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="Accept" description="Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="SetUserData" description="SetUserData(void*)" colour="0x27A5B3"/>
+        <methods name="GetUserData" description="GetUserData() const" colour="0x27A5B3"/>
+        <methods name="XMLNode" description="XMLNode(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="~XMLNode" description="~XMLNode()" colour="0x27A5B3"/>
+        <methods name="ParseDeep" description="ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="Unlink" description="Unlink(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="DeleteNode" description="DeleteNode(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="InsertChildPreamble" description="InsertChildPreamble(XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="ToElementWithName" description="ToElementWithName(const char*) const" colour="0x27A5B3"/>
+        <methods name="XMLNode" description="XMLNode(const XMLNode&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLNode&amp;)" colour="0x27A5B3"/>
+        <methods name="Accept" description="Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="ToText" description="ToText()" colour="0x27A5B3"/>
+        <methods name="ToText" description="ToText() const" colour="0x27A5B3"/>
+        <methods name="SetCData" description="SetCData(bool)" colour="0x27A5B3"/>
+        <methods name="CData" description="CData() const" colour="0x27A5B3"/>
+        <methods name="ShallowClone" description="ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="ShallowEqual" description="ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLText" description="XMLText(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="~XMLText" description="~XMLText()" colour="0x27A5B3"/>
+        <methods name="ParseDeep" description="ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLText" description="XMLText(const XMLText&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLText&amp;)" colour="0x27A5B3"/>
+        <methods name="ToComment" description="ToComment()" colour="0x27A5B3"/>
+        <methods name="ToComment" description="ToComment() const" colour="0x27A5B3"/>
+        <methods name="Accept" description="Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="ShallowClone" description="ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="ShallowEqual" description="ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLComment" description="XMLComment(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="~XMLComment" description="~XMLComment()" colour="0x27A5B3"/>
+        <methods name="ParseDeep" description="ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLComment" description="XMLComment(const XMLComment&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLComment&amp;)" colour="0x27A5B3"/>
+        <methods name="ToDeclaration" description="ToDeclaration()" colour="0x27A5B3"/>
+        <methods name="ToDeclaration" description="ToDeclaration() const" colour="0x27A5B3"/>
+        <methods name="Accept" description="Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="ShallowClone" description="ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="ShallowEqual" description="ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration" description="XMLDeclaration(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="~XMLDeclaration" description="~XMLDeclaration()" colour="0x27A5B3"/>
+        <methods name="ParseDeep" description="ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLDeclaration" description="XMLDeclaration(const XMLDeclaration&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLDeclaration&amp;)" colour="0x27A5B3"/>
+        <methods name="ToUnknown" description="ToUnknown()" colour="0x27A5B3"/>
+        <methods name="ToUnknown" description="ToUnknown() const" colour="0x27A5B3"/>
+        <methods name="Accept" description="Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="ShallowClone" description="ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="ShallowEqual" description="ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLUnknown" description="XMLUnknown(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="~XMLUnknown" description="~XMLUnknown()" colour="0x27A5B3"/>
+        <methods name="ParseDeep" description="ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLUnknown" description="XMLUnknown(const XMLUnknown&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLUnknown&amp;)" colour="0x27A5B3"/>
+        <methods name="Name" description="Name() const" colour="0x27A5B3"/>
+        <methods name="Value" description="Value() const" colour="0x27A5B3"/>
+        <methods name="Next" description="Next() const" colour="0x27A5B3"/>
+        <methods name="IntValue" description="IntValue() const" colour="0x27A5B3"/>
+        <methods name="Int64Value" description="Int64Value() const" colour="0x27A5B3"/>
+        <methods name="UnsignedValue" description="UnsignedValue() const" colour="0x27A5B3"/>
+        <methods name="BoolValue" description="BoolValue() const" colour="0x27A5B3"/>
+        <methods name="DoubleValue" description="DoubleValue() const" colour="0x27A5B3"/>
+        <methods name="FloatValue" description="FloatValue() const" colour="0x27A5B3"/>
+        <methods name="QueryIntValue" description="QueryIntValue(int*) const" colour="0x27A5B3"/>
+        <methods name="QueryUnsignedValue" description="QueryUnsignedValue(unsigned int*) const" colour="0x27A5B3"/>
+        <methods name="QueryInt64Value" description="QueryInt64Value(int64_t*) const" colour="0x27A5B3"/>
+        <methods name="QueryBoolValue" description="QueryBoolValue(bool*) const" colour="0x27A5B3"/>
+        <methods name="QueryDoubleValue" description="QueryDoubleValue(double*) const" colour="0x27A5B3"/>
+        <methods name="QueryFloatValue" description="QueryFloatValue(float*) const" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(int)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(unsigned)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(int64_t)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(bool)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(double)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(float)" colour="0x27A5B3"/>
+        <methods name="XMLAttribute" description="XMLAttribute()" colour="0x27A5B3"/>
+        <methods name="~XMLAttribute" description="~XMLAttribute()" colour="0x27A5B3"/>
+        <methods name="XMLAttribute" description="XMLAttribute(const XMLAttribute&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLAttribute&amp;)" colour="0x27A5B3"/>
+        <methods name="SetName" description="SetName(const char*)" colour="0x27A5B3"/>
+        <methods name="ParseDeep" description="ParseDeep(char*, bool)" colour="0x27A5B3"/>
+        <methods name="Name" description="Name() const" colour="0x27A5B3"/>
+        <methods name="SetName" description="SetName(const char*, bool=false)" colour="0x27A5B3"/>
+        <methods name="ToElement" description="ToElement()" colour="0x27A5B3"/>
+        <methods name="ToElement" description="ToElement() const" colour="0x27A5B3"/>
+        <methods name="Accept" description="Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="Attribute" description="Attribute(const char*, const char*=0) const" colour="0x27A5B3"/>
+        <methods name="IntAttribute" description="IntAttribute(const char*, int=0) const" colour="0x27A5B3"/>
+        <methods name="UnsignedAttribute" description="UnsignedAttribute(const char*, unsigned=0) const" colour="0x27A5B3"/>
+        <methods name="Int64Attribute" description="Int64Attribute(const char*, int64_t=0) const" colour="0x27A5B3"/>
+        <methods name="BoolAttribute" description="BoolAttribute(const char*, bool=false) const" colour="0x27A5B3"/>
+        <methods name="DoubleAttribute" description="DoubleAttribute(const char*, double=0) const" colour="0x27A5B3"/>
+        <methods name="FloatAttribute" description="FloatAttribute(const char*, float=0) const" colour="0x27A5B3"/>
+        <methods name="QueryIntAttribute" description="QueryIntAttribute(const char*, int*) const" colour="0x27A5B3"/>
+        <methods name="QueryUnsignedAttribute" description="QueryUnsignedAttribute(const char*, unsigned int*) const" colour="0x27A5B3"/>
+        <methods name="QueryInt64Attribute" description="QueryInt64Attribute(const char*, int64_t*) const" colour="0x27A5B3"/>
+        <methods name="QueryBoolAttribute" description="QueryBoolAttribute(const char*, bool*) const" colour="0x27A5B3"/>
+        <methods name="QueryDoubleAttribute" description="QueryDoubleAttribute(const char*, double*) const" colour="0x27A5B3"/>
+        <methods name="QueryFloatAttribute" description="QueryFloatAttribute(const char*, float*) const" colour="0x27A5B3"/>
+        <methods name="QueryAttribute" description="QueryAttribute(const char*, int*) const" colour="0x27A5B3"/>
+        <methods name="QueryAttribute" description="QueryAttribute(const char*, unsigned int*) const" colour="0x27A5B3"/>
+        <methods name="QueryAttribute" description="QueryAttribute(const char*, int64_t*) const" colour="0x27A5B3"/>
+        <methods name="QueryAttribute" description="QueryAttribute(const char*, bool*) const" colour="0x27A5B3"/>
+        <methods name="QueryAttribute" description="QueryAttribute(const char*, double*) const" colour="0x27A5B3"/>
+        <methods name="QueryAttribute" description="QueryAttribute(const char*, float*) const" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*, const char*)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*, int)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*, unsigned)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*, int64_t)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*, double)" colour="0x27A5B3"/>
+        <methods name="SetAttribute" description="SetAttribute(const char*, float)" colour="0x27A5B3"/>
+        <methods name="DeleteAttribute" description="DeleteAttribute(const char*)" colour="0x27A5B3"/>
+        <methods name="FirstAttribute" description="FirstAttribute() const" colour="0x27A5B3"/>
+        <methods name="FindAttribute" description="FindAttribute(const char*) const" colour="0x27A5B3"/>
+        <methods name="GetText" description="GetText() const" colour="0x27A5B3"/>
+        <methods name="SetText" description="SetText(const char*)" colour="0x27A5B3"/>
+        <methods name="SetText" description="SetText(int)" colour="0x27A5B3"/>
+        <methods name="SetText" description="SetText(unsigned)" colour="0x27A5B3"/>
+        <methods name="SetText" description="SetText(int64_t)" colour="0x27A5B3"/>
+        <methods name="SetText" description="SetText(bool)" colour="0x27A5B3"/>
+        <methods name="SetText" description="SetText(double)" colour="0x27A5B3"/>
+        <methods name="SetText" description="SetText(float)" colour="0x27A5B3"/>
+        <methods name="QueryIntText" description="QueryIntText(int*) const" colour="0x27A5B3"/>
+        <methods name="QueryUnsignedText" description="QueryUnsignedText(unsigned*) const" colour="0x27A5B3"/>
+        <methods name="QueryInt64Text" description="QueryInt64Text(int64_t*) const" colour="0x27A5B3"/>
+        <methods name="QueryBoolText" description="QueryBoolText(bool*) const" colour="0x27A5B3"/>
+        <methods name="QueryDoubleText" description="QueryDoubleText(double*) const" colour="0x27A5B3"/>
+        <methods name="QueryFloatText" description="QueryFloatText(float*) const" colour="0x27A5B3"/>
+        <methods name="IntText" description="IntText(int=0) const" colour="0x27A5B3"/>
+        <methods name="UnsignedText" description="UnsignedText(unsigned=0) const" colour="0x27A5B3"/>
+        <methods name="Int64Text" description="Int64Text(int64_t=0) const" colour="0x27A5B3"/>
+        <methods name="BoolText" description="BoolText(bool=false) const" colour="0x27A5B3"/>
+        <methods name="DoubleText" description="DoubleText(double=0) const" colour="0x27A5B3"/>
+        <methods name="FloatText" description="FloatText(float=0) const" colour="0x27A5B3"/>
+        <methods name="ClosingType" description="ClosingType() const" colour="0x27A5B3"/>
+        <methods name="ShallowClone" description="ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="ShallowEqual" description="ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="ParseDeep" description="ParseDeep(char*, StrPair*)" colour="0x27A5B3"/>
+        <methods name="XMLElement" description="XMLElement(XMLDocument*)" colour="0x27A5B3"/>
+        <methods name="~XMLElement" description="~XMLElement()" colour="0x27A5B3"/>
+        <methods name="XMLElement" description="XMLElement(const XMLElement&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLElement&amp;)" colour="0x27A5B3"/>
+        <methods name="FindAttribute" description="FindAttribute(const char*)" colour="0x27A5B3"/>
+        <methods name="FindOrCreateAttribute" description="FindOrCreateAttribute(const char*)" colour="0x27A5B3"/>
+        <methods name="ParseAttributes" description="ParseAttributes(char*)" colour="0x27A5B3"/>
+        <methods name="DeleteAttribute" description="DeleteAttribute(XMLAttribute*)" colour="0x27A5B3"/>
+        <methods name="XMLDocument" description="XMLDocument(bool=true, Whitespace=PRESERVE_WHITESPACE)" colour="0x27A5B3"/>
+        <methods name="~XMLDocument" description="~XMLDocument()" colour="0x27A5B3"/>
+        <methods name="ToDocument" description="ToDocument()" colour="0x27A5B3"/>
+        <methods name="ToDocument" description="ToDocument() const" colour="0x27A5B3"/>
+        <methods name="Parse" description="Parse(const char*, size_t=(size_t)(-1))" colour="0x27A5B3"/>
+        <methods name="LoadFile" description="LoadFile(const char*)" colour="0x27A5B3"/>
+        <methods name="LoadFile" description="LoadFile(FILE*)" colour="0x27A5B3"/>
+        <methods name="SaveFile" description="SaveFile(const char*, bool=false)" colour="0x27A5B3"/>
+        <methods name="SaveFile" description="SaveFile(FILE*, bool=false)" colour="0x27A5B3"/>
+        <methods name="ProcessEntities" description="ProcessEntities() const" colour="0x27A5B3"/>
+        <methods name="WhitespaceMode" description="WhitespaceMode() const" colour="0x27A5B3"/>
+        <methods name="HasBOM" description="HasBOM() const" colour="0x27A5B3"/>
+        <methods name="SetBOM" description="SetBOM(bool)" colour="0x27A5B3"/>
+        <methods name="RootElement" description="RootElement()" colour="0x27A5B3"/>
+        <methods name="RootElement" description="RootElement() const" colour="0x27A5B3"/>
+        <methods name="Print" description="Print(XMLPrinter*=0) const" colour="0x27A5B3"/>
+        <methods name="Accept" description="Accept(XMLVisitor*) const" colour="0x27A5B3"/>
+        <methods name="NewElement" description="NewElement(const char*)" colour="0x27A5B3"/>
+        <methods name="NewComment" description="NewComment(const char*)" colour="0x27A5B3"/>
+        <methods name="NewText" description="NewText(const char*)" colour="0x27A5B3"/>
+        <methods name="NewDeclaration" description="NewDeclaration(const char*=0)" colour="0x27A5B3"/>
+        <methods name="NewUnknown" description="NewUnknown(const char*)" colour="0x27A5B3"/>
+        <methods name="DeleteNode" description="DeleteNode(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="SetError" description="SetError(XMLError, const char*, const char*)" colour="0x27A5B3"/>
+        <methods name="Error" description="Error() const" colour="0x27A5B3"/>
+        <methods name="ErrorID" description="ErrorID() const" colour="0x27A5B3"/>
+        <methods name="ErrorName" description="ErrorName() const" colour="0x27A5B3"/>
+        <methods name="GetErrorStr1" description="GetErrorStr1() const" colour="0x27A5B3"/>
+        <methods name="GetErrorStr2" description="GetErrorStr2() const" colour="0x27A5B3"/>
+        <methods name="PrintError" description="PrintError() const" colour="0x27A5B3"/>
+        <methods name="Clear" description="Clear()" colour="0x27A5B3"/>
+        <methods name="Identify" description="Identify(char*, XMLNode**)" colour="0x27A5B3"/>
+        <methods name="ShallowClone" description="ShallowClone(XMLDocument*) const" colour="0x27A5B3"/>
+        <methods name="ShallowEqual" description="ShallowEqual(const XMLNode*) const" colour="0x27A5B3"/>
+        <methods name="XMLDocument" description="XMLDocument(const XMLDocument&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLDocument&amp;)" colour="0x27A5B3"/>
+        <methods name="Parse" description="Parse()" colour="0x27A5B3"/>
+        <methods name="XMLHandle" description="XMLHandle(XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLHandle" description="XMLHandle(XMLNode&amp;)" colour="0x27A5B3"/>
+        <methods name="XMLHandle" description="XMLHandle(const XMLHandle&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLHandle&amp;)" colour="0x27A5B3"/>
+        <methods name="FirstChild" description="FirstChild()" colour="0x27A5B3"/>
+        <methods name="FirstChildElement" description="FirstChildElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="LastChild" description="LastChild()" colour="0x27A5B3"/>
+        <methods name="LastChildElement" description="LastChildElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="PreviousSibling" description="PreviousSibling()" colour="0x27A5B3"/>
+        <methods name="PreviousSiblingElement" description="PreviousSiblingElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="NextSibling" description="NextSibling()" colour="0x27A5B3"/>
+        <methods name="NextSiblingElement" description="NextSiblingElement(const char*=0)" colour="0x27A5B3"/>
+        <methods name="ToNode" description="ToNode()" colour="0x27A5B3"/>
+        <methods name="ToElement" description="ToElement()" colour="0x27A5B3"/>
+        <methods name="ToText" description="ToText()" colour="0x27A5B3"/>
+        <methods name="ToUnknown" description="ToUnknown()" colour="0x27A5B3"/>
+        <methods name="ToDeclaration" description="ToDeclaration()" colour="0x27A5B3"/>
+        <methods name="XMLConstHandle" description="XMLConstHandle(const XMLNode*)" colour="0x27A5B3"/>
+        <methods name="XMLConstHandle" description="XMLConstHandle(const XMLNode&amp;)" colour="0x27A5B3"/>
+        <methods name="XMLConstHandle" description="XMLConstHandle(const XMLConstHandle&amp;)" colour="0x27A5B3"/>
+        <methods name="operator =" description="operator =(const XMLConstHandle&amp;)" colour="0x27A5B3"/>
+        <methods name="FirstChild" description="FirstChild() const" colour="0x27A5B3"/>
+        <methods name="FirstChildElement" description="FirstChildElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="LastChild" description="LastChild() const" colour="0x27A5B3"/>
+        <methods name="LastChildElement" description="LastChildElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="PreviousSibling" description="PreviousSibling() const" colour="0x27A5B3"/>
+        <methods name="PreviousSiblingElement" description="PreviousSiblingElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="NextSibling" description="NextSibling() const" colour="0x27A5B3"/>
+        <methods name="NextSiblingElement" description="NextSiblingElement(const char*=0) const" colour="0x27A5B3"/>
+        <methods name="ToNode" description="ToNode() const" colour="0x27A5B3"/>
+        <methods name="ToElement" description="ToElement() const" colour="0x27A5B3"/>
+        <methods name="ToText" description="ToText() const" colour="0x27A5B3"/>
+        <methods name="ToUnknown" description="ToUnknown() const" colour="0x27A5B3"/>
+        <methods name="ToDeclaration" description="ToDeclaration() const" colour="0x27A5B3"/>
+        <methods name="XMLPrinter" description="XMLPrinter(FILE*=0, bool=false, int=0)" colour="0x27A5B3"/>
+        <methods name="~XMLPrinter" description="~XMLPrinter()" colour="0x27A5B3"/>
+        <methods name="PushHeader" description="PushHeader(bool, bool)" colour="0x27A5B3"/>
+        <methods name="OpenElement" description="OpenElement(const char*, bool=false)" colour="0x27A5B3"/>
+        <methods name="PushAttribute" description="PushAttribute(const char*, const char*)" colour="0x27A5B3"/>
+        <methods name="PushAttribute" description="PushAttribute(const char*, int)" colour="0x27A5B3"/>
+        <methods name="PushAttribute" description="PushAttribute(const char*, unsigned)" colour="0x27A5B3"/>
+        <methods name="PushAttribute" description="PushAttribute(const char*, int64_t)" colour="0x27A5B3"/>
+        <methods name="PushAttribute" description="PushAttribute(const char*, bool)" colour="0x27A5B3"/>
+        <methods name="PushAttribute" description="PushAttribute(const char*, double)" colour="0x27A5B3"/>
+        <methods name="CloseElement" description="CloseElement(bool=false)" colour="0x27A5B3"/>
+        <methods name="PushText" description="PushText(const char*, bool=false)" colour="0x27A5B3"/>
+        <methods name="PushText" description="PushText(int)" colour="0x27A5B3"/>
+        <methods name="PushText" description="PushText(unsigned)" colour="0x27A5B3"/>
+        <methods name="PushText" description="PushText(int64_t)" colour="0x27A5B3"/>
+        <methods name="PushText" description="PushText(bool)" colour="0x27A5B3"/>
+        <methods name="PushText" description="PushText(float)" colour="0x27A5B3"/>
+        <methods name="PushText" description="PushText(double)" colour="0x27A5B3"/>
+        <methods name="PushComment" description="PushComment(const char*)" colour="0x27A5B3"/>
+        <methods name="PushDeclaration" description="PushDeclaration(const char*)" colour="0x27A5B3"/>
+        <methods name="PushUnknown" description="PushUnknown(const char*)" colour="0x27A5B3"/>
+        <methods name="VisitEnter" description="VisitEnter(const XMLDocument&amp;)" colour="0x27A5B3"/>
+        <methods name="VisitExit" description="VisitExit(const XMLDocument&amp;)" colour="0x27A5B3"/>
+        <methods name="VisitEnter" description="VisitEnter(const XMLElement&amp;, const XMLAttribute*)" colour="0x27A5B3"/>
+        <methods name="VisitExit" description="VisitExit(const XMLElement&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLText&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLComment&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLDeclaration&amp;)" colour="0x27A5B3"/>
+        <methods name="Visit" description="Visit(const XMLUnknown&amp;)" colour="0x27A5B3"/>
+        <methods name="CStr" description="CStr() const" colour="0x27A5B3"/>
+        <methods name="CStrSize" description="CStrSize() const" colour="0x27A5B3"/>
+        <methods name="ClearBuffer" description="ClearBuffer()" colour="0x27A5B3"/>
+        <methods name="CompactMode" description="CompactMode(const XMLElement&amp;)" colour="0x27A5B3"/>
+        <methods name="PrintSpace" description="PrintSpace(int)" colour="0x27A5B3"/>
+        <methods name="Print" description="Print(const char*, ...)" colour="0x27A5B3"/>
+        <methods name="SealElementIfJustOpened" description="SealElementIfJustOpened()" colour="0x27A5B3"/>
+        <methods name="PrintString" description="PrintString(const char*, bool)" colour="0x27A5B3"/>
+      </files>
+    </subpackages>
+    <subpackages name="testTinyXML" description="Folder: /testTinyXML" colour="0xA0522D">
+      <files name="testTinyXML.cpp" description="testTinyXML.cpp, LoC : " colour="0xB22029" height="12.0" width="2.0">
+        <methods name="testTinyXML" description="testTinyXML()" colour="0x27A5B3"/>
+      </files>
+      <files name="testTinyXML.h" description="testTinyXML.h, LoC : " colour="0xB22029" height="1.0" width="2.0">
+        <methods name="testParamDecl" description="testParamDecl(XMLError, const char*)" colour="0x27A5B3"/>
+        <methods name="testTinyXML" description="testTinyXML()" colour="0x27A5B3"/>
+      </files>
+    </subpackages>
+    <files name="XMLexample.cpp" description="XMLexample.cpp, LoC : " colour="0x2A75B3" height="0.0" width="2.0">
+      <methods name="main" description="main()" colour="0x27A5B3"/>
+    </files>
   </packages>
 </project:Project>

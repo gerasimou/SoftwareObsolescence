@@ -6,7 +6,19 @@ project.println();
 
 var packages = project.packages.first;
 packages.println();
+
 packages.first.eContainer.println();
+
+
+var ps : OrderedSet = packages;
+ps.println();
+ps.get(1).println();
+ps.size().println();
+
+for (i in Sequence{0..ps.size()-1}){
+	ps.get(i).println();
+}
+
 
 /*
 for (package in packages){
