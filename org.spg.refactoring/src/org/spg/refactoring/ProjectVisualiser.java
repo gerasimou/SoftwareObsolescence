@@ -43,6 +43,7 @@ public class ProjectVisualiser {
 	List<Building> buildingsList;
 	
 	
+	//Colouring
 	final String DISTRICT_COLOR 		 = "0xF7AB29";
 	final String CITY_COLOR	 			 = "0xF9F7F4";
 	final String BUILDING_COLOR 		 = "0x2A75B3";
@@ -63,18 +64,15 @@ public class ProjectVisualiser {
 	}
 	
 	
-//	public String run (IProject project, String jsonPath, Collection<String> tusUsing){
-		public String run (IProject project, String analysisDirFullPath, Map<String,String> tusUsingMap){
-		try {
-			
-//			generateCityElements(project, tusUsing);
+	public String run (IProject project, String analysisDirFullPath, Map<String,String> tusUsingMap){		
+		try {			
 			generateCityElements(project, tusUsingMap);
 			
 			String json = generateJSON();
 			
 			String filename = project.getName()+".json";
 			
-			//save file in project's directory
+//			save file in project's directory
 			String JSONfileFullPath = analysisDirFullPath + File.separator + filename;
 			Utility.exportToFile(JSONfileFullPath, json, false);
 			
@@ -85,7 +83,6 @@ public class ProjectVisualiser {
 			return null;
 		}
 	}
-	
 	
 	
 	private void generateCityElements(IProject project, Map<String,String> tusUsingMap) throws CoreException{
@@ -117,7 +114,7 @@ public class ProjectVisualiser {
 			else if ( (element instanceof ICContainer) && !(element.getParent() instanceof ISourceRoot) ){//a subpackage
 				String name 	= element.getElementName();
 				String tooltip	= "Folder: "; 
-				getTooltipForInnerElements(element, name, tooltip);
+				getTooltipForInnerElements(element, tooltip);
 				tooltip 		+= name;
 				String colour	= getSubDistrictColour(element); 
 				SubDistrict sDistrict = new SubDistrict(name, tooltip, colour, element.getParent().getElementName());
@@ -139,25 +136,19 @@ public class ProjectVisualiser {
 	}
 	
 	
-	private void getTooltipForInnerElements(ICElement element, String eName, String tooltip){
+	private void getTooltipForInnerElements(ICElement element, String tooltip){
 		if (!(element.getParent() instanceof ISourceRoot))
-			getTooltipForInnerElements(element.getParent(), eName, tooltip);
+			getTooltipForInnerElements(element.getParent(), tooltip);
 		tooltip += element.getElementName() + "/"; 
 	}
 	
 	
 	private String getSubDistrictColour(ICElement element){
-//		int r = 250;
-//		int g = 230;
-//		int b = 10;
 		int index=0;
 		while (element != null && !(element.getParent() instanceof ISourceRoot)){
-//			r -= 25;
-//			g -= 25;
 			index ++;
 			element = element.getParent();
 		}
-//		return String.format("0x%02X%02X%02X", r, g, b);
 		return SUB_DISTRICT_COLOR[index];
 	}
 	
@@ -202,7 +193,7 @@ public class ProjectVisualiser {
 //		System.out.println(JSON.toString());
 		return JSON.toString();
 	}
-	
+ 	
 	
 	
 	class City{

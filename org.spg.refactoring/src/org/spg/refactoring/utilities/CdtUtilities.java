@@ -375,6 +375,8 @@ public class CdtUtilities {
 		IProject newProjectHandle = root.getProject(projectName +"_test");
 		Assert.isNotNull(newProjectHandle);
 		Assert.isTrue(!newProjectHandle.exists());
+		newProjectHandle.create(null);
+		newProjectHandle.open(null);
 
 		IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
 		IProject project 				= CCorePlugin.getDefault().createCDTProject(description, newProjectHandle, new NullProgressMonitor());

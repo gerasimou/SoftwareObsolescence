@@ -48,7 +48,7 @@ public class ProjectVisualiserDialog extends AbstractRefactorerDialog {
 
 		mysqlText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		mysqlText.setLayoutData(new GridData(GridData.FILL_BOTH));
-		mysqlText.setEditable(false);
+		mysqlText.setEditable(true);
 
 		final Button selectBtn = new Button(groupContent, SWT.NONE); 
 		selectBtn.setText("Select..."); 
@@ -80,7 +80,7 @@ public class ProjectVisualiserDialog extends AbstractRefactorerDialog {
 
 		nodeText = new Text(groupContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		nodeText.setLayoutData(new GridData(GridData.FILL_BOTH));
-		nodeText.setEditable(false);
+		nodeText.setEditable(true);
 
 		final Button selectNodeBtn = new Button(groupContent, SWT.NONE); 
 		selectNodeBtn.setText("Select..."); 
