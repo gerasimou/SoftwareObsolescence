@@ -13,11 +13,13 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.cdt.core.dom.ast.cpp.ICPPMethod;
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.ICContainer;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICElementVisitor;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IFunctionDeclaration;
 import org.eclipse.cdt.core.model.ISourceRoot;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.resources.IProject;
@@ -55,14 +57,23 @@ public class ProjectModelGenerator {
 	String modelName	  	;
 	String modelExtension 	= "projectModel";
 
+	/** project */
+	protected ICProject currentCProject = null;
+
+	/** project index */
+	protected IIndex projectIndex = null;
+
 	
 	public ProjectModelGenerator(){
 	}
+
 	
 	public void generateProjectModel (IProject project){ 
-//		Package
-		
 		try {
+			//get existing cProject
+			this.currentCProject	= CdtUtilities.getICProject(project);
+			this.projectIndex 		= CCorePlugin.getIndexManager().getIndex(currentCProject); 
+
 			path 		= project.getLocation().toString() +"/SMILO/models/";
 			modelName	= project.getName();
 
@@ -141,6 +152,8 @@ public class ProjectModelGenerator {
 					aFile.setName(name);
 					aFile.setDescription(name + ", LoC : ");
 					aFile.setColour(colour);
+					aFile.setHeight(2.0);
+					aFile.setWidth(4.0);
 	
 					EObject parentPackage = findParent(projectModel, element);
 					if ( (parentPackage == null) || (!(parentPackage instanceof Package)) )
@@ -214,34 +227,35 @@ public class ProjectModelGenerator {
 				public boolean visit(ICElement element) throws CoreException {
 					int elementType = element.getElementType();
 					switch (elementType){
-						case (ICElement.C_CLASS):
-						{   
-							Clazz aClass = factory.createClazz();
-							aClass.setName(element.getElementName());
-							aClass.setDescription(element.getElementName());
-							aClass.setColour(BUILDING_COLOR);
-							aClass.setHeight(0.0);
-							aClass.setWidth(2.0);
-							//find parent
-							EObject parent = findParent(projectModel, element);
-							if (parent instanceof File)
-								((File)parent).getClasses().add(aClass);
-							else if (parent instanceof Clazz){
-								((Clazz)parent).getSubclasses().add(aClass);
-							}
-							else
-								throw new NullPointerException("Parent package of " + aClass.getName() + " not found!");
-							return true;
-						}
+//						case (ICElement.C_CLASS):
+//						{   
+//							Clazz aClass = factory.createClazz();
+//							aClass.setName(element.getElementName());
+//							aClass.setDescription(element.getElementName());
+//							aClass.setColour(BUILDING_COLOR);
+//							aClass.setHeight(0.0);
+//							aClass.setWidth(2.0);
+//							//find parent
+//							EObject parent = findParent(projectModel, element);
+//							if (parent instanceof File)
+//								((File)parent).getClasses().add(aClass);
+//							else if (parent instanceof Clazz){
+//								((Clazz)parent).getSubclasses().add(aClass);
+//							}
+//							else
+//								throw new NullPointerException("Parent package of " + aClass.getName() + " not found!");
+//							return true;
+//						}
 						case (ICElement.C_FUNCTION):	
 						case (ICElement.C_FUNCTION_DECLARATION):	
 						case (ICElement.C_METHOD):
 						case (ICElement.C_METHOD_DECLARATION):
-						{
+						{ 
 							Method method = factory.createMethod();
 							method.setName(element.getElementName());
-							method.setDescription(element.getElementName());
-							method.setColour(METHOD_COLOR);
+							if (element instanceof IFunctionDeclaration)
+								method.setDescription(((IFunctionDeclaration)element).getSignature());
+							method.setColour(METHOD_COLOR); 
 							//find parent
 							EObject parent = findParent(projectModel, element);
 							if (parent instanceof File)
