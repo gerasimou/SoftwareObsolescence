@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ASCII"?>
+<project:Project xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:project="http://org.spg.modernisation.model.project" xmi:id="_r8d9QChjEeiQl6sM_VrIQw">
+  <packages xmi:id="_sqSFgChjEeiQl6sM_VrIQw" name="default">
+    <files xmi:id="_xEveoChjEeiQl6sM_VrIQw" name="XMLExample.cpp" description="">
+      <methods xmi:id="_Ul0KcChkEeiQl6sM_VrIQw" name="int main()"/>
+    </files>
+  </packages>
+  <packages xmi:id="_zWGdQChjEeiQl6sM_VrIQw" name="Maths">
+    <files xmi:id="_4zf6EChjEeiQl6sM_VrIQw" name="Rectangle.cpp"/>
+    <files xmi:id="_6SFX8ChjEeiQl6sM_VrIQw" name="Rectangle.h"/>
+  </packages>
+  <packages xmi:id="_04FNYChjEeiQl6sM_VrIQw" name="TinyXML">
+    <files xmi:id="_71UFQChjEeiQl6sM_VrIQw" name="tinyxml2.cpp"/>
+    <files xmi:id="_8_MecChjEeiQl6sM_VrIQw" name="tinyxml2.h"/>
+  </packages>
+  <packages xmi:id="_2NzDIChjEeiQl6sM_VrIQw" name="testTinyXML">
+    <files xmi:id="_94QNYChjEeiQl6sM_VrIQw" name="testTinyXML.h">
+      <fileUsages xmi:id="_5VuLcChlEeiQl6sM_VrIQw" name="XMLError testParamDecl(XMLError error, const char *filename);&#xA;" colour="" command="XMLError testParamDecl(XMLError error, const char *filename);&#xA;"/>
+    </files>
+    <files xmi:id="_E8sggChkEeiQl6sM_VrIQw" name="testTinyXML.cpp"/>
+  </packages>
+</project:Project>

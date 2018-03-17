@@ -1,0 +1,25 @@
+"begin execution...".println();
+
+var project = Source!Project.all;
+project.println();
+//project.eContainer.println();
+
+var packages = project.packages.first;
+packages.println();
+packages.first.eContainer.println();
+
+/*
+for (package in packages){
+	package.println("\t");
+	
+	var files = package.files;
+	for (file in files){
+		file.println("\t\t");
+		
+		var methods = file.methods;
+		for (method in methods){
+			method.println("\t\t\t");
+		}
+	}
+}
+*/

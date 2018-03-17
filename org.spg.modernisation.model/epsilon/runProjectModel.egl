@@ -1,0 +1,12 @@
+Testing EGL script
+==================
+[%
+var project = Source!Project.all;%]
+Project: [%=project.name%]
+
+[%
+var packages = project.packages.first;%]
+Packages: [%=packages.name%]
+
+============================
+============================

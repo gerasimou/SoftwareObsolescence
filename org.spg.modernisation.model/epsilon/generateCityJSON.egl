@@ -1,0 +1,91 @@
+[%
+var project = Source!Project.all;
+var packages = project.packages.first;
+%]
+{
+"city":
+{
+  "name": "[%= project.first.name %]",
+  "tooltip": "[%= project.first.name %]"
+},
+"districts":[
+[% project.first.findPackages();%]
+],
+"buildings":[
+[% project.first.findFiles();%]
+]
+}
+[%operation Project findPackages(){
+	for (p in self.packages){
+		p.extractPackageDetails();
+		p.findSubPackages();
+	}
+}%]
+
+[%operation Package findSubPackages (){
+	for (p in self.subpackages){
+		p.extractSubPackageDetails();
+		p.findSubPackages();
+	}
+}%]
+
+[%operation EObject findFiles (){%]
+	[%var packages : OrderedSet;	  
+	if (self.isTypeOf(Project)){
+		packages = self.packages;
+	}
+	else if (self.isTypeOf(Package)){
+		packages = self.subpackages;
+	}
+	for (p in packages){
+		for (f in p.files){
+			f.extractFileDetails();
+		}
+		p.findFiles();
+	}
+}%]
+
+[%operation Package extractPackageDetails(){%]
+{
+	[%="\"name\":" +'"'+ self.name + '"' %],
+	[%="\"tooltip\":" +'"'+ self.description +'"'%],
+	[%="\"color\":" +'"'+ self.colour +'"'%],
+	[%="\"city\":" + "\"" + self.eContainer().name +"\""%]
+},
+[%}%]
+
+[%operation EObject extractSubPackageDetails(){%]
+{
+	[%="\"name\":" +'"'+ self.name + '"' %],
+	[%="\"tooltip\":" +'"'+ self.description +'"'%],
+	[%="\"color\":" +'"'+ self.colour +'"'%],
+	[%="\"district\":" + "\"" + self.eContainer().name +"\""%]
+},
+[%}%]
+
+[%operation EObject extractFileDetails(){%]
+{
+	[%="\"name\":" +'"'+ self.name + '"' %],
+	[%="\"tooltip\":" +'"'+ self.description +'"'%],
+	[%="\"color\":" +'"'+ self.colour +'"'%],
+	[%="\"height\":" +'"'+ self.height +'"'%],
+	[%="\"width\":" +'"'+ self.width +'"'%],
+	[%="\"district\":" + "\"" + self.eContainer().name +"\""%]
+},
+[%}%]
+
+[%
+operation Package findSubPackagesOld (str : String) : String{
+	for (p in self.subpackages){%]
+		[%=p.name%]
+	[%}
+	return "";
+}
+
+operation Project findPackagesOld (str : String) : String{
+	for (p in self.packages){
+		str += p.name +" "; 
+	}
+	return str;
+}
+%]

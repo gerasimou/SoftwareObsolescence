@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ASCII"?>
+<project:Project xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:project="http://org.spg.modernisation.model.project" name="XMLexample" description="XMLexample" colour="0xF9F7F4">
+  <packages name="src" description="default package" colour="0xF7AB29">
+    <files name="XMLexample.cpp" description="XMLexample.cpp, LoC : " colour="0x2A75B3"/>
+  </packages>
+  <packages name="Maths" description="Folder: Maths" colour="0xF7AB29">
+    <subpackages name="MathsInner">
+      <subpackages name="MathsInnerInner">
+        <files name="Maths.h" description="Maths header" colour="0xB22029"/>
+        <files name="Maths.cpp" description="Maths source" colour="0xB22029"/>
+      </subpackages>
+    </subpackages>
+    <files name="Rectangle.cpp" description="Rectangle.cpp, LoC : " colour="0x2A75B3"/>
+    <files name="Rectangle.h" description="Rectangle.h, LoC : " colour="0x2A75B3"/>
+  </packages>
+  <packages name="TinyXML" description="Folder: TinyXML" colour="0xF7AB29">
+    <files name="tinyxml2.cpp" description="tinyxml2.cpp, LoC : " colour="0x2A75B3"/>
+    <files name="tinyxml2.h" description="tinyxml2.h, LoC : " colour="0x2A75B3"/>
+  </packages>
+  <packages name="testTinyXML" description="Folder: testTinyXML" colour="0xF7AB29">
+    <files name="testTinyXML.cpp" description="testTinyXML.cpp, LoC : " colour="0xB22029"/>
+    <files name="testTinyXML.h" description="testTinyXML.h, LoC : " colour="0xB22029"/>
+  </packages>
+</project:Project>

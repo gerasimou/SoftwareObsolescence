@@ -1,0 +1,52 @@
+@namespace(uri="http://org.spg.modernisation.model.project", prefix="project")
+package project;
+
+abstract class Element {
+	attr String name;
+	attr String description;
+	attr String colour;
+}
+
+
+class Project extends Element{
+	val Package[*] packages;
+	
+}
+
+
+class Package extends Element{
+	val Package[*] subpackages;
+	val File[*]    files;
+}
+
+
+class File extends Element{
+//val Clazz[*] classes;
+	val Method[*] methods;
+	val Usage[*] fileUsages;
+	attr Double height;
+	attr Double width;
+}
+
+
+//class Clazz extends Element{
+//	val Clazz[*] subclasses;
+//	val Method[*] methods;
+//	val Usage[*]  classUsages;
+//	attr Double height;
+//	attr Double width;
+//}
+
+
+class Method extends Element{
+	val Usage[*] methodUsages;
+	attr int     startLine;
+	attr int     endLine;
+}
+
+
+class Usage extends Element{
+	attr String line;
+	attr String command;
+}
+
