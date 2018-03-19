@@ -4,7 +4,7 @@
       An Eclipse plug-in for extracting the interface of C/C++ header
 and source files
    </description>
-   <feature url="features/org.spg.modernisation.library.feature_1.0.11.jar" id="org.spg.modernisation.library.feature" version="1.0.11">
+   <feature url="features/org.spg.modernisation.library.feature_1.0.4.jar" id="org.spg.modernisation.library.feature" version="1.0.4">
       <category name="SPG"/>
    </feature>
    <category-def name="SPG" label="Modernisation"/>

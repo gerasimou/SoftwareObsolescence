@@ -2,7 +2,7 @@
 <feature
       id="org.spg.modernisation.library.feature"
       label="API Modernisation"
-      version="1.0.11"
+      version="1.0.4"
       provider-name="SPG">
 
    <description url="github.com/gerasimou/SoftwareObsolescence">
@@ -31,7 +31,7 @@
          id="org.spg.modernisation.library"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.4"
          unpack="false"/>
 
 </feature>

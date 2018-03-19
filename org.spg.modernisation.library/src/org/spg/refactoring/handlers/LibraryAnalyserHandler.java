@@ -59,10 +59,10 @@ public class LibraryAnalyserHandler extends AbstractRefactorerHandler {
 				File analysisDir = new File(project.getLocationURI().getPath().toString() 
 											+ File.separator + "SMILO" + File.separator + "interface");
 				if (!analysisDir.exists()){
-					boolean result = analysisDir.mkdir();
+					boolean result = analysisDir.mkdirs();
 					if (!result)
 						MessageUtility.showMessage(shell, MessageDialog.ERROR, "Creating project analysis directory", 
-								"There was something wrong with creating directory ProjectAnalysis. Please investigate!");
+								"There was something wrong with creating directory interface. Please investigate!");
 				}
 				
 				//get library dialogue properties		
