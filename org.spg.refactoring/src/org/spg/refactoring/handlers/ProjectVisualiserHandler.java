@@ -127,7 +127,6 @@ public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
 				throw new FileNotFoundException(String.format("Directory %s not found", dir));
 			
 			File file = new File(JSONfileFullPath);
-			System.out.println(Utility.readFile(JSONfileFullPath));
 			if (!file.exists())
 				throw new FileNotFoundException(String.format("File %s not found", file));
 			

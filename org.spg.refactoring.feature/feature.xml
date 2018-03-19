@@ -5,8 +5,8 @@
       version="1.0.10"
       provider-name="SPG">
 
-   <description url="http://www.example.com/description">
-      An Eclipse plug-in for software modernisation
+   <description url="github.com/gerasimou/SoftwareObsolescence">
+      An Eclipse plug-in for extracting the interface of C/C++ header and source files
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -23,12 +23,18 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.cdt"/>
       <import plugin="org.eclipse.cdt.core"/>
-      <import plugin="org.eclipse.ltk.core.refactoring"/>
       <import plugin="org.eclipse.text"/>
       <import plugin="org.eclipse.ui.console"/>
-      <import plugin="com.google.gson"/>
       <import plugin="org.eclipse.cdt.ui"/>
       <import plugin="org.eclipse.cdt.managedbuilder.core"/>
+      <import plugin="org.spg.modernisation.model" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.core.refactoring"/>
+      <import plugin="com.google.gson"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.epsilon.emc.emf"/>
+      <import plugin="org.eclipse.epsilon.common"/>
+      <import plugin="org.eclipse.epsilon.eol.engine"/>
+      <import plugin="org.eclipse.epsilon.egl.engine"/>
    </requires>
 
    <plugin

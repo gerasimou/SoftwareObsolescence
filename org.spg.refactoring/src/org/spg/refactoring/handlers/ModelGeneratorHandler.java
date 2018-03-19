@@ -5,7 +5,6 @@ import java.io.File;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.spg.refactoring.ProjectModelGenerator;
-import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.handlers.dialogs.ProjectAnalyserDialog;
 import org.spg.refactoring.utilities.MessageUtility;
 import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
