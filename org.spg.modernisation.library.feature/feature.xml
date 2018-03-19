@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.spg.modernisation.library.feature"
+      label="API Modernisation"
+      version="1.0.11"
+      provider-name="SPG">
+
+   <description url="github.com/gerasimou/SoftwareObsolescence">
+      An Eclipse plug-in for extracting the interface of C/C++ header and source files
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui" version="3.108.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.cdt" version="9.2.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.cdt.core" version="6.2.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.11.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.12.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.cdt.managedbuilder.core" version="8.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.console" version="3.6.200" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="org.spg.modernisation.library"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

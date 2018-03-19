@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.spg.modernisation.library.feature_1.0.11.jar" id="org.spg.modernisation.library.feature" version="1.0.11">
+      <category name="SPG"/>
+   </feature>
+   <category-def name="SPG" label="Modernisation"/>
+</site>
