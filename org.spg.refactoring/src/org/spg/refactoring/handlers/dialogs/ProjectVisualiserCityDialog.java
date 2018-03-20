@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.spg.refactoring.utilities.MessageUtility;
 
-public class ProjectVisualiserDialog extends AbstractRefactorerDialog {
+public class ProjectVisualiserCityDialog extends AbstractRefactorerDialog {
 
 	private Label mysqlLabel;
 	private Label nodeLabel;
@@ -29,7 +29,7 @@ public class ProjectVisualiserDialog extends AbstractRefactorerDialog {
 	private String node;
 	
 	
-	public ProjectVisualiserDialog() {
+	public ProjectVisualiserCityDialog() {
 		super();
 		title 	= "Visualisation configuration";
 		message = "Please provide the details for visualisation"; 

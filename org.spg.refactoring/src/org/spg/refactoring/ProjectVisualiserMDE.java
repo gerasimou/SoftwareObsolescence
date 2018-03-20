@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.epsilon.emc.emf.EmfModel;
+import org.spg.refactoring.handlers.VisualisationMetaphor;
 import org.spg.refactoring.utilities.CdtUtilities;
 import org.spg.refactoring.utilities.EmfUtilities;
 import org.spg.refactoring.utilities.Utility;
@@ -39,7 +40,6 @@ import project.Package;
 import project.Project;
 import project.ProjectFactory;
 import project.ProjectPackage;
-
 
 public class ProjectVisualiserMDE {
 	/** Colours for city metaphor */
@@ -53,10 +53,11 @@ public class ProjectVisualiserMDE {
 	
 	Random rand 		= new Random(System.currentTimeMillis());
 	
-	String path				;
+	String modelDir				;
 	String modelName	  	;
 	String modelExtension 	= "projectModel";
 
+	
 	
 	/**
 	 * Class constructor
@@ -65,17 +66,17 @@ public class ProjectVisualiserMDE {
 	}
 	
 	
-	public String run (IProject project, String analysisDirFullPath, Map<String,String> tusUsingMap){
-		path 		= project.getLocation().toString() +"/SMILO/models/";
+	public String runJSONGenerator (IProject project, String analysisDirFullPath, Map<String,String> tusUsingMap, VisualisationMetaphor metaphor){
+		modelDir	= analysisDirFullPath +java.io.File.separator+ "models/";
 		modelName	= project.getName();
 		
 		try {
 			
 			generateProjectModel(project, tusUsingMap);
 						
-			String json = generateCityJSONEpsilon();
+			String json = generateJSONEpsilon(metaphor);
 			
-			String filename = project.getName()+".json";
+			String filename = project.getName() +"-"+ metaphor.toString() +".json";
 			
 //			save file in project's directory
 			String JSONfileFullPath = analysisDirFullPath + java.io.File.separator + filename;
@@ -85,10 +86,9 @@ public class ProjectVisualiserMDE {
 		}
 		catch (CoreException e) {
 			e.printStackTrace();
-			return null;
 		}
-	}
-		
+		return null;
+	}	
 	
 	private void getTooltipForInnerElements(ICElement element, String tooltip){
 		if (!(element.getParent() instanceof ISourceRoot))
@@ -196,7 +196,7 @@ public class ProjectVisualiserMDE {
 		}
 				
 		//save model
-		EmfUtilities.saveResource(projectModel, path, modelName, modelExtension);		
+		EmfUtilities.saveResource(projectModel, modelDir, modelName, modelExtension);		
 	}
 
 	
@@ -281,11 +281,11 @@ public class ProjectVisualiserMDE {
 	}
 	
 	
-	private String generateCityJSONEpsilon(){
-		EmfUtilities.loadResource(path, modelName, modelExtension);
+	private String generateJSONEpsilon(VisualisationMetaphor metaphor){
+		EmfUtilities.loadResource(modelDir, modelName, modelExtension);
 		
 		String metamodelURI		= "http://org.spg.modernisation.model.project";
-		String modelFile 		= path + modelName +"."+ modelExtension;
+		String modelFile 		= modelDir + modelName +"."+ modelExtension;
 		String modelName		= "Source";
 		String readOnLoad		= "true";
 		String storeOnDisposal	= "false";
@@ -297,9 +297,13 @@ public class ProjectVisualiserMDE {
 		EmfUtilities.runEOL(model, eol);
 		
 		//ren EGL script
-		String egl = rootPath + "generateCityJSON.egl";
-		String cityJSON = EmfUtilities.runEGL(model, egl);
+		String egl = "";
+		switch (metaphor){
+			case CITY	: {egl = rootPath + "generateCityJSON.egl"; break;}
+			case TREEMAP: {egl = rootPath + "generateTreemapJSON.egl"; break;}
+		}
 		
+		String cityJSON = EmfUtilities.runEGL(model, egl);
 		return cityJSON;
 	}
 }

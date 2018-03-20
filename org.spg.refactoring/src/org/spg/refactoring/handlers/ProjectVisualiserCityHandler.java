@@ -19,7 +19,7 @@ import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
 import org.spg.refactoring.ProjectVisualiserMDE;
 import org.spg.refactoring.RefactoringProject;
 import org.spg.refactoring.handlers.dialogs.ProjectAnalyserDialog;
-import org.spg.refactoring.handlers.dialogs.ProjectVisualiserDialog;
+import org.spg.refactoring.handlers.dialogs.ProjectVisualiserCityDialog;
 import org.spg.refactoring.utilities.Utility;
 import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
 
@@ -28,7 +28,7 @@ import org.spg.refactoring.utilities.fromEpsilon.StringProperties;
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
-public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
+public class ProjectVisualiserCityHandler extends AbstractRefactorerHandler{
 	/** Process for server.js*/
 	private Process serverProcess;
 	
@@ -37,7 +37,7 @@ public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
 	
 	/**JSCity details */
 	final String slash				= File.separator;
-	private final String thisClass			= ProjectVisualiserHandler.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+	private final String thisClass			= ProjectVisualiserCityHandler.class.getProtectionDomain().getCodeSource().getLocation().getFile();
 	private final String path 	 			= thisClass + "JSCity" + slash + "js" + slash; 
 //			"/Users/sgerasimou/Documents/Git/ModernSoftware/JSCity/js/";
 	private final String jsonPath	 		= path + "backend" + slash; 
@@ -49,9 +49,9 @@ public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
 
 
 	
-	public ProjectVisualiserHandler() {
+	public ProjectVisualiserCityHandler() {
 		super();
-		dialog 			= new ProjectVisualiserDialog();
+		dialog 			= new ProjectVisualiserCityDialog();
 		this.title 		= "Showing City";
 		this.message	= "Project analysis will begin now, OK?";
 		serverProcess 	= null;
@@ -63,8 +63,8 @@ public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
 		//get library dialogue properties
 		String[] libHeaders       	= properties.getProperty(ProjectAnalyserDialog.LIB_HEADERS).split(",");
 		String[] excludedFiles		= properties.getProperty(ProjectAnalyserDialog.EXCLUDED_FILES).split(",");
-		MySQL						= properties.getProperty(ProjectVisualiserDialog.MYSQL);
-		NODE						= properties.getProperty(ProjectVisualiserDialog.NODE);
+		MySQL						= properties.getProperty(ProjectVisualiserCityDialog.MYSQL);
+		NODE						= properties.getProperty(ProjectVisualiserCityDialog.NODE);
 		
 		//analyse project
 		RefactoringProject refactoring = new RefactoringProject(libHeaders, excludedFiles, null, null, null);
@@ -79,7 +79,7 @@ public class ProjectVisualiserHandler extends AbstractRefactorerHandler{
 
 		//run MDE-based visualiser
 		ProjectVisualiserMDE vis = new ProjectVisualiserMDE();
-		String JSONfileFullPath = vis.run(project, analysisDir.getAbsolutePath(), tusUsingMap);
+		String JSONfileFullPath = vis.runJSONGenerator(project, analysisDir.getAbsolutePath(), tusUsingMap, VisualisationMetaphor.CITY);
 
 		
 		//If a JSON file is generated, start mysql and add the ciy to the database
