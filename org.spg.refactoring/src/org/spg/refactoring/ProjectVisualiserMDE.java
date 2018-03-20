@@ -209,18 +209,19 @@ public class ProjectVisualiserMDE {
 	 * @return
 	 */
 	private EObject findParent(Project projectModel, ICElement element){
-		element = findAppropriateElement(element);
+		ICElement tempElement = findAppropriateElement(element);
 		TreeIterator<EObject> it = projectModel.eAllContents();
 		while (it.hasNext()){
 			Element obj = (Element)it.next();
-			if(obj.getName().equals(element.getElementName())){
+			if(obj.getName().equals(tempElement.getElementName())){
 				Element parentE = obj;
 				boolean matches = true;
-				while (element.getParent() != null && (!(element.getParent() instanceof ICProject)) && (!(parentE instanceof Project))){
-					element = findAppropriateElement(element);
+				while (tempElement.getParent() != null && (!(tempElement.getParent() instanceof ICProject)) && (!(parentE instanceof Project))){
+					tempElement = findAppropriateElement(tempElement);
 					parentE = (Element)parentE.eContainer();
-					if (!parentE.getName().equals(element.getElementName())){
+					if (!parentE.getName().equals(tempElement.getElementName())){
 						matches = false;
+						tempElement = findAppropriateElement(element);
 						break;
 					}
 				}
