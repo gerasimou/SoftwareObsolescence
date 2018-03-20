@@ -1,12 +1,48 @@
 [%
 var project = Source!Project.all;
 var packages = project.packages.first;
+
+var packages 	 : Collection = Package.allInstances();
+var mainPackages : Collection = packages.select(p | p.eContainer.isTypeOf(Project));
+var subPackages  : Collection = packages.select(p | not p.eContainer.isTypeOf(Project));
+var files		 : Collection = File.allInstances();
 %]
 {
-  [%="name: \""+ project.first.name +"\""%],
-  [%="rate: "+ 0.03 %],
-  [% project.first.findPackages();%]
+  [%="\"name\": \""+ project.first.name +"\""%],
+  [%="\"rate\": "+ 0.03 %],
+  "children" : 
+  [
+    [%for (p in mainPackages) {
+    	p.extractPackageDetails("\t");
+    }%]
+  ]
 }
+[%var all = Source.allContents().flatten();%]
+[%for (o in all){%]
+	[%//o.name +"\t"+ o.type().name%][%
+	if (o.isTypeOf(Package)){
+		//o.ex
+	}
+}%]
+
+[%operation Package extractPackageDetails(space : String){%]
+   [%=space%]{
+     [%=space + " \"name\": \""+ self.name +"\""%],
+     [%=space + " \"rate\":" +'"'+ "0.1" +'"'%],
+     [%if (not self.subpackages.isEmpty()){%]
+      [%=space%] "children" : 
+      [%=space%]   [
+         [%for (p in self.subpackages){
+           p.extractPackageDetails(space +"\t");
+         }%]
+       [%=space%]  ]    
+       [%} else {%]
+      [%=space%] "value" : 10
+       [%}%]
+   [%=space%]}[%if ((self.eContainer.isTypeOf(Package) and not (self.eContainer.subpackages.last.equals(self)))){%],[%}else{%][%}%][%if ((self.eContainer.isTypeOf(Project) and not (self.eContainer.packages.last.equals(self)))){%],[%}else{%][%}%]
+   
+[%}%]
+
 
 [%operation Project findPackages(){%]
   "children": 
@@ -29,17 +65,3 @@ var packages = project.packages.first;
 		}
 	}
 }%]
-
-[%operation Package extractPackageDetails(){%]
-   {
-    [%="\"name\":" +'"'+ self.name + '"' %],
-    [%="\"rate\":" +'"'+ "0.1" +'"'%]
-   },
-[%}%]
-
-[%operation Package extractLeafPackageDetails(){%]
-   {
-    [%="\"name\":" +'"'+ self.name + '"' %],
-    [%="\"rate\":" +'"'+ "0.1" +'"'%]
-   },
-[%}%]
